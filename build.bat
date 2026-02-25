@@ -1,1 +1,0 @@
-python -m PyInstaller -w --icon=src/assets/icon/icon.ico main.py --name "Auto Install Programs"

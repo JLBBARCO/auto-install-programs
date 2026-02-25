@@ -21,6 +21,8 @@ call :install "Node.js" "OpenJS.NodeJS"
 call :install "XAMPP" "ApacheFriends.Xampp.8.1"
 call :install "Docker Desktop" "XP8CBJ40XLBWKX"
 call :install "VirtualBox" "Oracle.VirtualBox"
+call :install "Figma" "Figma.Figma"
+call :install "Blender" "BlenderFoundation.Blender"
 
 goto :eof
 
