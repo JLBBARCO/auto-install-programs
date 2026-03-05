@@ -14,13 +14,15 @@ install_pkg() {
     local NAME=$1
     local PKG_NAME=$2
     echo "------------------------------------------"
-    echo "Instalando: $NAME..."
+    echo "Installing: $NAME..."
 
     case $MANAGER in
         "apt") sudo apt install -y "$PKG_NAME" ;;
         "dnf") sudo dnf install -y "$PKG_NAME" ;;
         "pacman") sudo pacman -S --noconfirm "$PKG_NAME" ;;
     esac
+
+    sleep 2
 }
 
 if [ "$MANAGER" == "unknown" ]; then exit 1; fi
@@ -43,4 +45,4 @@ install_pkg "Blender" "blender"
 install_pkg "VirtualBox" "virtualbox"
 install_pkg "Arduino IDE" "arduino"
 
-echo "Desenvolvimento configurado!"
+echo "Configured Development!"

@@ -1,4 +1,4 @@
-from src.lib.externalLibs import ctk
+from src.lib.externalLibs import ctk, time
 from src.lib import installations, log, system
 
 # * Main Variables
@@ -47,7 +47,7 @@ class App(ctk.CTk):  # type: ignore
         self.checkedButtonDevelopment = ctk.BooleanVar()
         self.checkButtonDevelopment = ctk.CTkCheckBox(self.options_frame, text="Developer Tools", onvalue=True, offvalue=False, variable=self.checkedButtonDevelopment)
         self.checkButtonDevelopment.select()
-        self.checkButtonDevelopment.grid(padx=20, pady=5, row=4, column=0, sticky="w")
+        self.checkButtonDevelopment.grid(padx=20, pady=5, row=5, column=0, sticky="w")
 
         self.checkedButtonServer = ctk.BooleanVar()
         self.checkButtonServer = ctk.CTkCheckBox(self.options_frame, text="Server Tools", onvalue=True, offvalue=False, variable=self.checkedButtonServer)
@@ -72,14 +72,14 @@ class App(ctk.CTk):  # type: ignore
             self.checkButtonCustomization.grid(padx=20, pady=5, row=4, column=0, sticky="w")
 
             self.checkButtonGames.select()
-            self.checkButtonGames.grid(padx=20, pady=5, row=6, column=0, sticky="w")
+            self.checkButtonGames.grid(padx=20, pady=5, row=7, column=0, sticky="w")
 
         if 'Linux' in system.nameSO():
             self.checkButtonDrivers.select()
             self.checkButtonDrivers.grid(padx=20, pady=5, row=0, column=0, sticky="w")
 
             self.checkButtonServer.select()
-            self.checkButtonServer.grid(padx=20, pady=5, row=5, column=0, sticky="w")
+            self.checkButtonServer.grid(padx=20, pady=5, row=6, column=0, sticky="w")
 
     def install(self):
         self.destroy()  # Close the GUI before starting installations
@@ -87,30 +87,37 @@ class App(ctk.CTk):  # type: ignore
         if self.checkedButtonEssentials.get():
             log.log(f'Install Essential Programs: {self.checkedButtonEssentials.get()}')
             log.log(installations.essentials())
+            time.sleep(3)
 
         if self.checkedButtonOffice.get():
             log.log(f'Install Office: {self.checkedButtonOffice.get()}')
             log.log(installations.office())
+            time.sleep(3)
 
         if self.checkedButtonDevelopment.get():
             log.log(f'Install Development Programs: {self.checkedButtonDevelopment.get()}')
             log.log(installations.development())
+            time.sleep(3)
 
         if self.checkedButtonGames.get():
             log.log(f'Install Games: {self.checkedButtonGames.get()}')
             log.log(installations.games())
+            time.sleep(3)
 
         if self.checkedButtonScreen.get():
             log.log(f'Install Screen: {self.checkedButtonScreen.get()}')
             log.log(installations.screen())
+            time.sleep(3)
 
         if self.checkedButtonServer.get():
             log.log(f'Install Server: {self.checkedButtonServer.get()}')
             log.log(installations.server())
+            time.sleep(3)
 
         if self.checkedButtonCustomization.get():
             log.log(f'Install Customization: {self.checkedButtonCustomization.get()}')
             log.log(installations.customization())
+            time.sleep(3)
 
     def cancel(self):
         log.log('Installation cancelled by the user')

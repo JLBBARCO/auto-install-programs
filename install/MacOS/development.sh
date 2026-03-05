@@ -1,28 +1,34 @@
+#!/bin/bash
+
+# --- Função de Verificação do Homebrew ---
 if ! command -v brew &> /dev/null; then
     echo "Instalando Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-#!/bin/bash
-echo "Instalando ferramentas de desenvolvimento..."
+echo "Installing development tools..."
 echo ""
 
-# Apps de Interface (Casks)
-brew install --cask visual-studio-code --quiet
-brew install --cask arduino-ide --quiet
-brew install --cask microsoft-teams --quiet
-brew install --cask gimp --quiet
-brew install --cask github --quiet
-brew install --cask mysql-workbench --quiet
-brew install --cask xampp --quiet
-brew install --cask docker --quiet
-brew install --cask virtualbox --quiet
-brew install --cask figma --quiet
-brew install --cask blender --quiet
+# Lista de Apps de Interface (Casks)
+CASKS=(
+    visual-studio-code arduino-ide microsoft-teams gimp 
+    github mysql-workbench xampp docker virtualbox 
+    figma blender
+)
 
-# Ferramentas de Linha de Comando (Formulae)
-brew install git --quiet
-brew install python@3.12 --quiet
-brew install node --quiet
+for app in "${CASKS[@]}"; do
+    echo "Installing $app..."
+    brew install --cask "$app" --quiet
+    sleep 2  # <--- O Sleep aqui dá um respiro ao processador entre apps
+done
 
-echo "Setup de desenvolvimento finalizado!"
+# Lista de Ferramentas de Linha de Comando (Formulae)
+FORMULAE=(git python@3.12 node)
+
+for tool in "${FORMULAE[@]}"; do
+    echo "Installing $tool..."
+    brew install "$tool" --quiet
+    sleep 2  # <--- O Sleep aqui evita picos de processamento
+done
+
+echo "Development setup complete!"

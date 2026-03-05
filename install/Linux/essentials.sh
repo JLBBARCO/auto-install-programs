@@ -21,7 +21,7 @@ install_pkg() {
     local PKG_NAME=$2
 
     echo "------------------------------------------"
-    echo "Instalando: $NAME..."
+    echo "Installing: $NAME..."
 
     case $MANAGER in
         "apt")
@@ -34,26 +34,28 @@ install_pkg() {
             sudo pacman -S --noconfirm "$PKG_NAME"
             ;;
         *)
-            echo "[ERRO] Gestor de pacotes não suportado para $NAME"
+            echo "[ERROR] Package manager not supported for $NAME"
             return 1
             ;;
     esac
 
     if [ $? -eq 0 ]; then
-        echo "[SUCESSO] $NAME instalado corretamente!"
+        echo "[SUCCESS] $NAME installed correctly!"
     else
-        echo "[FALHA] Erro ao instalar $NAME."
+        echo "[ERROR] Error installing $NAME."
     fi
+
+    sleep 2
 }
 
 # --- Início do Script ---
 if [ "$MANAGER" == "unknown" ]; then
-    echo "Erro: Não foi possível encontrar um gestor de pacotes suportado (APT, DNF ou PACMAN)."
+    echo "Error: A supported package manager could not be found. (APT, DNF or PACMAN)."
     exit 1
 fi
 
-echo "Gestor detectado: $MANAGER"
-echo "A atualizar repositórios..."
+echo "Manager detected: $MANAGER"
+echo "Updating repositories..."
 
 case $MANAGER in
     "apt") sudo apt update ;;
@@ -75,4 +77,4 @@ install_pkg "Git" "git"
 install_pkg "Curl" "curl"
 
 echo "------------------------------------------"
-echo "Processo finalizado!"
+echo "Process completed!"

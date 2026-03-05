@@ -4,21 +4,25 @@ if ! command -v brew &> /dev/null; then
 fi
 
 #!/bin/bash
-echo "Iniciando atualização de aplicações instaladas..."
+echo "Starting update of installed applications..."
 brew upgrade --quiet
-echo "Atualização concluída."
+echo "Update complete."
 echo ""
 
 install() {
     NAME=$1
     ID=$2
-    echo "Instalando $NAME..."
+    echo "Installing $NAME..."
     # No macOS, a maioria das apps essenciais são 'casks' (GUI)
     brew install --cask $ID --quiet
+    
+    # Adicionado sistema de sleep para reduzir carga no CPU
+    sleep 2
+
     if [ $? -eq 0 ]; then
-        echo "[SUCCESS] $NAME instalado com sucesso!"
+        echo "[SUCCESS] $NAME Installed successfully!"
     else
-        echo "[INFO/ERROR] Falha ou $NAME já está presente."
+        echo "[INFO/ERROR] Failure or $NAME is already present."
     fi
     echo ""
 }
@@ -27,7 +31,7 @@ install() {
 install "Google Chrome" "google-chrome"
 install "Mozilla Firefox" "firefox"
 install "VLC" "vlc"
-install "The Unarchiver" "the-unarchiver" # Substituto do WinRAR no Mac
+install "The Unarchiver" "the-unarchiver"
 install "WhatsApp" "whatsapp"
 install "Telegram" "telegram"
 install "Spotify" "spotify"

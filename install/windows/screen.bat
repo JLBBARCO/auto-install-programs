@@ -1,6 +1,7 @@
 @echo off
 echo Starting update of all installed applications...
 winget update --all --accept-source-agreements --accept-package-agreements >nul 2>&1
+timeout /t 2 /nobreak >nul
 set UPDATE_ERROR=%ERRORLEVEL%
 echo Update process completed.
 echo.
@@ -19,6 +20,7 @@ set NAME=%~1
 set ID=%~2
 echo Installing %NAME%...
 winget install %ID% --accept-source-agreements --accept-package-agreements >nul 2>&1
+timeout /t 2 /nobreak >nul
 set INSTALL_ERROR=%ERRORLEVEL%
 
 if %INSTALL_ERROR% EQU 0 (

@@ -15,21 +15,23 @@ install_pkg() {
     local NAME=$1
     local PKG_NAME=$2
     echo "------------------------------------------"
-    echo "Configurando Servidor: $NAME..."
+    echo "Configuring the Server: $NAME..."
 
     case $MANAGER in
         "apt") sudo apt install -y "$PKG_NAME" ;;
         "dnf") sudo dnf install -y "$PKG_NAME" ;;
         "pacman") sudo pacman -S --noconfirm "$PKG_NAME" ;;
     esac
+
+    sleep 2
 }
 
 if [ "$MANAGER" == "unknown" ]; then
-    echo "Erro: Gestor de pacotes não identificado."
+    echo "Error: Package manager not identified."
     exit 1
 fi
 
-echo "Iniciando Setup de Servidor [$MANAGER]..."
+echo "Starting Server Setup [$MANAGER]..."
 
 # 1. Atualização de Segurança
 case $MANAGER in
@@ -68,5 +70,5 @@ elif [ "$MANAGER" == "dnf" ]; then
 fi
 
 echo "------------------------------------------"
-echo "Setup do Servidor Finalizado!"
-echo "Sugestão: Configure as chaves SSH e altere as portas padrão."
+echo "Server Setup Complete!"
+echo "Suggestion: Configure the SSH keys and change the default ports."
