@@ -1,8 +1,4 @@
-from datetime import datetime
-import threading
-import os
-import sys
-import inspect
+from src.lib.externalLibs import sys, os, threading, datetime, inspect
 
 # write log.log alongside the executable when frozen or in the project root
 if getattr(sys, 'frozen', False):
@@ -17,7 +13,7 @@ _lock = threading.Lock()
 
 
 def _now():
-    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    return datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
 def log(message, level="INFO"):

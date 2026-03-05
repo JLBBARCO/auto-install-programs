@@ -17,6 +17,7 @@ call :install "Telegram Desktop" "Telegram.TelegramDesktop"
 call :install "Spotify" "Spotify.Spotify"
 call :install "Google Drive" "Google.Drive"
 call :install "Cloudflare Warp" "Cloudflare.Warp"
+call :install "Adobe Acrobat" "Adobe.Acrobat.Reader.64-bit"
 
 goto :eof
 

@@ -1,10 +1,5 @@
-import subprocess
-import os
-import re
-import shutil
-import sys
-from src.lib import log
-
+from src.lib.externalLibs import sys, os, subprocess, re, shutil
+from src.lib import log, system
 
 # PyInstaller packages data files into a temporary folder during execution.
 # Use this helper to get the absolute path to bundled resources whether the
@@ -30,7 +25,7 @@ def install_program(program):
     # Build an absolute path to the installer script.  Use the packaging helper
     # so that the file can be found when the application is frozen by
     # PyInstaller (it ends up inside ``sys._MEIPASS``).
-    bat_path = _resource_path(os.path.join('install', 'windows', f"{program}.bat"))
+    bat_path = _resource_path(os.path.join('install', system.nameSO(), f"{program}.{system.installation()}"))
     log.log(f'Running installer: {bat_path}', level="INFO")
 
     if not os.path.exists(bat_path):
@@ -86,6 +81,9 @@ def install_program(program):
 
 def essentials():
     return install_program("essentials")
+
+def server():
+    return install_program("server")
 
 def office():
     destinationPath = r"C:\Office"

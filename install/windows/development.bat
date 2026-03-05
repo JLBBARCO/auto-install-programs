@@ -9,7 +9,6 @@ echo Starting installation applications...
 echo.
 
 call :install "Visual Studio Code" "Microsoft.VisualStudioCode"
-call :install "Visual Studio 2022 Community Edition" "Microsoft.VisualStudio.2022.Community"
 call :install "Arduino IDE" "ArduinoSA.IDE.stable"
 call :install "Microsoft Teams" "Microsoft.Teams"
 call :install "Gimp" "GIMP.GIMP.2"

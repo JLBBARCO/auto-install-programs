@@ -4,7 +4,7 @@ Auto installation programs for windows
 
 ## Interface
 
-![UI](src/assets/img/auto-install-programs.png)
+![UI](src/assets/img/thumbnail.webp)
 
 ## Packaging
 

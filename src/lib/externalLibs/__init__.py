@@ -1,6 +1,4 @@
-import sys
-import os
-import subprocess
+import sys, os, subprocess, threading, datetime, inspect, winreg, re, shutil, platform
 import importlib
 
 try:

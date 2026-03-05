@@ -1,7 +1,4 @@
-import os
-import subprocess
-import sys
-import winreg
+from src.lib.externalLibs import sys, os, winreg
 from src.lib import log
 
 

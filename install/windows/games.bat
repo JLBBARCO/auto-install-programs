@@ -10,11 +10,11 @@ echo.
 
 call :install "Xbox App" "Microsoft.XboxApp"
 call :install "Steam" "Valve.Steam"
-call :install "Discord" "Discord.Discord"
+call :install "Epic Games Launcher" "EpicGames.EpicGamesLauncher"
 call :install "Google Play Games" "Google.PlayGames"
+call :install "Discord" "Discord.Discord"
 call :install "Radmin VPN" "Famatech.RadminVPN"
 call :install "CurseForge" "Overwolf.CurseForge"
-call :install "Epic Games Launcher" "EpicGames.EpicGamesLauncher"
 
 goto :eof
 
