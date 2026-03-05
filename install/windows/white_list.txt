@@ -6,3 +6,14 @@ nearby
 camo
 edge
 whatsapp
+nv-display-container
+nvspcaps64
+nvidia share
+shadowplay
+amdsoftware
+atibrowser
+radeonsoftware
+cnext
+igfxpers
+igfxtray
+intelgraphics
