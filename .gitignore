@@ -2,9 +2,10 @@
 __pycache__/
 build/
 dist/
+venv/
 *.spec
 *.log
 test.*
-build.bat
+build.*
 *.lock
 %userprofile%/

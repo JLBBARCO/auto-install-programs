@@ -1,6 +1,6 @@
 @echo off
-echo Starting update of all installed applications...
-winget update --all --accept-source-agreements --accept-package-agreements >nul 2>&1
+echo Starting update Microsoft App Installer for correctly all future errors...
+winget update Microsoft.AppInstaller --accept-source-agreements --accept-package-agreements >nul 2>&1
 timeout /t 2 /nobreak >nul
 set UPDATE_ERROR=%ERRORLEVEL%
 echo Update process completed.
@@ -9,6 +9,7 @@ echo.
 echo Starting installation applications...
 echo.
 
+call :install "Free Download Manager" "SoftDeluxe.FreeDownloadManager"
 call :install "Google Chrome" "Google.Chrome"
 call :install "Mozilla Firefox" "Mozilla.Firefox"
 call :install "VLC" "VideoLAN.VLC"

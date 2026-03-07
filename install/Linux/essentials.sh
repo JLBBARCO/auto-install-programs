@@ -67,6 +67,7 @@ esac
 # Nota: Os nomes dos pacotes no Linux podem variar ligeiramente do Windows.
 # Ajustei para os nomes mais comuns no Ubuntu/Mint.
 
+install_pkg "Free Download Manager" ""
 install_pkg "Google Chrome" "google-chrome-stable"
 install_pkg "Mozilla Firefox" "firefox"
 install_pkg "VLC" "vlc"

@@ -17,3 +17,5 @@ cnext
 igfxpers
 igfxtray
 intelgraphics
+Rainmeter
+Lively Wallpaper

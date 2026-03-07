@@ -81,6 +81,13 @@ class App(ctk.CTk):  # type: ignore
             self.checkButtonServer.select()
             self.checkButtonServer.grid(padx=20, pady=5, row=6, column=0, sticky="w")
 
+        if system.nameSO() == 'MacOS':
+            self.checkButtonEssentials.select()
+            self.checkButtonEssentials.grid(padx=20, pady=5, row=1, column=0, sticky="w")
+
+            self.checkButtonDevelopment.select()
+            self.checkButtonDevelopment.grid(padx=20, pady=5, row=5, column=0, sticky="w")
+
     def install(self):
         self.destroy()  # Close the GUI before starting installations
         

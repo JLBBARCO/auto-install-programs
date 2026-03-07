@@ -1,4 +1,5 @@
-from src.lib.externalLibs import sys, os, winreg
+from src.lib.externalLibs import sys, os
+import winreg
 from src.lib import log
 
 

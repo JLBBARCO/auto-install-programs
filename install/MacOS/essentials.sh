@@ -28,6 +28,7 @@ install() {
 }
 
 # Lista de Programas Adaptada para macOS
+install "Free Download Manager" ""
 install "Google Chrome" "google-chrome"
 install "Mozilla Firefox" "firefox"
 install "VLC" "vlc"

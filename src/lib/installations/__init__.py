@@ -86,25 +86,8 @@ def server():
     return install_program("server")
 
 def office():
-    destinationPath = r"C:\Office"
-    files = ['install/windows/office/settings.xml']
-
-    os.makedirs(destinationPath, exist_ok=True)
-    messages = []
-    for file in files:
-        # compute the real path to the file using our helper; without this the
-        # file is not found when running from a PyInstaller bundle (it lives
-        # under ``sys._MEIPASS/install/windows/...`` instead of the CWD).
-        real_file = _resource_path(file)
-        try:
-            shutil.copy(real_file, destinationPath)
-            messages.append(f"Successfully copied {file} to {destinationPath}")
-        except Exception as error:
-            messages.append(f"Failed to copy {file} to {destinationPath}. Error: {error}")
-    
     result = install_program("office")
-    messages.append(result)
-    return "\n".join(messages)
+    return result
 
 def development():
     return install_program("development")
@@ -116,6 +99,9 @@ def screen():
     return install_program("screen")
 
 def customization():
+    if system.nameSO() != 'Windows':
+        return "Customization is only supported on Windows."
+    
     import src.lib.customizations as custom
     log.log('Starting customization flow', level="INFO")
 

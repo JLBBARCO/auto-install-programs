@@ -1,11 +1,11 @@
-import sys, os, subprocess, threading, datetime, inspect, winreg, re, shutil, platform, time
+import sys, os, subprocess, threading, datetime, inspect, re, shutil, platform, time
 import importlib
 
 try:
     import customtkinter as ctk
 except ImportError:
     # try installing missing requirements and re-importing
-    subprocess.run(r"src\lib\install_libs.bat", shell=True)
+    subprocess.run([sys.executable, "-m", "pip", "install", "customtkinter"])
     try:
         ctk = importlib.import_module('customtkinter')
     except Exception:
