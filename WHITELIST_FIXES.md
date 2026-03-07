@@ -24,7 +24,7 @@ A whitelist original continha nomes que não correspondiam exatamente aos nomes 
 
 **Nova whitelist otimizada:**
 
-```
+```text
 onedrive        # Microsoft OneDrive
 teams           # Microsoft Teams
 discord         # Discord
@@ -92,7 +92,7 @@ Documentação completa sobre como:
 
 **Localização:**
 
-```
+```text
 install/Windows/WHITELIST_README.md
 ```
 
@@ -137,7 +137,7 @@ if any(term in name.lower() for term in whitelist)
 
 ## Como Adicionar Novo Programa
 
-### Quick Start:
+### Quick Start
 
 1. Descobra o nome exato:
 
@@ -147,13 +147,13 @@ if any(term in name.lower() for term in whitelist)
 
 2. Edite `install/Windows/white_list.txt`:
 
-   ```
+   ```text
    spotify
    ```
 
 3. Recompile o programa ou edite o arquivo dentro do `.app`/executável
 
-### Exemplo Prático:
+### Exemplo Pratico
 
 Quer reativar Spotify?
 
