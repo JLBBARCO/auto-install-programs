@@ -6,7 +6,6 @@ venv/
 *.spec
 *.log
 test.*
-build.*
 *.lock
 %userprofile%/
 white_list_generated.txt
