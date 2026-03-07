@@ -6,11 +6,11 @@ rm -rf dist build
 rm -f "Auto Install Programs.spec"
 
 echo "Instalando dependencias necessarias..."
-python3 -m pip install --upgrade pip
-python3 -m pip install pyinstaller customtkinter
+python -m pip install --upgrade pip
+python -m pip install pyinstaller customtkinter
 
 echo "Iniciando o Build com PyInstaller..."
-python3 -m PyInstaller --noconfirm --onedir --windowed \
+python -m PyInstaller --noconfirm --onedir --windowed \
     --name "Auto Install Programs" \
     --add-data "src:src" \
     --add-data "install:install" \

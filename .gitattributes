@@ -1,2 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Keep shell scripts Unix-compatible for CI runners.
+*.sh text eol=lf
+
+# Keep batch scripts Windows-friendly.
+*.bat text eol=crlf
