@@ -76,6 +76,7 @@ install_pkg "Telegram" "telegram-desktop"
 install_pkg "Spotify" "spotify-client"
 install_pkg "Git" "git"
 install_pkg "Curl" "curl"
+install_pkg "Passwords Manager" "passwords-manager"
 
 echo "------------------------------------------"
 echo "Process completed!"

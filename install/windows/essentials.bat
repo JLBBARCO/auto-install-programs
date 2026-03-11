@@ -20,6 +20,7 @@ call :install "Spotify" "Spotify.Spotify"
 call :install "Google Drive" "Google.Drive"
 call :install "Cloudflare Warp" "Cloudflare.Warp"
 call :install "Adobe Acrobat" "Adobe.Acrobat.Reader.64-bit"
+call :install "Passwords Manager" "JLBBARCO.PasswordsManager"
 
 goto :eof
 

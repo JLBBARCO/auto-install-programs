@@ -27,6 +27,7 @@ call :install "Rufus" "Rufus.Rufus"
 call :install "Ventoy" "Ventoy.Ventoy"
 call :install "VirtualBox" "Oracle.VirtualBox"
 call :install "XAMPP" "ApacheFriends.Xampp.8.1"
+call :install "Winget Create" "wingetcreate"
 
 goto :eof
 
