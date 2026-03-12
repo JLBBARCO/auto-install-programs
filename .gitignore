@@ -9,3 +9,4 @@ test.*
 *.lock
 %userprofile%/
 white_list_generated.txt
+user.json

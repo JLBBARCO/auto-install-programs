@@ -38,9 +38,19 @@ Essential programs with basis in user settings
 
 ## Microsoft Office
 
-Oficial executable and installation. This system utilize of the oficial [settings.xml](install/Windows/office/settings.xml) for install Microsoft Office in the LTSC version.
+Office programs are selectable directly in the **Essentials** tab, under the "── Office ──" section.
+The available programs are defined in [`install/windows/office.json`](install/windows/office.json).
 
-For more, consults [Deployment Settings](https://config.office.com/deploymentsettings) for download of new `settings.xml`
+For a custom Office deployment via the Office Deployment Tool, an official [`settings.xml`](install/windows/office/settings.xml) is included (LTSC 2024, PerpetualVL channel).
+Consult [Deployment Settings](https://config.office.com/deploymentsettings) to generate a new `settings.xml`.
+
+Default selectable programs:
+
+- Microsoft 365 Apps
+- Microsoft OneNote
+- Microsoft Teams
+- Notion
+- Obsidian
 
 ## Screen
 

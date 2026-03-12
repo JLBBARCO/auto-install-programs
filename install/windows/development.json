@@ -1,0 +1,82 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for Windows.",
+  "programs": [
+    {
+      "name": "Arduino IDE",
+      "id": "ArduinoSA.IDE.stable"
+    },
+    {
+      "name": "Blender",
+      "id": "BlenderFoundation.Blender"
+    },
+    {
+      "name": "Docker Desktop",
+      "id": "Docker.DockerDesktop"
+    },
+    {
+      "name": "Figma",
+      "id": "Figma.Figma"
+    },
+    {
+      "name": "Gimp",
+      "id": "GIMP.GIMP.3"
+    },
+    {
+      "name": "Git",
+      "id": "Git.Git"
+    },
+    {
+      "name": "GitHub Desktop",
+      "id": "GitHub.GitHubDesktop"
+    },
+    {
+      "name": "Java Runtime Environment",
+      "id": "Oracle.JavaRuntimeEnvironment"
+    },
+    {
+      "name": "Microsoft Teams",
+      "id": "Microsoft.Teams"
+    },
+    {
+      "name": "MySQL Workbench",
+      "id": "Oracle.MySQLWorkbench"
+    },
+    {
+      "name": "Node.js",
+      "id": "OpenJS.NodeJS"
+    },
+    {
+      "name": "Visual Studio Code",
+      "id": "Microsoft.VisualStudioCode"
+    },
+    {
+      "name": "Python 3.12",
+      "id": "Python.Python.3.12"
+    },
+    {
+      "name": "Raspberry Pi",
+      "id": "RaspberryPi.RaspberryPiImager"
+    },
+    {
+      "name": "Rufus",
+      "id": "Rufus.Rufus"
+    },
+    {
+      "name": "Ventoy",
+      "id": "Ventoy.Ventoy"
+    },
+    {
+      "name": "VirtualBox",
+      "id": "Oracle.VirtualBox"
+    },
+    {
+      "name": "XAMPP",
+      "id": "ApacheFriends.Xampp.8.1"
+    },
+    {
+      "name": "Winget Create",
+      "id": "wingetcreate"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Customization",
+  "description": "Tools for customizing your system's appearance and behavior.",
+  "programs": [
+    {
+      "name": "Lively Wallpaper",
+      "id": "9NTM2QC6QWS7"
+    },
+    {
+      "name": "Rainmeter",
+      "id": "Rainmeter.Rainmeter"
+    },
+    {
+      "name": "TranslucentTB",
+      "id": "CharlesMilette.TranslucentTB"
+    }
+  ]
+}

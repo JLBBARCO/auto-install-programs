@@ -12,7 +12,6 @@ python -m PyInstaller --noconfirm --onedir --windowed ^
     --name "Auto Install Programs" ^
     --icon "src/assets/icon/icon.ico" ^
     --add-data "src;src" ^
-    --add-data "install;install" ^
     --collect-all customtkinter ^
     --collect-all psutil ^
     "main.py"

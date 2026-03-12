@@ -1,4 +1,4 @@
-from src.lib.externalLibs import platform
+import platform
 
 def nameSO():
     system = platform.system()

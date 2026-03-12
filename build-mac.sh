@@ -13,7 +13,6 @@ echo "Starting build with PyInstaller..."
 python -m PyInstaller --noconfirm --onedir --windowed \
     --name "Auto Install Programs" \
     --add-data "src:src" \
-    --add-data "install:install" \
     --collect-all customtkinter \
     --collect-all psutil \
     "main.py"
