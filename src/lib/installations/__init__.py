@@ -1,12 +1,23 @@
 import os, subprocess, re, shutil
 import urllib.request
 import time
+import importlib
+import sys
 try:
     from src.lib.json import _resource_path, read_json
     from src.lib import log, system
 except ModuleNotFoundError:
     from lib.json import _resource_path, read_json
     from lib import log, system
+
+try:
+    import psutil
+except ImportError:
+    subprocess.run([sys.executable, "-m", "pip", "install", "psutil"])
+    try:
+        psutil = importlib.import_module('psutil')
+    except Exception:
+        psutil = None
 
 # PyInstaller packages data files into a temporary folder during execution.
 # Use this helper to get the absolute path to bundled resources whether the
@@ -103,9 +114,88 @@ def _resolve_linux_installer() -> str:
     return ""
 
 
-def _install_program_id(program_id: str) -> str:
+def _tokenize_program_signature(program_name: str, program_id: str):
+    signature = f"{program_name} {program_id}".strip().lower()
+    if not signature:
+        return []
+
+    raw_tokens = re.findall(r"[a-z0-9]+", signature)
+    ignored = {
+        "microsoft", "windows", "desktop", "installer", "install", "stable",
+        "program", "programs", "tool", "tools", "reader", "runtime", "environment",
+        "soft", "open", "community", "edition", "official", "app", "apps",
+    }
+
+    tokens = []
+    for token in raw_tokens:
+        if len(token) < 4:
+            continue
+        if token in ignored:
+            continue
+        if token not in tokens:
+            tokens.append(token)
+    return tokens
+
+
+def _close_running_program_instances(program_name: str, program_id: str) -> int:
+    """Close running app processes before installation to avoid locked files."""
+    if system.nameSO() != "Windows":
+        return 0
+    if psutil is None:
+        log.log('psutil is unavailable; skipping running-process check.', level="WARNING")
+        return 0
+
+    tokens = _tokenize_program_signature(program_name, program_id)
+    if not tokens:
+        return 0
+
+    killed_count = 0
+    own_pid = os.getpid()
+
+    for process in psutil.process_iter(["pid", "name", "exe", "cmdline"]):
+        try:
+            pid = process.info.get("pid")
+            if pid in (None, own_pid):
+                continue
+
+            name = (process.info.get("name") or "").lower()
+            exe = (process.info.get("exe") or "").lower()
+            cmdline = " ".join(process.info.get("cmdline") or []).lower()
+            process_signature = f"{name} {exe} {cmdline}"
+
+            # Require at least one strong token hit to avoid killing unrelated apps.
+            if not any(token in process_signature for token in tokens):
+                continue
+
+            process.terminate()
+            try:
+                process.wait(timeout=3)
+            except psutil.TimeoutExpired:
+                process.kill()
+
+            killed_count += 1
+            log.log(
+                f'Closed running process before reinstall: PID={pid}, NAME={process.info.get("name")}',
+                level="WARNING",
+            )
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+        except Exception as error:
+            log.log(f'Error while trying to close running process: {error}', level="WARNING")
+
+    return killed_count
+
+
+def _install_program_id(program_id: str, program_name: str = "") -> str:
     if not program_id:
         return "Skipped empty program id"
+
+    closed_instances = _close_running_program_instances(program_name, program_id)
+    if closed_instances:
+        log.log(
+            f'Closed {closed_instances} running instance(s) for {program_name or program_id}.',
+            level="INFO",
+        )
 
     os_name = system.nameSO()
     if os_name == "Windows":
@@ -198,7 +288,7 @@ def install_program(program, selected_program_ids=None):
             continue
 
         log.log(f'Installing [{program}] {name} ({program_id})', level="INFO")
-        output = _install_program_id(program_id)
+        output = _install_program_id(program_id, name)
         outputs.append(f"{name}: {output}")
         installed_count += 1
 
@@ -248,7 +338,7 @@ def office(selected_program_ids=None):
         if program_id.lower() == "microsoft.office":
             output = _install_office_ltsc()
         else:
-            output = _install_program_id(program_id)
+            output = _install_program_id(program_id, name)
 
         outputs.append(f"{name}: {output}")
         installed_count += 1
