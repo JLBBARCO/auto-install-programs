@@ -8,14 +8,17 @@ Auto installation programs in a different operational systems
 
 ## Packaging
 
-The project is built with PyInstaller using `build.bat`. All files under
-`install/` and the `src` package are bundled into the executable. When the
-application is run from the compiled directory the code uses a helper named
-`_resource_path` to locate data files inside the bundle (`sys._MEIPASS`).
+The project is built with PyInstaller using `build.bat`. Only the `src` package
+is bundled into the executable. Program lists (the `install/` JSON files) are
+fetched at runtime directly from this GitHub repository, so **an internet
+connection is required** when the application runs. This keeps the installer
+small and always up-to-date with the latest program catalogue without needing
+to rebuild.
 
-Logs (`log.log` and `programs.log`) are written next to the executable rather
-than the current working directory, avoiding mysterious “path not found”
-errors which were previously seen during installations.
+The only local data written at runtime is:
+
+- `user.json` — personal program additions saved next to the executable.
+- `programs.log` — startup-key dump written by the Customization step.
 
 ## Installations
 

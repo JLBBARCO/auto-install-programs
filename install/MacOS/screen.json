@@ -1,0 +1,10 @@
+{
+  "name": "Screen",
+  "description": "Remote access and display tools for macOS.",
+  "programs": [
+    {
+      "name": "AnyDesk",
+      "id": "anydesk"
+    }
+  ]
+}

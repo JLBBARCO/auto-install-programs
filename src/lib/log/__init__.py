@@ -1,4 +1,4 @@
-from src.lib.externalLibs import sys, os, threading, datetime, inspect
+import sys, os, threading, datetime, inspect
 
 # write log.log alongside the executable when frozen or in the project root
 if getattr(sys, 'frozen', False):
@@ -20,6 +20,11 @@ def log(message, level="INFO"):
     """Write a timestamped log entry with level, PID, thread name and caller.
 
     Usage: log('message', level='ERROR')
+
+    Level variables:
+    level='INFO';
+    level='WARRING';
+    level='ERROR';
     """
     try:
         caller = inspect.stack()[1].function

@@ -1,5 +1,4 @@
 onedrive
-teams
 discord
 securityhealth
 nearby
