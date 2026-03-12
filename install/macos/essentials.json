@@ -1,0 +1,54 @@
+{
+  "name": "Essentials",
+  "description": "Essential programs for a functional macOS system.",
+  "programs": [
+    {
+      "name": "Free Download Manager",
+      "id": ""
+    },
+    {
+      "name": "Google Chrome",
+      "id": "google-chrome"
+    },
+    {
+      "name": "Mozilla Firefox",
+      "id": "firefox"
+    },
+    {
+      "name": "VLC",
+      "id": "vlc"
+    },
+    {
+      "name": "The Unarchiver",
+      "id": "the-unarchiver"
+    },
+    {
+      "name": "WhatsApp",
+      "id": "whatsapp"
+    },
+    {
+      "name": "Telegram",
+      "id": "telegram"
+    },
+    {
+      "name": "Spotify",
+      "id": "spotify"
+    },
+    {
+      "name": "Google Drive",
+      "id": "google-drive"
+    },
+    {
+      "name": "Cloudflare Warp",
+      "id": "cloudflare-warp"
+    },
+    {
+      "name": "Adobe Acrobat Reader",
+      "id": "adobe-acrobat-reader"
+    },
+    {
+      "name": "Passwords Manager",
+      "id": "passwords-manager"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Essentials",
+  "description": "Essential programs for a functional Windows system.",
+  "programs": [
+    {
+      "name": "Adobe Acrobat",
+      "id": "Adobe.Acrobat.Reader.64-bit"
+    },
+    {
+      "name": "Cloudflare Warp",
+      "id": "Cloudflare.Warp"
+    },
+    {
+      "name": "Free Download Manager",
+      "id": "SoftDeluxe.FreeDownloadManager"
+    },
+    {
+      "name": "Google Chrome",
+      "id": "Google.Chrome"
+    },
+    {
+      "name": "Google Drive",
+      "id": "Google.Drive"
+    },
+    {
+      "name": "Mozilla Firefox",
+      "id": "Mozilla.Firefox"
+    },
+    {
+      "name": "Spotify",
+      "id": "Spotify.Spotify"
+    },
+    {
+      "name": "Telegram Desktop",
+      "id": "Telegram.TelegramDesktop"
+    },
+    {
+      "name": "VLC",
+      "id": "VideoLAN.VLC"
+    },
+    {
+      "name": "WinRAR",
+      "id": "RARLab.WinRAR"
+    },
+    {
+      "name": "WhatsApp",
+      "id": "WhatsApp.WhatsApp"
+    }
+  ]
+}
