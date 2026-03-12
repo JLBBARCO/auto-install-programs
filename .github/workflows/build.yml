@@ -9,36 +9,57 @@ on:
       - main
     paths:
       - "**/*.py"
+      - "build.bat"
+      - "build.sh"
+      - "build-mac.sh"
   pull_request:
     branches:
       - main
     paths:
       - "**/*.py"
+      - "build.bat"
+      - "build.sh"
+      - "build-mac.sh"
 
 jobs:
-  detect-python-changes:
+  detect-changes:
     runs-on: ubuntu-latest
     outputs:
       python_changed: ${{ steps.filter.outputs.python }}
+      windows_changed: ${{ steps.filter.outputs.windows }}
+      linux_changed: ${{ steps.filter.outputs.linux }}
+      macos_changed: ${{ steps.filter.outputs.macos }}
+      build_all: ${{ steps.filter.outputs.python }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Detect Python file changes
+      - name: Detect file changes
         id: filter
         uses: dorny/paths-filter@v3
         with:
           filters: |
             python:
               - '**/*.py'
+            windows:
+              - 'build.bat'
+            linux:
+              - 'build.sh'
+            macos:
+              - 'build-mac.sh'
 
   build:
-    needs: detect-python-changes
-    if: needs.detect-python-changes.outputs.python_changed == 'true'
+    needs: detect-changes
+    if: |
+      needs.detect-changes.outputs.build_all == 'true' ||
+      needs.detect-changes.outputs.windows_changed == 'true' ||
+      needs.detect-changes.outputs.linux_changed == 'true' ||
+      needs.detect-changes.outputs.macos_changed == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -46,46 +67,98 @@ jobs:
             script: build.bat
             artifact-name: windows
             artifact-path: dist/Auto*
+            build_filter: windows
 
           - os: ubuntu-latest
             python-version: "3.12"
             script: build.sh
             artifact-name: linux
             artifact-path: dist/Auto*
+            build_filter: linux
 
           - os: macos-latest
             python-version: "3.12"
             script: build-mac.sh
             artifact-name: macos
             artifact-path: dist/Auto*
+            build_filter: macos
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Evaluate build condition for ${{ matrix.build_filter }}
+        id: should_build
+        shell: bash
+        run: |
+          BUILD_PYTHON="${{ needs.detect-changes.outputs.python_changed }}"
+          BUILD_WINDOWS="${{ needs.detect-changes.outputs.windows_changed }}"
+          BUILD_LINUX="${{ needs.detect-changes.outputs.linux_changed }}"
+          BUILD_MACOS="${{ needs.detect-changes.outputs.macos_changed }}"
+
+          # Se arquivos Python foram alterados, compila tudo
+          if [ "$BUILD_PYTHON" == "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Compilando ${{ matrix.build_filter }} porque arquivos Python foram modificados"
+            exit 0
+          fi
+
+          # Senão, compila apenas se o compilador específico foi alterado
+          case "${{ matrix.build_filter }}" in
+            windows)
+              if [ "$BUILD_WINDOWS" == "true" ]; then
+                echo "should_build=true" >> "$GITHUB_OUTPUT"
+                echo "Compilando Windows porque build.bat foi modificado"
+              else
+                echo "should_build=false" >> "$GITHUB_OUTPUT"
+                echo "Pulando Windows - build.bat não foi modificado"
+              fi
+              ;;
+            linux)
+              if [ "$BUILD_LINUX" == "true" ]; then
+                echo "should_build=true" >> "$GITHUB_OUTPUT"
+                echo "Compilando Linux porque build.sh foi modificado"
+              else
+                echo "should_build=false" >> "$GITHUB_OUTPUT"
+                echo "Pulando Linux - build.sh não foi modificado"
+              fi
+              ;;
+            macos)
+              if [ "$BUILD_MACOS" == "true" ]; then
+                echo "should_build=true" >> "$GITHUB_OUTPUT"
+                echo "Compilando macOS porque build-mac.sh foi modificado"
+              else
+                echo "should_build=false" >> "$GITHUB_OUTPUT"
+                echo "Pulando macOS - build-mac.sh não foi modificado"
+              fi
+              ;;
+          esac
+
       - name: Set up Python
+        if: steps.should_build.outputs.should_build == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
+        if: steps.should_build.outputs.should_build == 'true' && runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip python3-venv python3-full
 
       - name: Build on Windows
-        if: runner.os == 'Windows'
+        if: steps.should_build.outputs.should_build == 'true' && runner.os == 'Windows'
         shell: cmd
         run: ${{ matrix.script }}
 
       - name: Build on Linux/macOS
-        if: runner.os != 'Windows'
+        if: steps.should_build.outputs.should_build == 'true' && runner.os != 'Windows'
         run: |
           chmod +x ./${{ matrix.script }}
           bash ./${{ matrix.script }}
 
       - name: Package artifacts
+        if: steps.should_build.outputs.should_build == 'true'
         shell: bash
         run: |
           cd dist
@@ -96,6 +169,7 @@ jobs:
           fi
 
       - name: Upload artifacts
+        if: steps.should_build.outputs.should_build == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: auto-install-programs-${{ matrix.artifact-name }}
@@ -112,14 +186,28 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ./releases
+        continue-on-error: true
+
+      - name: Check if artifacts exist
+        id: check_artifacts
+        shell: bash
+        run: |
+          if find ./releases -type f \( -name "*.zip" -o -name "*.tar.gz" \) 2>/dev/null | grep -q .; then
+            echo "artifacts_exist=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "artifacts_exist=false" >> "$GITHUB_OUTPUT"
+            echo "Nenhum artefato encontrado para criar release"
+          fi
 
       - name: Flatten artifacts
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         shell: bash
         run: |
           find ./releases -type f \( -name "*.zip" -o -name "*.tar.gz" \) -exec mv {} ./releases/ \;
           find ./releases -type d -empty -delete
 
       - name: Define release tag and name
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         id: release_meta
         shell: bash
         run: |
@@ -138,6 +226,7 @@ jobs:
           echo "prerelease=${PRE}" >> "$GITHUB_OUTPUT"
 
       - name: Create Release
+        if: steps.check_artifacts.outputs.artifacts_exist == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}

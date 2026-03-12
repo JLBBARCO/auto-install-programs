@@ -14,6 +14,7 @@ python -m PyInstaller --noconfirm --onedir --windowed ^
     --add-data "src;src" ^
     --collect-all customtkinter ^
     --collect-all psutil ^
+    --noupx ^
     "main.py"
 
 if errorlevel 1 (
