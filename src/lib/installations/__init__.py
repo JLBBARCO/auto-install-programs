@@ -367,52 +367,24 @@ def user(selected_program_ids=None):
 
 def customization(selected_program_ids=None):
     if system.nameSO() != 'Windows':
-        return "Customization is only supported on Windows."
-
-    if not selected_program_ids:
-        message = "Customization niche enabled but no active program selected; skipping customization checklist."
-        log.log(message, level="INFO")
-        return message
+        return "Startup management is only supported on Windows."
     
     try:
         import src.lib.customizations as custom
     except ModuleNotFoundError:
         import lib.customizations as custom
-    log.log('Starting customization flow', level="INFO")
+    log.log('Starting startup management flow', level="INFO")
 
-    # 1) Run customization installers
-    installProgramsMessage = install_program("customization", selected_program_ids)
-    log.log('Customization installers output captured', level="INFO")
-
-    # 2) Disable all startup programs
-    disableStartupMessage = custom.disable_startup_programs()
+    whitelist_path = _resource_path('install/windows/white_list.txt')
+    disableStartupMessage = custom.disable_startup_programs(whitelist_path)
     log.log(f'Disable startup: {disableStartupMessage}', level="INFO")
 
-    # 3) Save current startup keys to programs.log (overwrite)
-    # write the startup key dump next to the executable rather than into
-    # whatever directory the caller is currently in
     save_path = _resource_path('programs.log')
     saveKeysMessage = custom.save_startup_keys(save_path)
     log.log(saveKeysMessage, level="INFO")
 
-    # 4) Reactivate entries listed in the repository whitelist.
-    whitelist_url = "https://raw.githubusercontent.com/JLBBARCO/auto-install-programs/main/install/windows/white_list.txt"
-    enableStartupMessage = custom.enable_startup_whitelist(whitelist_url)
+    enableStartupMessage = custom.enable_startup_whitelist(whitelist_path)
     log.log(enableStartupMessage, level="INFO")
 
-    # 5) Disable mouse precision (enhance pointer precision)
-    mousePrecisionMessage = custom.disable_mouse_precision()
-    log.log(mousePrecisionMessage, level="INFO")
-
-    # 6) Configure power behavior for AC/DC and battery saver threshold
-    powerBehaviorMessage = custom.configure_power_behavior()
-    log.log(powerBehaviorMessage, level="INFO")
-
-    # 7) Apply dark mode and restart explorer to apply visual changes
-    darkModeMessage = custom.dark_mode()
-    log.log(darkModeMessage, level="INFO")
-    subprocess.run("taskkill /f /im explorer.exe", shell=True)
-    subprocess.run("start explorer.exe", shell=True)
-
-    log.log('Customization flow completed', level="INFO")
-    return f"{installProgramsMessage}\n{disableStartupMessage}\n{saveKeysMessage}\n{enableStartupMessage}\n{mousePrecisionMessage}\n{powerBehaviorMessage}\n{darkModeMessage}"
+    log.log('Startup management flow completed', level="INFO")
+    return f"{disableStartupMessage}\n{saveKeysMessage}\n{enableStartupMessage}"

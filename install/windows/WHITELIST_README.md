@@ -1,27 +1,27 @@
 # White List - Programas de Startup Permitidos
 
-Este arquivo contém uma lista de programas que devem permanecer ativos no startup do Windows após a customização.
+Este arquivo contém a lista de chaves de startup que devem permanecer ativas no Windows.
 
 ## Como funciona
 
-1. O script `customization.bat` desativa TODOS os programas de startup por padrão
-2. Depois, lê este arquivo `white_list.txt` e reativa os programas que estão na lista
-3. A busca é **case-insensitive** e suporta **correspondência parcial**
+1. O aplicativo desativa somente os itens que nao estao na whitelist
+2. Depois, pode reativar explicitamente os programas que estao na whitelist
+3. A busca e normalizada e exata
 
 ## Formato
 
-- Um programa por linha
-- Sem espaços no início ou fim
-- Sem comentários
-- A busca é feita em minúsculas, então você pode escrever em qualquer case
+- Uma chave por linha
+- Use nomes normalizados: apenas letras e numeros, sem espacos, pontos ou hifens
+- Comentarios iniciados com `#` sao ignorados
+- Linhas vazias sao ignoradas
 
 Exemplo:
 
-```
-onedrive
-teams
+```text
+microsoftonedrive
 discord
-nvidia
+nvidiageforceexperience
+rainmeter
 ```
 
 ## Como descobrir nomes de programas
@@ -61,66 +61,63 @@ Get-ItemProperty "HKLM:\\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\R
 
 ## Programas recomendados
 
-- **Microsoft**: `onedrive`, `teams`, `msedge`
-- **NVIDIA**: `nvidia`, `nvbackend`, `nvinitialize`
-- **Intel Graphics**: `igfxtray`, `igfxpers`, `igfxhk`
-- **AMD**: `amd`, `radeon`
-- **Segurança**: `securityhealth`, `defender`
-- **Comunicação**: `discord`, `whatsapp`, `teams`, `slack`
-- **Utilitários**: `rainmeter`, `lively`
+- **Microsoft**: `microsoftonedrive`, `microsoftedgeautolaunch`, `microsoftpcmanager`
+- **NVIDIA**: `nvidiageforceexperience`, `nvbackend`, `nvcontainer`, `nvidiaapp`
+- **Intel Graphics**: `igfxtray`, `persistence`, `hotkeyscmds`
+- **AMD**: `radeonsoftware`
+- **Seguranca**: `securityhealth`
+- **Comunicacao**: `discord`, `whatsapp`
+- **Utilitarios**: `rainmeter`, `livelywpf`, `camostudio`
 
-## Regras de Busca
+## Como a comparacao funciona
 
-A busca é **case-insensitive** e **parcial**, então:
+O codigo normaliza o nome da whitelist e o nome do registro antes de comparar.
 
-| Entrada na Whitelist | Programas que serão reativados                      |
-| -------------------- | --------------------------------------------------- |
-| `onedrive`           | Microsoft.OneDrive, OneDriveStandAlone, ...         |
-| `nvidia`             | NVIDIA GeForce Experience, NVBackend, nvcuda, ...   |
-| `teams`              | Microsoft Teams, ms-teams, teams, ...               |
-| `igfx`               | igfxtray, igfxpers, igfxhk, Intel UHD Graphics, ... |
+| Entrada na Whitelist      | Programas que serao reativados |
+| ------------------------- | ------------------------------ |
+| `microsoftonedrive`       | Microsoft.OneDrive             |
+| `nvidiageforceexperience` | NVIDIA GeForce Experience      |
+| `hotkeyscmds`             | HotKeysCmds                    |
+| `microsoftpcmanager`      | Microsoft PC Manager           |
 
 ## Adicionando novos programas
 
 1. Descubra o nome exato usando uma das opções acima
 2. Abra `white_list.txt` em um editor de texto (Notepad, VS Code, etc)
-3. Adicione uma nova linha com o nome ou parte do nome
+3. Adicione uma nova linha com o nome normalizado da chave
 4. Salve o arquivo
-5. Execute o programa novamente e a customização reativará o novo programa
+5. Execute o programa novamente e reative a whitelist
 
 ### Exemplo
 
 Se você quer reativar "Spotify" e seu nome no registro é "Spotify", adicione:
 
-```
+```text
 spotify
 ```
 
-Se o nome for "SpotifyHelper", você pode adicionar qualquer uma dessas variações:
+Se o nome for "SpotifyHelper", normalize antes de salvar:
 
-```
-spotify
+```text
 spotifyhelper
-helper
 ```
 
 ## Notas Importantes
 
-- **Correspondência Parcial**: Se a whitelist tem "teams" e o programa é "Microsoft Teams", ele será ativado
-- **Case-Insensitive**: "ONEDRIVE", "OneDrive", "onedrive" funcionam do mesmo jeito
-- **Máximo de Flexibilidade**: Use partes curtas e únicas dos nomes para evitar ativações acidentais
+- **Normalizacao**: "Microsoft.OneDrive" vira `microsoftonedrive`
+- **Sem correspondencia parcial**: termos curtos como `edge` nao reativam tudo que contenha esse trecho
+- **Mais seguro**: isso reduz ativacoes acidentais
 
 ## Programas conhecidos do Windows
 
-| Programa         | Nomes típicos no Registro        |
-| ---------------- | -------------------------------- |
-| OneDrive         | `OneDrive`, `Microsoft.OneDrive` |
-| Microsoft Edge   | `msedge`, `Microsoft Edge`       |
-| Microsoft Teams  | `Teams`, `ms-teams`              |
-| Windows Defender | `SecurityHealth`, `Defender`     |
-| Windows Updates  | `waasassistant`                  |
-| Cortana          | `Cortana`                        |
-| Xbox App         | `Xbox`                           |
+| Programa         | Nomes tipicos no Registro                |
+| ---------------- | ---------------------------------------- |
+| OneDrive         | `Microsoft.OneDrive`                     |
+| Microsoft Edge   | `MicrosoftEdgeAutoLaunch`                |
+| Windows Security | `SecurityHealth`                         |
+| Intel Graphics   | `IgfxTray`, `Persistence`, `HotKeysCmds` |
+| AMD              | `RadeonSoftware`                         |
+| PC Manager       | `Microsoft PC Manager`                   |
 
 ## Troubleshooting
 
@@ -128,16 +125,12 @@ helper
 
 1. Verifique o nome exato usando `listar-startup.bat`
 2. Confirme que está escrito corretamente (sem espaços extras)
-3. Considere usar uma parte maior do nome para correspondência melhor
+3. Normalize o nome antes de salvar na whitelist
 4. Execute o programa como administrador
 
-### Programa inesperado foi reativado
+### Programa inesperado nao foi reativado
 
-A busca é parcial, então um termo pode corresponder a múltiplos programas.
-
-Exemplo: Se você adicionar `edge`, pode reativar `Microsoft Edge` E qualquer programa com "edge" no nome.
-
-Solução: Use nomes mais específicos.
+Verifique o nome exato no registro e normalize o valor antes de salvar.
 
 ## Editar depois da compilação
 
@@ -145,19 +138,19 @@ Depois que o programa foi compilado com PyInstaller:
 
 **Windows**:
 
-```
+```text
 dist/Auto Install Programs/install/Windows/white_list.txt
 ```
 
 **Linux**:
 
-```
+```text
 dist/Auto Install Programs/install/Windows/white_list.txt
 ```
 
 **macOS**:
 
-```
+```text
 dist/Auto Install Programs/open dist/Auto\ Install\ Programs.app/Contents/Resources/install/Windows/white_list.txt
 ```
 

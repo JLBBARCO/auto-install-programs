@@ -1,6 +1,6 @@
 # Auto Installation Programs
 
-Auto installation programs in a different operational systems
+Windows now runs only as a startup manager. It no longer installs programs or changes theme, power, mouse, or Explorer settings.
 
 ## Interface
 
@@ -9,20 +9,18 @@ Auto installation programs in a different operational systems
 ## Packaging
 
 The project is built with PyInstaller using `build.bat`. Only the `src` package
-is bundled into the executable. Program lists (the `install/` JSON files) are
-fetched at runtime directly from this GitHub repository, so **an internet
-connection is required** when the application runs. This keeps the installer
-small and always up-to-date with the latest program catalogue without needing
-to rebuild.
+is bundled into the executable.
 
 The only local data written at runtime is:
 
-- `user.json` — personal program additions saved next to the executable.
-- `programs.log` — startup-key dump written by the Customization step.
+- `programs.log` — startup-key dump written by the startup manager actions.
 
-## Installations
+## Current Scope
 
-Installations in different Operational Systems
+The current Windows application only exposes two actions:
+
+- Disable startup entries that are not listed in `install/windows/white_list.txt`.
+- Re-enable startup entries listed in `install/windows/white_list.txt`.
 
 ### [MacOS](MacOS.md)
 

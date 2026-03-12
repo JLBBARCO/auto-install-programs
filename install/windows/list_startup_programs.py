@@ -6,7 +6,10 @@ and facilitate the generation of a custom whitelist.
 
 import sys
 import winreg
-from pathlib import Path
+
+
+def normalize_startup_name(value):
+    return ''.join(char for char in value.casefold() if char.isalnum())
 
 def list_startup_programs():
     """Lista todos os programas de startup registrados no Windows"""
@@ -43,23 +46,22 @@ def list_startup_programs():
     return all_programs
 
 def generate_whitelist(programs):
-    """Gera uma whitelist sugerida baseada nos programas encontrados"""
+    """Gera uma whitelist sugerida com nomes normalizados de chaves reais."""
     
     print(f"\n{'='*60}")
     print("WHITELIST SUGERIDA")
     print(f"{'='*60}")
     
     suggested = []
-    keywords_microsoft = ['onedrive', 'teams', 'edge', 'cortana', 'defender', 'security']
-    keywords_gpu = ['nvidia', 'igfx', 'intel', 'amd', 'radeon', 'nvbackend']
-    keywords_utils = ['rainmeter', 'lively', 'discord', 'slack', 'whatsapp']
+    keywords_microsoft = ['onedrive', 'edge', 'securityhealth', 'nearby', 'pc manager']
+    keywords_gpu = ['nvidia', 'igfx', 'intel', 'amd', 'radeon', 'nvbackend', 'nvcontainer']
+    keywords_utils = ['rainmeter', 'lively', 'discord', 'whatsapp', 'camo']
     
     all_names = []
     for region_programs in programs.values():
         all_names.extend(region_programs)
     
-    all_names = list(set(all_names))  # Remove duplicatas
-        all_names = list(set(all_names))  # Remove duplicates
+    all_names = list(set(all_names))
     all_names.sort()
     
     for name in all_names:
@@ -88,19 +90,20 @@ def generate_whitelist(programs):
                     break
         
         if should_suggest:
-            suggested.append(name.lower())
-            print(f"  {name:<40} ({reason})")
+            normalized = normalize_startup_name(name)
+            suggested.append(normalized)
+            print(f"  {name:<40} -> {normalized:<30} ({reason})")
     
     return suggested
 
 def save_whitelist(programs, filename="white_list_generated.txt"):
-    """Salva a whitelist sugerida em um arquivo"""
+    """Salva a whitelist sugerida em um arquivo."""
     
     all_names = []
     for region_programs in programs.values():
         all_names.extend(region_programs)
     
-    all_names = list(set(all_names))  # Remove duplicatas
+    all_names = list(set(all_names))
     all_names.sort()
     
     suggested = []
@@ -112,15 +115,15 @@ def save_whitelist(programs, filename="white_list_generated.txt"):
         lower_name = name.lower()
         for keyword in keywords:
             if keyword in lower_name:
-                suggested.append(lower_name)
+                suggested.append(normalize_startup_name(name))
                 break
     
     with open(filename, 'w', encoding='utf-8') as f:
+        f.write("# Nomes normalizados das chaves de inicializacao\n")
         for program in sorted(set(suggested)):
             f.write(program + '\n')
     
     print(f"\nArquivo salvo: {filename}")
-    print(f"\nFile saved: {filename}")
     print(f"Total suggested programs: {len(set(suggested))}")
 
 def main():

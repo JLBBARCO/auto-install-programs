@@ -1,95 +1,23 @@
 # Windows
 
-This system install programs with basis in this topics:
-
-- [Customization](#customization)
-- [Developer Tools](#developer-tools)
-- [Drivers](#drivers)
-- [Essential Programs](#essential-programs)
-- [Games](#games)
-- [Microsoft Office](#microsoft-office)
-- [Screen](#screen)
+The current Windows app is restricted to startup management.
 
 ![Windows print program](src/assets/img/windows.webp)
 
-## Drivers
+## Behavior
 
-The system analyzes the video card and installs the necessary drivers.
+- Disable startup entries that are not on the local whitelist.
+- Re-enable startup entries that are on the local whitelist.
+- Save the current registry startup dump to `programs.log` after each action.
 
-- AMD
-- Intel
-- NVIDIA
+## Safety Changes
 
-## Essential Programs
+- The whitelist is loaded only from the local repository copy.
+- Matching is normalized and exact; broad substring matches were removed.
+- Theme, mouse precision, power plan, Explorer restarts, and installer execution were removed from the Windows flow.
 
-Essential programs with basis in user settings
+## Whitelist
 
-- Adobe Acrobat
-- Cloudflare Warp
-- Free Download Manager
-- Google Chrome
-- Google Drive
-- Mozilla FireFox
-- Spotify
-- Telegram Desktop
-- VLC
-- WinRAR
-- WhatsApp
+Allowed startup keys are defined in `install/windows/white_list.txt`.
 
-## Microsoft Office
-
-Office programs are selectable directly in the **Essentials** tab, under the "── Office ──" section.
-The available programs are defined in [`install/windows/office.json`](install/windows/office.json).
-
-For a custom Office deployment via the Office Deployment Tool, an official [`settings.xml`](install/windows/office/settings.xml) is included (LTSC 2024, PerpetualVL channel).
-Consult [Deployment Settings](https://config.office.com/deploymentsettings) to generate a new `settings.xml`.
-
-Default selectable programs:
-
-- Microsoft 365 Apps
-- Microsoft OneNote
-- Microsoft Teams
-- Notion
-- Obsidian
-
-## Screen
-
-- AnyDesk
-- SpaceDesk Client
-- SpaceDesk Server
-
-## Customization
-
-- Lively Wallpaper
-- Rainmeter
-- TranslucentTB
-
-## Developer Tools
-
-- Arduino IDE
-- Blender
-- Docker Desktop
-- Figma
-- GIMP 3
-- Git
-- Github Desktop
-- Java Runtime Environment
-- Microsoft Teams
-- MySQL Workbench
-- Node.js
-- Python 3.12
-- Rufus
-- Ventoy
-- VirtualBox
-- Visual Studio Code
-- XAMPP
-
-## Games
-
-- CourseForge
-- Discord
-- Epic Games Launcher
-- Google Play Games
-- Radmin VPN
-- Steam
-- Xbox App
+Use `install/windows/list_startup_programs.py` to inspect the registry names present on your machine and adjust the whitelist if needed.
