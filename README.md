@@ -17,10 +17,12 @@ The only local data written at runtime is:
 
 ## Current Scope
 
-The current Windows application only exposes two actions:
+The current Windows startup flow exposes two actions:
 
-- Disable startup entries that are not listed in `install/windows/white_list.txt`.
-- Re-enable startup entries listed in `install/windows/white_list.txt`.
+- Disable startup entries that are not listed in the repository whitelist.
+- Re-enable startup entries listed in the repository whitelist.
+
+Startup resources are downloaded from the repository at runtime, including category JSON files, the startup whitelist, and the Office deployment files.
 
 ### [MacOS](MacOS.md)
 

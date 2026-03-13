@@ -1,13 +1,12 @@
 import os, subprocess, re, shutil
-import urllib.request
 import time
 import importlib
 import sys
 try:
-    from src.lib.json import _resource_path, read_json
+    from src.lib.json import _resource_path, ensure_repo_file, read_json
     from src.lib import log, system
 except ModuleNotFoundError:
-    from lib.json import _resource_path, read_json
+    from lib.json import _resource_path, ensure_repo_file, read_json
     from lib import log, system
 
 try:
@@ -23,12 +22,8 @@ except ImportError:
 # Use this helper to get the absolute path to bundled resources whether the
 # application is running from source or from a PyInstaller-built executable.
 
-OFFICE_RAW_BASE_URL = "https://raw.githubusercontent.com/jlbbarco/auto-install-programs/main/install/windows/office"
-OFFICE_SETUP_URLS = [
-    f"{OFFICE_RAW_BASE_URL}/setup.exe",
-    "https://officecdn.microsoft.com/pr/wsus/setup.exe",
-]
-OFFICE_SETTINGS_URL = f"{OFFICE_RAW_BASE_URL}/settings.xml"
+OFFICE_SETUP_REPO_PATH = "install/windows/office/setup.exe"
+OFFICE_SETTINGS_REPO_PATH = "install/windows/office/settings.xml"
 
 def update():
     system_name = system.nameSO()
@@ -137,8 +132,8 @@ def _tokenize_program_signature(program_name: str, program_id: str):
     return tokens
 
 
-def _close_running_program_instances(program_name: str, program_id: str) -> int:
-    """Close running app processes before installation to avoid locked files."""
+def _detect_running_program_instances(program_name: str, program_id: str) -> int:
+    """Count matching running processes without terminating user applications."""
     if system.nameSO() != "Windows":
         return 0
     if psutil is None:
@@ -149,7 +144,7 @@ def _close_running_program_instances(program_name: str, program_id: str) -> int:
     if not tokens:
         return 0
 
-    killed_count = 0
+    matched_count = 0
     own_pid = os.getpid()
 
     for process in psutil.process_iter(["pid", "name", "exe", "cmdline"]):
@@ -163,38 +158,28 @@ def _close_running_program_instances(program_name: str, program_id: str) -> int:
             cmdline = " ".join(process.info.get("cmdline") or []).lower()
             process_signature = f"{name} {exe} {cmdline}"
 
-            # Require at least one strong token hit to avoid killing unrelated apps.
+            # Require at least one strong token hit to avoid matching unrelated apps.
             if not any(token in process_signature for token in tokens):
                 continue
 
-            process.terminate()
-            try:
-                process.wait(timeout=3)
-            except psutil.TimeoutExpired:
-                process.kill()
-
-            killed_count += 1
-            log.log(
-                f'Closed running process before reinstall: PID={pid}, NAME={process.info.get("name")}',
-                level="WARNING",
-            )
+            matched_count += 1
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
         except Exception as error:
-            log.log(f'Error while trying to close running process: {error}', level="WARNING")
+            log.log(f'Error while checking running process state: {error}', level="WARNING")
 
-    return killed_count
+    return matched_count
 
 
 def _install_program_id(program_id: str, program_name: str = "") -> str:
     if not program_id:
         return "Skipped empty program id"
 
-    closed_instances = _close_running_program_instances(program_name, program_id)
-    if closed_instances:
+    running_instances = _detect_running_program_instances(program_name, program_id)
+    if running_instances:
         log.log(
-            f'Closed {closed_instances} running instance(s) for {program_name or program_id}.',
-            level="INFO",
+            f'Found {running_instances} running instance(s) for {program_name or program_id}; continuing without closing them.',
+            level="WARNING",
         )
 
     os_name = system.nameSO()
@@ -222,14 +207,6 @@ def _install_program_id(program_id: str, program_name: str = "") -> str:
     return f"Unsupported OS: {os_name}"
 
 
-def _download_file(url: str, destination_path: str) -> None:
-    os.makedirs(os.path.dirname(destination_path), exist_ok=True)
-    with urllib.request.urlopen(url, timeout=30) as response:
-        payload = response.read()
-    with open(destination_path, 'wb') as output_file:
-        output_file.write(payload)
-
-
 def _install_office_ltsc() -> str:
     if system.nameSO() != "Windows":
         return "Office LTSC installer is only supported on Windows."
@@ -238,26 +215,17 @@ def _install_office_ltsc() -> str:
     setup_path = os.path.join(office_dir, "setup.exe")
     settings_path = os.path.join(office_dir, "settings.xml")
 
-    setup_downloaded = False
-    last_setup_error = ""
-    for setup_url in OFFICE_SETUP_URLS:
-        try:
-            _download_file(setup_url, setup_path)
-            log.log(f"Office setup downloaded from: {setup_url}", level="INFO")
-            setup_downloaded = True
-            break
-        except Exception as error:
-            last_setup_error = str(error)
-            log.log(f"Failed to download Office setup from {setup_url}: {error}", level="WARNING")
-
-    if not setup_downloaded:
-        return f"Failed to download Office setup.exe. Last error: {last_setup_error}"
+    try:
+        setup_path = ensure_repo_file(OFFICE_SETUP_REPO_PATH, os.path.join("install", "windows", "office", "setup.exe"))
+        log.log(f"Office setup downloaded from repository: {OFFICE_SETUP_REPO_PATH}", level="INFO")
+    except Exception as error:
+        return f"Failed to download Office setup.exe from repository. Error: {error}"
 
     try:
-        _download_file(OFFICE_SETTINGS_URL, settings_path)
-        log.log(f"Office settings downloaded from: {OFFICE_SETTINGS_URL}", level="INFO")
+        settings_path = ensure_repo_file(OFFICE_SETTINGS_REPO_PATH, os.path.join("install", "windows", "office", "settings.xml"))
+        log.log(f"Office settings downloaded from repository: {OFFICE_SETTINGS_REPO_PATH}", level="INFO")
     except Exception as error:
-        return f"Failed to download Office settings.xml. Error: {error}"
+        return f"Failed to download Office settings.xml from repository. Error: {error}"
 
     # Equivalent to: setup.exe /configure settings.xml
     command = f'"{setup_path}" /configure "{settings_path}"'
@@ -375,7 +343,13 @@ def customization(selected_program_ids=None):
         import lib.customizations as custom
     log.log('Starting startup management flow', level="INFO")
 
-    whitelist_path = _resource_path('install/windows/white_list.txt')
+    try:
+        whitelist_path = ensure_repo_file('install/windows/white_list.txt')
+        log.log('Startup whitelist downloaded from repository.', level="INFO")
+    except Exception as error:
+        whitelist_path = _resource_path('install/windows/white_list.txt')
+        log.log(f'Failed to download startup whitelist from repository; using local fallback. Error: {error}', level="WARNING")
+
     disableStartupMessage = custom.disable_startup_programs(whitelist_path)
     log.log(f'Disable startup: {disableStartupMessage}', level="INFO")
 

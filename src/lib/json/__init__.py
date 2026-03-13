@@ -6,7 +6,8 @@ try:
 except ModuleNotFoundError:
     from lib import log, system
 
-GITHUB_JSON_BASE_URL = "https://raw.githubusercontent.com/jlbbarco/auto-install-programs/main/install"
+GITHUB_REPOSITORY_BASE_URL = "https://raw.githubusercontent.com/jlbbarco/auto-install-programs/main"
+GITHUB_INSTALL_BASE_URL = f"{GITHUB_REPOSITORY_BASE_URL}/install"
 
 def _resource_path(relative_path: str) -> str:
     """Return the absolute path to *relative_path* next to the executable.
@@ -37,6 +38,34 @@ def _normalize_json_payload(installer_data: Dict) -> Dict:
     }
 
 
+def _build_repo_raw_url(relative_repo_path: str) -> str:
+    normalized_path = str(relative_repo_path).replace('\\', '/').lstrip('/')
+    return f"{GITHUB_REPOSITORY_BASE_URL}/{normalized_path}"
+
+
+def fetch_repo_bytes(relative_repo_path: str, timeout: int = 30) -> bytes:
+    url = _build_repo_raw_url(relative_repo_path)
+    with urllib.request.urlopen(url, timeout=timeout) as response:
+        return response.read()
+
+
+def fetch_repo_text(relative_repo_path: str, timeout: int = 12, encoding: str = 'utf-8') -> str:
+    payload = fetch_repo_bytes(relative_repo_path, timeout=timeout)
+    return payload.decode(encoding, errors='ignore')
+
+
+def ensure_repo_file(relative_repo_path: str, local_relative_path: str = None, timeout: int = 30) -> str:
+    target_relative_path = local_relative_path or relative_repo_path
+    target_path = _resource_path(target_relative_path)
+    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+
+    payload = fetch_repo_bytes(relative_repo_path, timeout=timeout)
+    with open(target_path, 'wb') as output_file:
+        output_file.write(payload)
+
+    return target_path
+
+
 def _read_local_json(installer_path: str):
     if not os.path.exists(installer_path):
         return None
@@ -47,9 +76,7 @@ def _read_local_json(installer_path: str):
 
 
 def _fetch_remote_json(system_name: str, file_name: str):
-    url = f"{GITHUB_JSON_BASE_URL}/{system_name.lower()}/{file_name}.json"
-    with urllib.request.urlopen(url, timeout=12) as response:
-        payload = response.read().decode('utf-8', errors='ignore')
+    payload = fetch_repo_text(f"install/{system_name.lower()}/{file_name}.json", timeout=12)
     installer_data = json.loads(payload) if payload.strip() else {}
     return _normalize_json_payload(installer_data)
 
