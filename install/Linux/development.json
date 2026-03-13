@@ -33,14 +33,6 @@
     {
       "name": "VirtualBox",
       "id": "virtualbox"
-    },
-    {
-      "name": "Arduino IDE",
-      "id": "arduino"
-    },
-    {
-      "name": "Raspberry Pi",
-      "id": "raspberrypi-imager"
     }
   ]
 }
