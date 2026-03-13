@@ -1,4 +1,8 @@
-import sys, os, threading, datetime, inspect
+import sys
+import os
+import threading
+import datetime
+import inspect
 
 # write log.log alongside the executable when frozen or in the project root
 if getattr(sys, 'frozen', False):

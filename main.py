@@ -1,4 +1,8 @@
-import subprocess, sys, importlib, os, time
+import subprocess
+import sys
+import importlib
+import os
+import time
 try:
     from src.lib import installations, log, system, json, add_programs
     from src.lib.installations import single_instance
@@ -10,7 +14,7 @@ try:
     import customtkinter as ctk
 except ImportError:
     # try installing missing requirements and re-importing
-    subprocess.run([sys.executable, "-m", "pip", "install", "customtkinter"])
+    subprocess.run([sys.executable, "-m", "pip", "install", "requirements.txt"], check=True)
     try:
         ctk = importlib.import_module('customtkinter')
     except Exception:
