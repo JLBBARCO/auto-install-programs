@@ -130,9 +130,9 @@ def acquire_installation_lock():
             if psutil.pid_exists(existing_pid):
                 log.log(f'Terminating previous installation (PID {existing_pid})', level="WARNING")
                 if _kill_process_tree(existing_pid):
-                    log.log(f'Successfully terminated previous installation', level="INFO")
+                    log.log('Successfully terminated previous installation', level="INFO")
                 else:
-                    log.log(f'Failed to terminate previous installation', level="ERROR")
+                    log.log('Failed to terminate previous installation', level="ERROR")
             else:
                 log.log(f'Previous installation (PID {existing_pid}) is not running', level="INFO")
         except Exception as e:

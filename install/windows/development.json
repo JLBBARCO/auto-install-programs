@@ -3,10 +3,6 @@
   "description": "Development tools and environments for Windows.",
   "programs": [
     {
-      "name": "Arduino IDE",
-      "id": "ArduinoSA.IDE.stable"
-    },
-    {
       "name": "Blender",
       "id": "BlenderFoundation.Blender"
     },
@@ -55,10 +51,6 @@
       "id": "Python.Python.3.12"
     },
     {
-      "name": "Raspberry Pi",
-      "id": "RaspberryPi.RaspberryPiImager"
-    },
-    {
       "name": "Rufus",
       "id": "Rufus.Rufus"
     },
@@ -73,10 +65,6 @@
     {
       "name": "XAMPP",
       "id": "ApacheFriends.Xampp.8.1"
-    },
-    {
-      "name": "Winget Create",
-      "id": "wingetcreate"
     }
   ]
 }
