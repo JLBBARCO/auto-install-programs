@@ -1,0 +1,66 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for macOS.",
+  "programs": [
+    {
+      "name": "Visual Studio Code",
+      "id": "visual-studio-code"
+    },
+    {
+      "name": "Arduino IDE",
+      "id": "arduino-ide"
+    },
+    {
+      "name": "Microsoft Teams",
+      "id": "microsoft-teams"
+    },
+    {
+      "name": "GIMP",
+      "id": "gimp"
+    },
+    {
+      "name": "GitHub Desktop",
+      "id": "github"
+    },
+    {
+      "name": "MySQL Workbench",
+      "id": "mysql-workbench"
+    },
+    {
+      "name": "XAMPP",
+      "id": "xampp"
+    },
+    {
+      "name": "Docker",
+      "id": "docker"
+    },
+    {
+      "name": "VirtualBox",
+      "id": "virtualbox"
+    },
+    {
+      "name": "Figma",
+      "id": "figma"
+    },
+    {
+      "name": "Blender",
+      "id": "blender"
+    },
+    {
+      "name": "Raspberry Pi Imager",
+      "id": "raspberry-pi-imager"
+    },
+    {
+      "name": "Git",
+      "id": "git"
+    },
+    {
+      "name": "Python 3.12",
+      "id": "python@3.12"
+    },
+    {
+      "name": "Node.js",
+      "id": "node"
+    }
+  ]
+}
