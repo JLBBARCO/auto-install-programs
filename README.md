@@ -23,29 +23,29 @@ The script will fetch/update source code in a local cache and launch the app.
 - Windows PowerShell:
 
   ```powershell
-  irm https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/scripts/quick-run.ps1 | iex
+  irm https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/run.ps1 | iex
   ```
 
 - Linux:
 
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/scripts/quick-run.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/run.sh | bash
   ```
 
 - macOS:
 
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/scripts/quick-run.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/run.sh | bash
   ```
 
 Optional branch override (for testing `develop`):
 
 ```powershell
-$env:AIP_BRANCH='develop'; irm https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/scripts/quick-run.ps1 | iex
+$env:AIP_BRANCH='develop'; irm https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/run.ps1 | iex
 ```
 
 ```bash
-AIP_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/scripts/quick-run.sh | bash
+AIP_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JLBBARCO/auto-programs/main/run.sh | bash
 ```
 
 ## Current Scope
