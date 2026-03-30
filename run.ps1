@@ -3,6 +3,8 @@ $repo = "auto-programs"
 $installRoot = Join-Path $HOME ".auto-install-programs"
 $expectedExePath = Join-Path $installRoot "Auto-Install-Programs\Auto Install Programs.exe"
 
+Write-Host "[auto-programs] Script em execução: $PSCommandPath"
+
 function Resolve-ExePath {
     param(
         [string]$Root,
@@ -51,9 +53,4 @@ if (!(Test-Path $exePath)) {
 
 # 2. Executa o binário diretamente (Sem Python, sem VENV)
 Write-Host "[auto-programs] Iniciando..."
-$workingDirectory = Split-Path -Path $exePath -Parent
-if (!(Test-Path $workingDirectory)) {
-    $workingDirectory = $installRoot
-}
-
-Start-Process -FilePath $exePath -WorkingDirectory $workingDirectory
+Start-Process -FilePath $exePath
