@@ -4,32 +4,45 @@ permissions:
   contents: write
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - develop
     paths:
       - "**/*.py"
+      - "install/**"
+      - "README.md"
+      - "requirements.txt"
+      - "Auto Install Programs.spec"
       - "build.bat"
       - "build.sh"
       - "build-mac.sh"
+      - ".github/workflows/**"
   pull_request:
     branches:
       - main
+      - develop
     paths:
       - "**/*.py"
+      - "install/**"
+      - "README.md"
+      - "requirements.txt"
+      - "Auto Install Programs.spec"
       - "build.bat"
       - "build.sh"
       - "build-mac.sh"
+      - ".github/workflows/**"
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
       python_changed: ${{ steps.filter.outputs.python }}
+      data_changed: ${{ steps.filter.outputs.data }}
       windows_changed: ${{ steps.filter.outputs.windows }}
       linux_changed: ${{ steps.filter.outputs.linux }}
       macos_changed: ${{ steps.filter.outputs.macos }}
-      build_all: ${{ steps.filter.outputs.python }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,6 +56,10 @@ jobs:
           filters: |
             python:
               - '**/*.py'
+            data:
+              - 'install/**'
+              - 'README.md'
+              - 'Auto Install Programs.spec'
             windows:
               - 'build.bat'
             linux:
@@ -53,7 +70,8 @@ jobs:
   build:
     needs: detect-changes
     if: |
-      needs.detect-changes.outputs.build_all == 'true' ||
+      needs.detect-changes.outputs.python_changed == 'true' ||
+      needs.detect-changes.outputs.data_changed == 'true' ||
       needs.detect-changes.outputs.windows_changed == 'true' ||
       needs.detect-changes.outputs.linux_changed == 'true' ||
       needs.detect-changes.outputs.macos_changed == 'true'

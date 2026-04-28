@@ -1,9 +1,9 @@
 $owner = "JLBBARCO"
-$repo = "auto-programs"
+$repo = "programs-manager"
 $installRoot = Join-Path $HOME ".auto-install-programs"
-$expectedExePath = Join-Path $installRoot "Auto-Install-Programs\Auto Install Programs.exe"
+$expectedExePath = Join-Path $installRoot "Auto Install Programs\Auto Install Programs.exe"
 
-Write-Host "[auto-programs] Script em execução: $PSCommandPath"
+Write-Host "[programs-manager] Script em execução: $PSCommandPath"
 
 function Resolve-ExePath {
     param(
@@ -31,9 +31,9 @@ $exePath = Resolve-ExePath -Root $installRoot -ExpectedPath $expectedExePath
 
 # 1. Verifica se já existe, se não, busca na API do GitHub
 if (!(Test-Path $exePath)) {
-    Write-Host "[auto-programs] Baixando versão compilada para Windows..."
+    Write-Host "[programs-manager] Baixando versão compilada para Windows..."
     $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
-    $asset = $release.assets | Where-Object { $_.name -like "*windows.zip" } | Select-Object -First 1
+    $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
 
     if (!$asset) {
         throw "Nenhum asset '*windows.zip' foi encontrado no release mais recente."
@@ -52,5 +52,5 @@ if (!(Test-Path $exePath)) {
 }
 
 # 2. Executa o binário diretamente (Sem Python, sem VENV)
-Write-Host "[auto-programs] Iniciando..."
+Write-Host "[programs-manager] Iniciando..."
 Start-Process -FilePath $exePath

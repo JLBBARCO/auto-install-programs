@@ -26,9 +26,10 @@
       "name": "Seelen UI",
       "id": "SeelenUI.SeelenUI"
     },
+
     {
-      "name": "BIOS",
-      "function": "path-to-bios"
+      "name": "Vision Cursor",
+      "function": "vision-cursor"
     }
   ]
 }

@@ -7,6 +7,10 @@
     {
       "name": "Ventoy",
       "id": "Ventoy.Ventoy"
+    },
+    {
+      "name": "BIOS",
+      "function": "path-to-bios"
     }
   ]
 }

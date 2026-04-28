@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 
 
 REPO_OWNER = "JLBBARCO"
-REPO_NAME = "auto-programs"
+REPO_NAME = "programs-manager"
 REPO_BRANCH = "main"
 INSTALL_PREFIX = "install/"
 
@@ -24,11 +24,12 @@ TREE_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/git/trees
 
 
 class More(ctk.CTkToplevel):
-	def __init__(self, parent=None, title: str = "Install Files", run_callback=None, menu_items: list[tuple[str, str]] | None = None):
+	def __init__(self, parent=None, title: str = "Install Files", run_callback=None, menu_items: list[tuple[str, str]] | None = None, close_callback=None):
 		super().__init__(parent)
 		self.title(title)
 
 		self.run_callback = run_callback
+		self.close_callback = close_callback
 		self.menu_items = [
 			(str(key).strip(), str(label).strip())
 			for key, label in (menu_items or [])
@@ -208,7 +209,7 @@ class More(ctk.CTkToplevel):
 				payload = self._extract_local_payload(category_key)
 			else:
 				raw_url = f"{RAW_BASE_URL}/{repo_path}"
-				request = urllib.request.Request(raw_url, headers={"User-Agent": "auto-programs"})
+				request = urllib.request.Request(raw_url, headers={"User-Agent": "programs-manager"})
 				with urllib.request.urlopen(request, timeout=20) as response:
 					content = response.read().decode('utf-8', errors='ignore')
 				payload = self._extract_program_payload(content)
@@ -427,9 +428,47 @@ class More(ctk.CTkToplevel):
 		self._reload_all_entries()
 
 	def _submit(self):
+		selected_programs = self._collect_selected_programs()
+
 		if callable(self.run_callback):
-			self.run_callback(self._collect_selected_programs())
-		self.destroy()
+			runner = threading.Thread(
+				target=self.run_callback,
+				args=(selected_programs,),
+				name='ProgramsManagerRunWorker',
+				daemon=False,
+			)
+			runner.start()
+
+		self._close_all_windows()
+
+	def _close_all_windows(self):
+		if callable(self.close_callback):
+			try:
+				self.close_callback()
+				return
+			except Exception:
+				pass
+
+		for tool_window in list(self.tool_windows):
+			try:
+				if tool_window.winfo_exists():
+					tool_window.destroy()
+			except Exception:
+				continue
+
+		self.tool_windows.clear()
+
+		try:
+			if self.master is not None and self.master.winfo_exists():
+				self.master.destroy()
+		except Exception:
+			pass
+
+		try:
+			if self.winfo_exists():
+				self.destroy()
+		except Exception:
+			pass
 
 	def _collect_selected_programs(self) -> dict[str, list[dict]]:
 		selected_programs: dict[str, list[dict]] = {}
@@ -441,7 +480,11 @@ class More(ctk.CTkToplevel):
 					continue
 
 				checkbox_var = program_data.get('var')
-				if checkbox_var is None or not checkbox_var.get():
+				if checkbox_var is None:
+					continue
+
+				checkbox_get = getattr(checkbox_var, 'get', None)
+				if not callable(checkbox_get) or not checkbox_get():
 					continue
 
 				name = str(program_data.get('name', '')).strip()

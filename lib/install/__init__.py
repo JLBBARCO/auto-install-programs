@@ -352,6 +352,13 @@ def _run_custom_function(function_key: str) -> str:
     if normalized_key == 'path-to-bios':
         return _create_bios_shortcut()
 
+    if normalized_key == 'vision-cursor':
+        try:
+            from lib import customizations as customizations_module
+        except ModuleNotFoundError:
+            from lib import customizations as customizations_module
+        return customizations_module.apply_vision_cursor_black()
+
     return f'Unsupported custom function: {normalized_key}'
 
 
@@ -519,3 +526,7 @@ def customization(selected_program_ids=None):
 
     log.log('Startup management flow completed', level="INFO")
     return f"{execution_summary}\n{disableStartupMessage}\n{saveKeysMessage}\n{enableStartupMessage}"
+
+
+def ti_tools(selected_program_ids=None):
+    return install_program('ti_tools', selected_program_ids)

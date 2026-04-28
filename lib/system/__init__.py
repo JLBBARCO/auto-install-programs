@@ -11,13 +11,3 @@ def nameSO():
         return "Linux"
     else:
         return "Unknown"
-
-def installation():
-    name = nameSO()
-
-    if name == "Windows":
-        return "bat"
-    elif name == "Linux" or name == "MacOS":
-        return "sh"
-    else:
-        return "Unknown"

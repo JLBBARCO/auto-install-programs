@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 import time
+import webbrowser
+from urllib.parse import urlencode
 from dataclasses import dataclass
 
 try:
@@ -52,7 +54,7 @@ CATEGORY_CONFIGS = (
     CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="games"),
     CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen"),
     CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server"),
-    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), include_in_tabs=False),
+    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), installer_name="ti_tools", include_in_tabs=False),
 )
 
 
@@ -68,6 +70,8 @@ class App(ctk.CTk):  # type: ignore
         self.more_window = None
         self.program_tabview = None
         self.user_programs_container = None
+        self._log_share_server = None
+        self._support_site_opened = False
 
         ctk.set_appearance_mode("system")
 
@@ -198,13 +202,18 @@ class App(ctk.CTk):  # type: ignore
         for program in programs:
             program_name = str(program.get("name", "")).strip()
             program_id = str(program.get("id", "")).strip()
+            program_function = str(program.get("function", "")).strip()
             if not program_name:
+                continue
+            if not program_id and not program_function:
                 continue
 
             checkbox_var = ctk.BooleanVar(value=True)
-            self.program_selection_vars[category][f"{program_name}::{program_id}"] = {
+            self.program_selection_vars[category][f"{program_name}::{program_id}::{program_function}"] = {
                 "var": checkbox_var,
                 "id": program_id,
+                "function": program_function,
+                "name": program_name,
             }
 
             checkbox = ctk.CTkCheckBox(
@@ -222,9 +231,9 @@ class App(ctk.CTk):  # type: ignore
             return []
 
         return [
-            program_data["id"]
+            program_data
             for program_data in self.program_selection_vars.get(category, {}).values()
-            if program_data["var"].get() and program_data["id"]
+            if program_data["var"].get() and (program_data["id"] or program_data["function"])
         ]
 
     def add_programs(self):
@@ -285,6 +294,16 @@ class App(ctk.CTk):  # type: ignore
         return selected_installations
 
     def _run_selected_installations(self, selected_programs_by_category=None):
+        self._start_log_bridge()
+        user_uninstall_entries = []
+        user_install_entries = []
+        if selected_programs_by_category is not None:
+            user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
+            user_install_entries = selected_programs_by_category.get("user_install", [])
+
+            if user_uninstall_entries:
+                uninstall_module.user(user_uninstall_entries)
+
         selected_installations = self._selected_installations()
         if not selected_installations and not selected_programs_by_category:
             log.log("No selected categories to install.", level="INFO")
@@ -306,13 +325,45 @@ class App(ctk.CTk):  # type: ignore
         if selected_programs_by_category is None:
             return
 
-        user_install_entries = selected_programs_by_category.get("user_install", [])
         if user_install_entries:
             install_module.user(user_install_entries)
 
-        user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
-        if user_uninstall_entries:
-            uninstall_module.user(user_uninstall_entries)
+    def _start_log_bridge(self):
+        if self._log_share_server is None:
+            self._log_share_server = log.start_shared_log_server()
+
+        if self._support_site_opened:
+            return
+
+        server_url = getattr(self._log_share_server, 'server_url', '')
+        if not server_url:
+            return
+
+        site_url = f"https://programs-manager-website.vercel.app/?{urlencode({'logUrl': f'{server_url}/log.log', 'logPort': str(getattr(self._log_share_server, 'server_address', ('', 0))[1]), 'logFile': 'log.log'})}"
+
+        try:
+            webbrowser.open(site_url, new=1, autoraise=True)
+            self._support_site_opened = True
+            log.log(f'Opened support site: {site_url}', level='INFO')
+        except Exception as error:
+            log.log(f'Failed to open support site: {error}', level='WARNING')
+
+    def close_all_windows(self):
+        for window_attr in ('add_programs_window', 'more_window'):
+            window = getattr(self, window_attr, None)
+            if window is None:
+                continue
+            try:
+                if window.winfo_exists():
+                    window.destroy()
+            except Exception:
+                pass
+
+        try:
+            if self.winfo_exists():
+                self.destroy()
+        except Exception:
+            pass
 
     def run(self):
         selected_configs = self._selected_category_configs()
@@ -327,6 +378,7 @@ class App(ctk.CTk):  # type: ignore
             "Install Files (GitHub Raw)",
             run_callback=self._run_selected_installations,
             menu_items=menu_items,
+            close_callback=self.close_all_windows,
         )
         self.more_window.focus()
 
