@@ -33,6 +33,30 @@
     {
       "name": "VirtualBox",
       "id": "virtualbox"
+    },
+    {
+      "name": "Figma",
+      "id": "figma"
+    },
+    {
+      "name": "Microsoft Teams",
+      "id": "teams"
+    },
+    {
+      "name": "MySQL Workbench",
+      "id": "mysql-workbench"
+    },
+    {
+      "name": "GitHub Desktop",
+      "id": "github-desktop"
+    },
+    {
+      "name": "XAMPP",
+      "id": "xampp"
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "id": "powershell"
     }
   ]
 }

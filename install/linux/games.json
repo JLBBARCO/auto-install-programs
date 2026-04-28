@@ -7,40 +7,8 @@
       "id": "steam"
     },
     {
-      "name": "Lutris",
-      "id": "lutris"
-    },
-    {
       "name": "Discord",
       "id": "discord"
-    },
-    {
-      "name": "MangoHud",
-      "id": "mangohud"
-    },
-    {
-      "name": "GameMode",
-      "id": "gamemode"
-    },
-    {
-      "name": "Protontricks",
-      "id": "protontricks"
-    },
-    {
-      "name": "OBS Studio",
-      "id": "obs-studio"
-    },
-    {
-      "name": "Wine",
-      "id": "wine"
-    },
-    {
-      "name": "Winetricks",
-      "id": "winetricks"
-    },
-    {
-      "name": "RetroArch",
-      "id": "retroarch"
     }
   ]
 }

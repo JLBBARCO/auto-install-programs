@@ -1,10 +1,8 @@
 onedrive
-discord
 securityhealth
 nearby
 camo
 msedge
-whatsapp
 nvidia
 nvbackend
 nvinitialize

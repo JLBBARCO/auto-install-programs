@@ -10,3 +10,5 @@ test.*
 %userprofile%/
 white_list_generated.txt
 user.json
+user_install.json
+user_uninstall.json

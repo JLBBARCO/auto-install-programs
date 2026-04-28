@@ -1,367 +1,333 @@
-import subprocess
-import sys
 import importlib
 import os
+import subprocess
+import sys
 import time
+from dataclasses import dataclass
+
 try:
-    from src.lib import installations, log, system, json, add_programs
-    from src.lib.installations import single_instance
+    from lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
+    from lib.install import single_instance
 except ModuleNotFoundError:
     # Compatibility mode for executions where "src" is already the working root.
-    from lib import installations, log, system, json, add_programs
-    from lib.installations import single_instance
+    from lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
+    from lib.install import single_instance
+
 try:
     import customtkinter as ctk
 except ImportError:
-    # try installing missing requirements and re-importing
     subprocess.run([sys.executable, "-m", "pip", "install", "requirements.txt"], check=True)
     try:
-        ctk = importlib.import_module('customtkinter')
+        ctk = importlib.import_module("customtkinter")
     except Exception:
         sys.exit("customtkinter is required. Install dependencies and run again.")
-# ensure the working directory is predictable when the app is frozen
-if getattr(sys, 'frozen', False):
+
+if getattr(sys, "frozen", False):
     os.chdir(os.path.dirname(sys.executable))
 
-# * Main Variables
-systemName = f"{system.nameSO()} Installations"
+APP_TITLE_TEMPLATE = "{system_name} Programs Manager"
+GRID_PADDING_X = 20
+GRID_PADDING_Y = 5
+PROGRAM_TAB_ROW = 10
+INSTALLATION_DELAY_SECONDS = 3
 
-# * Single Instance Control
-# The application allows multiple GUI windows to be opened simultaneously,
-# but only the most recently started installation will execute.
-# When a new installation begins, any previous running installation is
-# automatically cancelled and terminated, ensuring no conflicts between
-# concurrent installation processes.
+
+@dataclass(frozen=True)
+class CategoryConfig:
+    key: str
+    label: str
+    row: int
+    default_selected: bool = False
+    supported_systems: tuple[str, ...] = ()
+    include_in_tabs: bool = True
+    installer_name: str | None = None
+
+
+CATEGORY_CONFIGS = (
+    CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization"),
+    CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development"),
+    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="drivers"),
+    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essentials"),
+    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="games"),
+    CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen"),
+    CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server"),
+    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), include_in_tabs=False),
+)
+
 
 class App(ctk.CTk):  # type: ignore
     def __init__(self):
         super().__init__()
 
+        self.system_name = system.nameSO()
         self.program_selection_vars = {}
+        self.category_vars = {}
+        self.category_checkboxes = {}
         self.add_programs_window = None
+        self.more_window = None
+        self.program_tabview = None
+        self.user_programs_container = None
 
-        log.log('Program started', level="INFO")
         ctk.set_appearance_mode("system")
 
-        self.title(systemName)
+        self._configure_window()
+        self._build_header()
+        self._build_options_frame()
+        self._build_action_buttons()
+
+    def _configure_window(self):
+        self.title(APP_TITLE_TEMPLATE.format(system_name=self.system_name))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        # Keep the app inside the visible screen area on smaller displays.
-        screen_w = self.winfo_screenwidth()
-        screen_h = self.winfo_screenheight()
-        window_w = min(1200, max(900, int(screen_w * 0.9)))
-        window_h = min(820, max(620, int(screen_h * 0.88)))
-        self.geometry(f"{window_w}x{window_h}")
+    def _build_header(self):
+        title = ctk.CTkLabel(
+            self,
+            text=f"Welcome to the {self.system_name} Programs Manager",
+            font=ctk.CTkFont(size=16, weight="bold"),
+        )
+        title.grid(pady=10, padx=10, columnspan=2, row=0)
 
-        self.labelTitle = ctk.CTkLabel(self, text=f"Welcome to the {system.nameSO()} Installations", font=ctk.CTkFont(size=16, weight="bold"))
-        self.labelTitle.grid(pady=10, padx=10, columnspan=2, row=0)
+        subtitle = ctk.CTkLabel(self, text="Select the programs you want to install:")
+        subtitle.grid(pady=10, padx=10, columnspan=2, row=1)
 
-        self.labelCheck = ctk.CTkLabel(self, text="Select the programs you want to install:")
-        self.labelCheck.grid(pady=10, padx=10, columnspan=2, row=1)
-
+    def _build_options_frame(self):
         self.options_frame = ctk.CTkFrame(self)
-        self.options_frame.grid(row=2, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+        self.options_frame.grid(row=3, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+
         for col in range(8):
             self.options_frame.grid_columnconfigure(col, weight=1)
-        self.options_frame.grid_rowconfigure(1, weight=1)
+        self.options_frame.grid_rowconfigure(PROGRAM_TAB_ROW - 1, weight=1)
 
-        self.checkedButtonDrivers = ctk.BooleanVar()
-        self.checkButtonDrivers = ctk.CTkCheckBox(self.options_frame, text="Drivers", onvalue=True, offvalue=False, variable=self.checkedButtonDrivers)
+        for config in CATEGORY_CONFIGS:
+            self._create_category_checkbox(config)
 
-        self.checkedButtonEssentials = ctk.BooleanVar()
-        self.checkButtonEssentials = ctk.CTkCheckBox(self.options_frame, text="Essential Programs", onvalue=True, offvalue=False, variable=self.checkedButtonEssentials)
-        self.checkButtonEssentials.select()
-        self.checkButtonEssentials.grid(padx=20, pady=5, row=0, column=1, sticky="w")
+    def _build_action_buttons(self):
+        settings_frame = ctk.CTkFrame(self)
+        settings_frame.grid(pady=20, padx=10, row=5, column=0, sticky="e")
 
-        self.checkedButtonScreen = ctk.BooleanVar()
-        self.checkButtonScreen = ctk.CTkCheckBox(self.options_frame, text="Screen", onvalue=True, offvalue=False, variable=self.checkedButtonScreen)
-        self.checkButtonScreen.select()
-        self.checkButtonScreen.grid(padx=20, pady=5, row=0, column=2, sticky="w")
+        self.uncheckAllOptions = ctk.CTkButton(
+            settings_frame,
+            text="Uncheck all options",
+            command=self.uncheck_all_options,
+        )
+        self.uncheckAllOptions.grid(padx=5, pady=20, row=0, column=0)
 
-        self.checkedButtonCustomization = ctk.BooleanVar()
-        self.checkButtonCustomization = ctk.CTkCheckBox(self.options_frame, text="Customization", onvalue=True, offvalue=False, variable=self.checkedButtonCustomization)
+        button_frame = ctk.CTkFrame(self)
+        button_frame.grid(pady=20, padx=10, row=5, column=1, sticky="e")
 
-        self.checkedButtonDevelopment = ctk.BooleanVar()
-        self.checkButtonDevelopment = ctk.CTkCheckBox(self.options_frame, text="Developer Tools", onvalue=True, offvalue=False, variable=self.checkedButtonDevelopment)
-        self.checkButtonDevelopment.select()
-        self.checkButtonDevelopment.grid(padx=20, pady=5, row=0, column=4, sticky="w")
+        run_button = ctk.CTkButton(button_frame, text="Run", command=self.run)
+        run_button.grid(padx=5, pady=20, column=0, row=0)
 
-        self.checkedButtonServer = ctk.BooleanVar()
-        self.checkButtonServer = ctk.CTkCheckBox(self.options_frame, text="Server Tools", onvalue=True, offvalue=False, variable=self.checkedButtonServer)
+    def _create_category_checkbox(self, config: CategoryConfig):
+        variable = ctk.BooleanVar(value=config.default_selected)
+        checkbox = ctk.CTkCheckBox(
+            self.options_frame,
+            text=config.label,
+            variable=variable,
+            onvalue=True,
+            offvalue=False,
+        )
 
-        self.checkedButtonGames = ctk.BooleanVar()
-        self.checkButtonGames = ctk.CTkCheckBox(self.options_frame, text="Games", onvalue=True, offvalue=False, variable=self.checkedButtonGames)
+        self.category_vars[config.key] = variable
+        self.category_checkboxes[config.key] = checkbox
 
-        self.checkedButtonOffice = ctk.BooleanVar()
-        self.checkButtonOffice = ctk.CTkCheckBox(self.options_frame, text="Office", onvalue=True, offvalue=False, variable=self.checkedButtonOffice)
+        if self._should_display_category(config):
+            checkbox.grid(
+                padx=GRID_PADDING_X,
+                pady=GRID_PADDING_Y,
+                row=config.row,
+                column=0,
+                sticky="w",
+            )
 
-        self.checkedButtonUser = ctk.BooleanVar()
-        self.checkButtonUser = ctk.CTkCheckBox(self.options_frame, text='User', onvalue=True, offvalue=False, variable=self.checkedButtonUser)
-        self.checkButtonUser.select()
-        self.checkButtonUser.grid(padx=20, pady=5, row=0, column=7, sticky="w")
+    def _should_display_category(self, config: CategoryConfig) -> bool:
+        if not config.supported_systems:
+            return True
+        return any(system_name in self.system_name for system_name in config.supported_systems)
 
-        # Program list containers inside a tabview — one tab per category prevents
-        # side-by-side overflow that would make the window wider than the screen.
-        self.programTabview = ctk.CTkTabview(self.options_frame, height=280)
-        self.programTabview.grid(row=1, column=0, columnspan=8, padx=10, pady=5, sticky="nsew")
+    def uncheck_all_options(self):
+        for checkbox in self.category_checkboxes.values():
+            checkbox.deselect()
 
-        _tab = self.programTabview.add("Essentials")
-        self.containerEssentials = ctk.CTkScrollableFrame(_tab)
-        self.containerEssentials.pack(fill="both", expand=True)
-        self.selectAnyoneProgram("essentials", self.containerEssentials)
-        if system.nameSO() == 'Windows':
-            ctk.CTkLabel(self.containerEssentials, text="── Office ──", font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", padx=10, pady=(10, 4))
-            self.selectAnyoneProgram("office", self.containerEssentials)
+    def _build_program_tab(self, config: CategoryConfig):
+        if self.program_tabview is None:
+            return
 
-        _tab = self.programTabview.add("Screen")
-        self.containerScreen = ctk.CTkScrollableFrame(_tab)
-        self.containerScreen.pack(fill="both", expand=True)
-        self.selectAnyoneProgram("screen", self.containerScreen)
+        tab = self.program_tabview.add(config.label.replace(" Programs", ""))
+        container = ctk.CTkScrollableFrame(tab)
+        container.pack(fill="both", expand=True, padx=10, pady=10)
 
-        _tab = self.programTabview.add("Development")
-        self.containerDevelopment = ctk.CTkScrollableFrame(_tab)
-        self.containerDevelopment.pack(fill="both", expand=True)
-        self.selectAnyoneProgram("development", self.containerDevelopment)
+        if config.key == "user":
+            self.user_programs_container = container
+            self._render_user_program_controls()
 
-        _tab = self.programTabview.add("User")
-        self.containerUser = ctk.CTkScrollableFrame(_tab)
-        self.containerUser.pack(fill="both", expand=True)
-        self.selectAnyoneProgram('user', self.containerUser)
+        self.select_any_program(config.key, container)
 
-        if system.nameSO() in ('Windows', 'Linux'):
-            _tab = self.programTabview.add("Drivers")
-            self.containerDrivers = ctk.CTkScrollableFrame(_tab)
-            self.containerDrivers.pack(fill="both", expand=True)
-            self.selectAnyoneProgram("drivers", self.containerDrivers)
+    def _render_user_program_controls(self):
+        if self.user_programs_container is None or not self.user_programs_container.winfo_exists():
+            return
 
-        if system.nameSO() == 'Windows':
-            _tab = self.programTabview.add("Customization")
-            self.containerCustomization = ctk.CTkScrollableFrame(_tab)
-            self.containerCustomization.pack(fill="both", expand=True)
-            self.selectAnyoneProgram("customization", self.containerCustomization)
+        add_button = ctk.CTkButton(
+            self.user_programs_container,
+            text="Add programs",
+            command=self.add_programs,
+        )
+        add_button.pack(anchor="w", padx=10, pady=(0, 10))
 
-        if system.nameSO() in ('Windows', 'Linux'):
-            _tab = self.programTabview.add("Games")
-            self.containerGames = ctk.CTkScrollableFrame(_tab)
-            self.containerGames.pack(fill="both", expand=True)
-            self.selectAnyoneProgram("games", self.containerGames)
-
-        if system.nameSO() == 'Linux':
-            _tab = self.programTabview.add("Server")
-            self.containerServer = ctk.CTkScrollableFrame(_tab)
-            self.containerServer.pack(fill="both", expand=True)
-            self.selectAnyoneProgram("server", self.containerServer)
-
-        self.containerSettings = ctk.CTkFrame(self)
-        self.containerSettings.grid(pady=20, padx=10, row=5, column=0, sticky='e')
-
-        self.addProgramsButton = ctk.CTkButton(self.containerSettings, text="Add Programs", command=self.addPrograms)
-        self.addProgramsButton.grid(padx=5, pady=20)
-
-        self.containerButtons = ctk.CTkFrame(self)
-        self.containerButtons.grid(pady=20, padx=10, row=5, column=1, sticky="e")
-
-        self.submitButton = ctk.CTkButton(self.containerButtons, text="Install", command=self.install)
-        self.submitButton.grid(padx=5, pady=20, column=0, row=0)
-
-        self.cancelButton = ctk.CTkButton(self.containerButtons, text="Cancel", command=self.cancel)
-        self.cancelButton.grid(padx=5, pady=20, column=1, row=0)
-
-        if system.nameSO() == 'Windows':
-            self.checkButtonDrivers.select()
-            self.checkButtonDrivers.grid(padx=20, pady=5, row=0, column=0, sticky="w")
-
-            self.checkButtonCustomization.select()
-            self.checkButtonCustomization.grid(padx=20, pady=5, row=0, column=3, sticky="w")
-
-            self.checkButtonOffice.select()
-            self.checkButtonOffice.grid(padx=20, pady=5, row=0, column=5, sticky="w")
-
-            self.checkButtonGames.select()
-            self.checkButtonGames.grid(padx=20, pady=5, row=0, column=6, sticky="w")
-
-        if 'Linux' in system.nameSO():
-            self.checkButtonDrivers.select()
-            self.checkButtonDrivers.grid(padx=20, pady=5, row=0, column=0, sticky="w")
-
-            self.checkButtonServer.select()
-            self.checkButtonServer.grid(padx=20, pady=5, row=0, column=5, sticky="w")
-
-            self.checkButtonGames.select()
-            self.checkButtonGames.grid(padx=20, pady=5, row=0, column=6, sticky="w")
-
-    def selectAnyoneProgram(self, category, container=None):
-        programsArray = json.read_json(category)
-        if not programsArray:
-            log.log(f"Could not load JSON data for category {category}.", "WARNING")
+    def _load_programs(self, category: str) -> list[dict]:
+        payload = json.read_json(category)
+        if not payload:
             return []
 
-        programs = programsArray.get('programs', [])
+        programs = payload.get("programs", [])
         if not programs:
-            log.log(f"No 'programs' key found in JSON file for category {category}.", "WARNING")
             return []
 
+        return [program for program in programs if isinstance(program, dict)]
+
+    def _build_program_checkboxes(self, category: str, container):
+        self.program_selection_vars[category] = {}
+        programs = sorted(
+            self._load_programs(category),
+            key=lambda program: str(program.get("name", "")).lower(),
+        )
+
+        for program in programs:
+            program_name = str(program.get("name", "")).strip()
+            program_id = str(program.get("id", "")).strip()
+            if not program_name:
+                continue
+
+            checkbox_var = ctk.BooleanVar(value=True)
+            self.program_selection_vars[category][f"{program_name}::{program_id}"] = {
+                "var": checkbox_var,
+                "id": program_id,
+            }
+
+            checkbox = ctk.CTkCheckBox(
+                container,
+                text=program_name,
+                variable=checkbox_var,
+                onvalue=True,
+                offvalue=False,
+            )
+            checkbox.pack(anchor="w", padx=10, pady=4)
+
+    def select_any_program(self, category, container=None):
         if container is not None:
-            # Build one active checkbox per JSON program entry and persist vars.
-            self.program_selection_vars[category] = {}
-            programs_sorted = sorted(programs, key=lambda p: str(p.get('name', '')).lower())
-            for program in programs_sorted:
-                if not isinstance(program, dict):
-                    continue
-
-                program_name = str(program.get('name', '')).strip()
-                program_id = str(program.get('id', '')).strip()
-                if not program_name:
-                    continue
-
-                checkbox_var = ctk.BooleanVar(value=True)
-                key = f"{program_name}::{program_id}"
-                self.program_selection_vars[category][key] = {
-                    "var": checkbox_var,
-                    "id": program_id,
-                }
-
-                checkbox = ctk.CTkCheckBox(
-                    container,
-                    text=program_name,
-                    variable=checkbox_var,
-                    onvalue=True,
-                    offvalue=False,
-                )
-                checkbox.pack(anchor="w", padx=10, pady=4)
-
+            self._build_program_checkboxes(category, container)
             return []
 
-        selected_programs = []
-        for program_data in self.program_selection_vars.get(category, {}).values():
-            if program_data["var"].get() and program_data["id"]:
-                selected_programs.append(program_data["id"])
-        return selected_programs
+        return [
+            program_data["id"]
+            for program_data in self.program_selection_vars.get(category, {}).values()
+            if program_data["var"].get() and program_data["id"]
+        ]
 
-    def addPrograms(self):
+    def add_programs(self):
         if self.add_programs_window is not None and self.add_programs_window.winfo_exists():
             self.add_programs_window.focus()
             return
 
-        self.add_programs_window = add_programs.searchPrograms(parent=self, on_submit=self.refresh_user_programs)
+        self.add_programs_window = add_programs.searchPrograms(
+            parent=self,
+            on_submit=self.refresh_user_programs,
+        )
         self.add_programs_window.focus()
 
     def refresh_user_programs(self):
-        if not hasattr(self, 'containerUser'):
+        if self.user_programs_container is None or not self.user_programs_container.winfo_exists():
             return
-        for widget in self.containerUser.winfo_children():
+
+        for widget in self.user_programs_container.winfo_children():
             widget.destroy()
-        self.selectAnyoneProgram('user', self.containerUser)
-        self.programTabview.set('User')
+
+        self._render_user_program_controls()
+        self.select_any_program("user", self.user_programs_container)
+
+        if self.program_tabview is not None and self.program_tabview.winfo_exists():
+            self.program_tabview.set("User")
         self.update_idletasks()
 
-    def showAllPrograms(self):
-        self.programTabview.grid(row=1, column=0, columnspan=8, padx=10, pady=5, sticky="nsew")
-        self.update_idletasks()
+    def _selected_category_configs(self) -> list[CategoryConfig]:
+        selected_configs: list[CategoryConfig] = []
 
-    def install(self):
-        self.destroy()  # Close the GUI before starting installations
+        for config in CATEGORY_CONFIGS:
+            if not config.installer_name or config.key == "drivers":
+                continue
 
-        log.log('Update installation package', level='INFO')
-        installations.update()
+            category_var = self.category_vars.get(config.key)
+            if category_var is None or not category_var.get():
+                continue
 
-        # Acquire installation lock - this will cancel any previous installation
-        log.log('Acquiring installation lock...', level="INFO")
-        single_instance.acquire_installation_lock()
-        time.sleep(3)
+            selected_configs.append(config)
 
-        try:
-            if self.checkedButtonDrivers.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("drivers")
-                log.log(f'Install Drivers: {self.checkedButtonDrivers.get()}')
-                installations.drivers(selected_programs)
-                time.sleep(3)
+        return selected_configs
 
-            if self.checkedButtonEssentials.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("essentials")
-                log.log(f'Install Essential Programs: {self.checkedButtonEssentials.get()}')
-                installations.essentials(selected_programs)
-                time.sleep(3)
+    def _selected_installations(self):
+        selected_installations = []
 
-            if self.checkedButtonOffice.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("office")
-                log.log(f'Install Office: {self.checkedButtonOffice.get()}')
-                installations.office(selected_programs)
-                time.sleep(3)
+        for config in self._selected_category_configs():
+            installer_name = config.installer_name
+            if installer_name is None:
+                continue
 
-            if self.checkedButtonDevelopment.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("development")
-                log.log(f'Install Development Programs: {self.checkedButtonDevelopment.get()}')
-                installations.development(selected_programs)
-                time.sleep(3)
+            installer = getattr(install_module, installer_name, None)
+            if installer is None:
+                log.log(f"No installer found for category '{config.key}'.", level="WARNING")
+                continue
 
-            if self.checkedButtonGames.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("games")
-                log.log(f'Install Games: {self.checkedButtonGames.get()}')
-                installations.games(selected_programs)
-                time.sleep(3)
+            selected_installations.append((config, installer))
 
-            if self.checkedButtonScreen.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("screen")
-                log.log(f'Install Screen: {self.checkedButtonScreen.get()}')
-                installations.screen(selected_programs)
-                time.sleep(3)
+        return selected_installations
 
-            if self.checkedButtonServer.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("server")
-                log.log(f'Install Server: {self.checkedButtonServer.get()}')
-                installations.server(selected_programs)
-                time.sleep(3)
+    def _run_selected_installations(self, selected_programs_by_category=None):
+        selected_installations = self._selected_installations()
+        if not selected_installations and not selected_programs_by_category:
+            log.log("No selected categories to install.", level="INFO")
+            return
 
-            if self.checkedButtonCustomization.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("customization")
-                log.log(f'Install Customization: {self.checkedButtonCustomization.get()}')
-                installations.customization(selected_programs)
-                time.sleep(3)
+        for config, installer in selected_installations:
+            if single_instance.is_installation_cancelled():
+                log.log("Installation cancelled by newer instance", level="WARNING")
+                return
 
-            if self.checkedButtonUser.get():
-                if single_instance.is_installation_cancelled():
-                    log.log('Installation cancelled by newer instance', level="WARNING")
-                    return
-                selected_programs = self.selectAnyoneProgram("user")
-                log.log(f'Install User Programs: {self.checkedButtonUser.get()}')
-                installations.user(selected_programs)
-                time.sleep(3)
+            if selected_programs_by_category is None:
+                selected_programs = self.select_any_program(config.key)
+            else:
+                selected_programs = selected_programs_by_category.get(config.key, [])
 
-            log.log('All installations completed successfully', level="INFO")
-        finally:
-            # Always release the lock when done
-            single_instance.release_installation_lock()
+            installer(selected_programs)
+            time.sleep(INSTALLATION_DELAY_SECONDS)
 
-    def cancel(self):
-        log.log('Installation cancelled by the user')
-        self.destroy()
+        if selected_programs_by_category is None:
+            return
+
+        user_install_entries = selected_programs_by_category.get("user_install", [])
+        if user_install_entries:
+            install_module.user(user_install_entries)
+
+        user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
+        if user_uninstall_entries:
+            uninstall_module.user(user_uninstall_entries)
+
+    def run(self):
+        selected_configs = self._selected_category_configs()
+        menu_items = [(config.key, config.label) for config in selected_configs]
+
+        if not menu_items:
+            log.log("No supported categories selected for installation.", level="INFO")
+            return
+
+        self.more_window = more.More(
+            self,
+            "Install Files (GitHub Raw)",
+            run_callback=self._run_selected_installations,
+            menu_items=menu_items,
+        )
+        self.more_window.focus()
 
 if __name__ == "__main__":
     app = App()

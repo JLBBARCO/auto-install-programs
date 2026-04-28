@@ -37,10 +37,6 @@
     {
       "name": "Curl",
       "id": "curl"
-    },
-    {
-      "name": "Passwords Manager",
-      "id": "passwords-manager"
     }
   ]
 }
