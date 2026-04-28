@@ -1,0 +1,16 @@
+{
+  "programs": [
+    {
+      "name": "Rufus",
+      "id": "Rufus.Rufus"
+    },
+    {
+      "name": "Ventoy",
+      "id": "Ventoy.Ventoy"
+    },
+    {
+      "name": "BIOS",
+      "function": "path-to-bios"
+    }
+  ]
+}

@@ -45,6 +45,16 @@
     {
       "name": "WhatsApp",
       "id": "WhatsApp.WhatsApp"
-    }
+    },
+    {
+      "name": "Microsoft Office",
+      "id": "Microsoft.Office"
+    },
+    {
+      "name": "Notion",
+      "id": "Notion.Notion"
+    },
+    { "name": "Obsidian", "id": "Obsidian.Obsidian" },
+    { "name": "Camo Studio", "id": "Reincubate.CamoStudio" }
   ]
 }

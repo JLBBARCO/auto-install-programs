@@ -51,20 +51,20 @@
       "id": "Python.Python.3.12"
     },
     {
-      "name": "Rufus",
-      "id": "Rufus.Rufus"
-    },
-    {
-      "name": "Ventoy",
-      "id": "Ventoy.Ventoy"
-    },
-    {
       "name": "VirtualBox",
       "id": "Oracle.VirtualBox"
     },
     {
       "name": "XAMPP",
       "id": "ApacheFriends.Xampp.8.1"
+    },
+    {
+      "name": "Postman",
+      "id": "Postman.Postman"
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "id": "Microsoft.PowerShell"
     }
   ]
 }

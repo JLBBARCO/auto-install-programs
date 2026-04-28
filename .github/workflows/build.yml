@@ -4,32 +4,45 @@ permissions:
   contents: write
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+      - develop
     paths:
       - "**/*.py"
+      - "install/**"
+      - "README.md"
+      - "requirements.txt"
+      - "Auto Install Programs.spec"
       - "build.bat"
       - "build.sh"
       - "build-mac.sh"
+      - ".github/workflows/**"
   pull_request:
     branches:
       - main
+      - develop
     paths:
       - "**/*.py"
+      - "install/**"
+      - "README.md"
+      - "requirements.txt"
+      - "Auto Install Programs.spec"
       - "build.bat"
       - "build.sh"
       - "build-mac.sh"
+      - ".github/workflows/**"
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
       python_changed: ${{ steps.filter.outputs.python }}
+      data_changed: ${{ steps.filter.outputs.data }}
       windows_changed: ${{ steps.filter.outputs.windows }}
       linux_changed: ${{ steps.filter.outputs.linux }}
       macos_changed: ${{ steps.filter.outputs.macos }}
-      build_all: ${{ steps.filter.outputs.python }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,6 +56,10 @@ jobs:
           filters: |
             python:
               - '**/*.py'
+            data:
+              - 'install/**'
+              - 'README.md'
+              - 'Auto Install Programs.spec'
             windows:
               - 'build.bat'
             linux:
@@ -53,7 +70,8 @@ jobs:
   build:
     needs: detect-changes
     if: |
-      needs.detect-changes.outputs.build_all == 'true' ||
+      needs.detect-changes.outputs.python_changed == 'true' ||
+      needs.detect-changes.outputs.data_changed == 'true' ||
       needs.detect-changes.outputs.windows_changed == 'true' ||
       needs.detect-changes.outputs.linux_changed == 'true' ||
       needs.detect-changes.outputs.macos_changed == 'true'
@@ -176,6 +194,35 @@ jobs:
           path: dist/Auto-Install-Programs-${{ matrix.artifact-name }}.*
           retention-days: 30
 
+      - name: Install screenshot dependencies
+        if: steps.should_build.outputs.should_build == 'true'
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb x11-utils
+          fi
+          python -m pip install mss pillow
+
+      - name: Capture screenshot
+        if: steps.should_build.outputs.should_build == 'true'
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run -s "-screen 0 1920x1080x24" python scripts/ci_screenshot.py screenshots/screenshot-${{ matrix.artifact-name }}.webp
+          else
+            python scripts/ci_screenshot.py screenshots/screenshot-${{ matrix.artifact-name }}.webp
+          fi
+
+      - name: Upload screenshot
+        if: steps.should_build.outputs.should_build == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-${{ matrix.artifact-name }}
+          path: screenshots/screenshot-${{ matrix.artifact-name }}.webp
+          retention-days: 7
+
   create-release:
     needs: build
     runs-on: ubuntu-latest
@@ -240,3 +287,41 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  assemble-screenshots:
+    needs: build
+    runs-on: ubuntu-latest
+    if: needs.build.result == 'success'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Download screenshot artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: screenshot-*
+          path: screenshots
+          merge-multiple: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install assembly dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pillow
+
+      - name: Assemble thumbnails and write assets
+        run: |
+          python scripts/assemble_thumbnails.py --windows screenshots/screenshot-windows.webp --linux screenshots/screenshot-linux.webp --macos screenshots/screenshot-macos.webp --out-windows src/assets/img/windows.webp --out-linux src/assets/img/linux.webp --out-macos src/assets/img/macos.webp --output src/assets/img/thumbnail.webp
+
+      - name: Commit and push screenshots
+        run: |
+          git add src/assets/img/windows.webp src/assets/img/linux.webp src/assets/img/macos.webp src/assets/img/thumbnail.webp || true
+          git commit -m "ci: update platform screenshots and thumbnail" || echo "No changes to commit"
+          git push || echo "Push failed"

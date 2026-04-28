@@ -13,6 +13,23 @@
     {
       "name": "TranslucentTB",
       "id": "CharlesMilette.TranslucentTB"
+    },
+    {
+      "name": "Microsoft PowerToys",
+      "id": "Microsoft.PowerToys"
+    },
+    {
+      "name": "Dark Mode ",
+      "function": "dark-mode"
+    },
+    {
+      "name": "Seelen UI",
+      "id": "SeelenUI.SeelenUI"
+    },
+
+    {
+      "name": "Vision Cursor",
+      "function": "vision-cursor"
     }
   ]
 }

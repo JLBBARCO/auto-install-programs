@@ -3,6 +3,7 @@ __pycache__/
 build/
 dist/
 venv/
+.venv/
 *.spec
 *.log
 test.*
@@ -10,3 +11,5 @@ test.*
 %userprofile%/
 white_list_generated.txt
 user.json
+user_install.json
+user_uninstall.json
