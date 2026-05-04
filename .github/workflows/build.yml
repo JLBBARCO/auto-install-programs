@@ -336,6 +336,7 @@ jobs:
           python scripts/assemble_thumbnails.py --windows screenshots/screenshot-windows.webp --linux screenshots/screenshot-linux.webp --macos screenshots/screenshot-macos.webp --out-windows src/assets/img/windows.webp --out-linux src/assets/img/linux.webp --out-macos src/assets/img/macos.webp --output src/assets/img/thumbnail.webp
 
       - name: Commit and push screenshots
+        if: github.event_name == 'push'
         env:
           GIT_AUTHOR_NAME: github-actions[bot]
           GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com

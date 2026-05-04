@@ -31,20 +31,12 @@
       "id": "Spotify.Spotify"
     },
     {
-      "name": "Telegram Desktop",
-      "id": "Telegram.TelegramDesktop"
-    },
-    {
       "name": "VLC",
       "id": "VideoLAN.VLC"
     },
     {
       "name": "WinRAR",
       "id": "RARLab.WinRAR"
-    },
-    {
-      "name": "WhatsApp",
-      "id": "WhatsApp.WhatsApp"
     },
     {
       "name": "Microsoft Office",
