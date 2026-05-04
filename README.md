@@ -99,9 +99,9 @@ On each successful platform build, the CI workflow launches the compiled app, ca
 
 The macOS section is organized around these areas:
 
-- Developer Tools
-- Essential Programs
-- Screen
+- [Developer Tools](#developer-tools)
+- [Essential Programs](#essential-programs)
+- [Screen](#screen)
 
 ![macOS screenshot](src/assets/img/macos.webp)
 
@@ -140,11 +140,11 @@ The macOS section is organized around these areas:
 
 The Linux section is organized around these areas:
 
-- Developer Tools
-- Drivers
-- Essential Programs
-- Server Tools
-- Screen
+- [Developer Tools](#developer-tools)
+- [Drivers](#drivers)
+- [Essential Programs](#essential-programs-1)
+- [Server Tools](#server-tools)
+- [Screen](#screen-1)
 
 ![Linux screenshot](src/assets/img/linux.webp)
 
@@ -199,6 +199,13 @@ The system analyzes the graphics card and installs the appropriate drivers.
 
 The Windows app combines startup management, install categories, and system customization.
 
+The Linux section is organized around these areas:
+
+- [Behavior](#behavior)
+- [Installations and Modifications](#installations-and-modifications)
+- [Safety](#safety)
+- [Whitelist](#whitelist)
+
 ![Windows screenshot](src/assets/img/windows.webp)
 
 ### Behavior
@@ -221,3 +228,91 @@ The Windows app combines startup management, install categories, and system cust
 Allowed startup keys are defined in `install/windows/white_list.txt` in the repository.
 
 Use `install/windows/list_startup_programs.py` to inspect the registry names present on your machine and adjust the whitelist if needed.
+
+### Installations and Modifications
+
+- [Customization](#customization)
+- [Development](#development)
+- [Drivers](#drivers-1)
+- [Essential Programs](#essential-programs-2)
+- [Games](#games)
+- [Screen](#screen-2)
+- [Customization](#customization)
+- [TI Tools](#ti-tools)
+
+#### Customization
+
+- Dark Mode
+- Lively Wallpaper
+- Microsoft PowerToys
+- Rainmeter
+- Seelen UI
+- TranslucentTB
+- Vision Cursor
+
+#### Development
+
+- Blender
+- Docker
+- Figma
+- GIMP
+- Git
+- Github Desktop
+- Java Runtime Environment
+- Microsoft PowerShell
+- Microsoft Teams
+- MySQL
+- Node.JS
+- Postman
+- Python 3.12
+- Python Install Manager
+- VirtualBox
+- Visual Studio Code
+- XAMPP
+
+#### Drivers
+
+The system analyzes the graphics card and installs the appropriate drivers.
+
+- AMD
+- Intel
+- NVIDIA
+
+#### Essential Programs
+
+- Adobe Acrobat
+- Camo Studio
+- Cloudflare Warp
+- Free Download Manager
+- Google Chrome
+- Google Drive
+- Microsoft Office
+- Mozilla Firefox
+- Notion
+- Obsidian
+- Spotify
+- Tor Browser
+- VLC
+- WinRAR
+
+#### Games
+
+- CurseForge
+- Discord
+- Epic Games Launcher
+- Google Play Games
+- Radmin VPN
+- Steam
+- Xbox App
+
+#### Screen
+
+- AnyDesk
+- Spacedesk Client
+- Spacedesk Server
+
+#### TI Tools
+
+- Bios Shortcut
+- Rufus
+- Ventoy
