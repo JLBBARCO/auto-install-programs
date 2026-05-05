@@ -85,7 +85,7 @@ jobs:
             script: build.bat
             artifact-name: windows
             artifact-path: dist/Auto*
-            launch-path: dist/Auto Install Programs/Auto Install Programs.exe
+            launch-path: dist/Programs Manager/Programs Manager.exe
             build_filter: windows
 
           - os: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
             script: build.sh
             artifact-name: linux
             artifact-path: dist/Auto*
-            launch-path: dist/Auto Install Programs/Auto Install Programs
+            launch-path: dist/Programs Manager/Programs Manager
             build_filter: linux
 
           - os: macos-latest
@@ -101,7 +101,7 @@ jobs:
             script: build-mac.sh
             artifact-name: macos
             artifact-path: dist/Auto*
-            launch-path: dist/Auto Install Programs/Auto Install Programs
+            launch-path: dist/Programs Manager/Programs Manager
             build_filter: macos
 
     steps:
@@ -183,10 +183,31 @@ jobs:
         shell: bash
         run: |
           cd dist
+
+          PACKAGE_SOURCE=""
+          for candidate in "Programs Manager" "Auto Install Programs" "Programs Manager.app" "Auto Install Programs.app"; do
+            if [[ -e "$candidate" ]]; then
+              PACKAGE_SOURCE="$candidate"
+              break
+            fi
+          done
+
+          if [[ -z "$PACKAGE_SOURCE" ]]; then
+            PACKAGE_SOURCE="$(find . -maxdepth 1 -mindepth 1 \( -type d -o -name "*.app" \) | head -n 1 | sed 's|^\./||')"
+          fi
+
+          if [[ -z "$PACKAGE_SOURCE" ]]; then
+            echo "No build output found in dist/."
+            ls -la
+            exit 1
+          fi
+
+          echo "Packaging source: $PACKAGE_SOURCE"
+
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            7z a -tzip "Auto-Install-Programs-${{ matrix.artifact-name }}.zip" "Auto Install Programs"/*
+            7z a -tzip "Auto-Install-Programs-${{ matrix.artifact-name }}.zip" "$PACKAGE_SOURCE"
           else
-            tar -czf "Auto-Install-Programs-${{ matrix.artifact-name }}.tar.gz" "Auto Install Programs"
+            tar -czf "Auto-Install-Programs-${{ matrix.artifact-name }}.tar.gz" "$PACKAGE_SOURCE"
           fi
 
       - name: Upload artifacts

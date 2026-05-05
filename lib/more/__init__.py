@@ -16,7 +16,10 @@ except ModuleNotFoundError:
 
 REPO_OWNER = "JLBBARCO"
 REPO_NAME = "programs-manager"
-REPO_BRANCH = "main"
+import os
+
+# Allow overriding branch via environment variable (e.g. AIP_BRANCH=develop)
+REPO_BRANCH = os.environ.get('AIP_BRANCH', 'main')
 INSTALL_PREFIX = "install/"
 
 RAW_BASE_URL = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{REPO_BRANCH}"

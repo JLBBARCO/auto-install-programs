@@ -1,6 +1,10 @@
 $owner = "JLBBARCO"
 $repo = "programs-manager"
-$installRoot = Join-Path $HOME ".auto-install-programs"
+# Branch of this script file. Set to 'main' in the main branch copy, 'develop' in develop.
+$ScriptBranch = "develop"
+
+# Use the current user's profile directory (works on Windows reliably).
+$installRoot = Join-Path $env:USERPROFILE ".auto-install-programs"
 $expectedExePath = Join-Path $installRoot "Auto Install Programs\Auto Install Programs.exe"
 
 Write-Host "[programs-manager] Script em execução: $PSCommandPath"
@@ -42,16 +46,29 @@ if (-not $exePath) {
 
 if ($shouldDownload) {
     Write-Host "[programs-manager] Baixando versão compilada para Windows..."
-    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
-    $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
 
-    if (!$asset) {
-        throw "Nenhum asset '*windows.zip' foi encontrado no release mais recente."
+    if ($ScriptBranch -eq 'develop') {
+        # Prefer the latest prerelease for develop scripts
+        $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases" -UseBasicParsing
+        $pr = $releases | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
+        if ($pr) {
+            $asset = $pr.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
+        }
     }
-    
+
+    if (-not $asset) {
+        # Fallback to latest stable release
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
+        $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
+    }
+
+    if (-not $asset) {
+        throw "Nenhum asset '*windows.zip' foi encontrado no release apropriado."
+    }
+
     $zipTemp = Join-Path $env:TEMP "aip_win.zip"
     Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipTemp -UseBasicParsing
-    
+
     Expand-Archive -Path $zipTemp -DestinationPath $installRoot -Force
     Remove-Item $zipTemp -Force
 

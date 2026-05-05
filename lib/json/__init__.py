@@ -8,7 +8,7 @@ try:
 except ModuleNotFoundError:
     from lib import log, system
 
-GITHUB_REPOSITORY_BASE_URL = "https://raw.githubusercontent.com/jlbbarco/auto-install-programs/main"
+GITHUB_REPOSITORY_BASE_URL = "https://raw.githubusercontent.com/JLBBARCO/programs-manager/main"
 GITHUB_INSTALL_BASE_URL = f"{GITHUB_REPOSITORY_BASE_URL}/install"
 
 

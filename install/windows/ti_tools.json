@@ -11,6 +11,14 @@
     {
       "name": "BIOS",
       "function": "path-to-bios"
+    },
+    {
+      "name": "EaseUS Todo Backup",
+      "id": "EaseUS.TodoBackup"
+    },
+    {
+      "name": "EaseUS Disk Copy",
+      "id": "EaseUS.DiskCopy"
     }
   ]
 }

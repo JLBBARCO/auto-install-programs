@@ -36,7 +36,7 @@ fi
 
 echo "Cleaning old builds..."
 rm -rf dist build
-rm -f "Auto Install Programs.spec"
+rm -f "Programs Manager.spec"
 
 echo "Checking and installing required dependencies..."
 
@@ -69,7 +69,7 @@ echo "✓ Dependencies installed"
 echo ""
 echo "Starting build with PyInstaller..."
 python3 -m PyInstaller --noconfirm --onedir --windowed \
-    --name "Auto Install Programs" \
+    --name "Programs Manager" \
     --add-data "src:src" \
     --add-data "install:install" \
     --collect-all customtkinter \
@@ -77,12 +77,12 @@ python3 -m PyInstaller --noconfirm --onedir --windowed \
     "main.py"
 
 echo ""
-if [ -d "dist/Auto Install Programs" ]; then
+if [ -d "dist/Programs Manager" ]; then
     echo "============================================"
     echo "Build completed!"
     echo "============================================"
     echo ""
-    echo "Executable is at: dist/Auto Install Programs/"
+    echo "Executable is at: dist/Programs Manager/"
     echo ""
 else
     echo "============================================"

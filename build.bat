@@ -1,7 +1,7 @@
 @echo off
 echo Cleaning old builds...
 rd /s /q dist build 2>nul
-del /f /q "Auto Install Programs.spec" 2>nul
+del /f /q "Programs Manager.spec" 2>nul
 
 echo Installing required dependencies...
 python -m pip install --upgrade pip
@@ -9,7 +9,7 @@ python -m pip install pyinstaller customtkinter psutil
 
 echo Iniciando o Build com PyInstaller...
 python -m PyInstaller --noconfirm --onedir --windowed ^
-    --name "Auto Install Programs" ^
+    --name "Programs Manager" ^
     --icon "src/assets/icon/icon.ico" ^
     --add-data "src;src" ^
     --add-data "install;install" ^
@@ -29,6 +29,6 @@ echo.
 echo Build completed successfully!
 echo %%%%
 echo.
-echo O executavel esta em: dist/Auto Install Programs/
+echo O executavel esta em: dist/Programs Manager/
 echo.
 pause

@@ -314,5 +314,7 @@ The system analyzes the graphics card and installs the appropriate drivers.
 #### TI Tools
 
 - Bios Shortcut
+- EaseUS DiskCopy
+- EaseUS Todo Backup
 - Rufus
 - Ventoy
