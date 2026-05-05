@@ -53,6 +53,7 @@ jobs:
       windows_changed: ${{ steps.filter.outputs.windows }}
       linux_changed: ${{ steps.filter.outputs.linux }}
       macos_changed: ${{ steps.filter.outputs.macos }}
+      workflow_changed: ${{ steps.filter.outputs.workflow }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,13 +70,16 @@ jobs:
             data:
               - 'install/**'
               - 'README.md'
-              - 'Auto Install Programs.spec'
             windows:
               - 'build.bat'
+              - 'run.ps1'
             linux:
               - 'build.sh'
+              - 'run.sh'
             macos:
               - 'build-mac.sh'
+            workflow:
+              - '.github/workflows/**'
 
   build:
     needs: detect-changes
@@ -84,7 +88,8 @@ jobs:
       needs.detect-changes.outputs.data_changed == 'true' ||
       needs.detect-changes.outputs.windows_changed == 'true' ||
       needs.detect-changes.outputs.linux_changed == 'true' ||
-      needs.detect-changes.outputs.macos_changed == 'true'
+      needs.detect-changes.outputs.macos_changed == 'true' ||
+      needs.detect-changes.outputs.workflow_changed == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -123,9 +128,25 @@ jobs:
         shell: bash
         run: |
           BUILD_PYTHON="${{ needs.detect-changes.outputs.python_changed }}"
+          BUILD_DATA="${{ needs.detect-changes.outputs.data_changed }}"
           BUILD_WINDOWS="${{ needs.detect-changes.outputs.windows_changed }}"
           BUILD_LINUX="${{ needs.detect-changes.outputs.linux_changed }}"
           BUILD_MACOS="${{ needs.detect-changes.outputs.macos_changed }}"
+          BUILD_WORKFLOW="${{ needs.detect-changes.outputs.workflow_changed }}"
+
+          # Se o workflow foi modificado, compila tudo
+          if [ "$BUILD_WORKFLOW" == "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Compilando ${{ matrix.build_filter }} porque o workflow foi modificado"
+            exit 0
+          fi
+
+          # Se dados foram alterados, compila tudo
+          if [ "$BUILD_DATA" == "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Compilando ${{ matrix.build_filter }} porque dados foram modificados"
+            exit 0
+          fi
 
           # Se arquivos Python foram alterados, compila tudo
           if [ "$BUILD_PYTHON" == "true" ]; then
@@ -139,19 +160,19 @@ jobs:
             windows)
               if [ "$BUILD_WINDOWS" == "true" ]; then
                 echo "should_build=true" >> "$GITHUB_OUTPUT"
-                echo "Compilando Windows porque build.bat foi modificado"
+                echo "Compilando Windows porque build.bat ou run.ps1 foi modificado"
               else
                 echo "should_build=false" >> "$GITHUB_OUTPUT"
-                echo "Pulando Windows - build.bat não foi modificado"
+                echo "Pulando Windows"
               fi
               ;;
             linux)
               if [ "$BUILD_LINUX" == "true" ]; then
                 echo "should_build=true" >> "$GITHUB_OUTPUT"
-                echo "Compilando Linux porque build.sh foi modificado"
+                echo "Compilando Linux porque build.sh ou run.sh foi modificado"
               else
                 echo "should_build=false" >> "$GITHUB_OUTPUT"
-                echo "Pulando Linux - build.sh não foi modificado"
+                echo "Pulando Linux"
               fi
               ;;
             macos)
@@ -160,7 +181,7 @@ jobs:
                 echo "Compilando macOS porque build-mac.sh foi modificado"
               else
                 echo "should_build=false" >> "$GITHUB_OUTPUT"
-                echo "Pulando macOS - build-mac.sh não foi modificado"
+                echo "Pulando macOS"
               fi
               ;;
           esac
@@ -267,7 +288,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/develop')
+      github.ref == 'refs/heads/develop') && (needs.build.result == 'success' ||
+      needs.build.result == 'skipped')
 
     steps:
       - name: Download all artifacts
