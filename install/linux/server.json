@@ -1,0 +1,46 @@
+{
+  "name": "Server",
+  "description": "Server setup packages for Linux.",
+  "programs": [
+    {
+      "name": "SSH Server",
+      "id": "openssh-server"
+    },
+    {
+      "name": "Vim (Editor)",
+      "id": "vim"
+    },
+    {
+      "name": "Curl & Wget",
+      "id": "curl wget"
+    },
+    {
+      "name": "HTOP (Monitorização)",
+      "id": "htop"
+    },
+    {
+      "name": "Net-Tools (Rede)",
+      "id": "net-tools"
+    },
+    {
+      "name": "Git",
+      "id": "git"
+    },
+    {
+      "name": "Nginx",
+      "id": "nginx"
+    },
+    {
+      "name": "Docker",
+      "id": "docker.io / docker"
+    },
+    {
+      "name": "UFW Firewall",
+      "id": "ufw"
+    },
+    {
+      "name": "Firewalld",
+      "id": "firewalld"
+    }
+  ]
+}

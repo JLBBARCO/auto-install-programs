@@ -1,0 +1,22 @@
+{
+  "name": "Drivers",
+  "description": "Driver packages and GPU utilities for Linux.",
+  "programs": [
+    {
+      "name": "NVIDIA Drivers",
+      "id": "ubuntu-drivers autoinstall | nvidia-driver-535 | akmod-nvidia | nvidia nvidia-utils"
+    },
+    {
+      "name": "AMD Drivers",
+      "id": "mesa-vulkan-drivers xserver-xorg-video-amdgpu | mesa-dri-drivers | mesa lib32-mesa xf86-video-amdgpu"
+    },
+    {
+      "name": "Intel Drivers",
+      "id": "intel-media-va-driver-non-free | intel-media-driver"
+    },
+    {
+      "name": "NVTop",
+      "id": "io.github.sylveon.Gvnvtop"
+    }
+  ]
+}

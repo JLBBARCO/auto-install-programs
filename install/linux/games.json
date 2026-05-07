@@ -1,0 +1,14 @@
+{
+  "name": "Games",
+  "description": "Aplicativos populares para gamers no Linux com foco em compatibilidade entre distros.",
+  "programs": [
+    {
+      "name": "Steam",
+      "id": "steam"
+    },
+    {
+      "name": "Discord",
+      "id": "discord"
+    }
+  ]
+}

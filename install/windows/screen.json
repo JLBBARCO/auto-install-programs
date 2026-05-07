@@ -1,0 +1,18 @@
+{
+  "name": "Screen",
+  "description": "Screen sharing and remote display tools for Windows.",
+  "programs": [
+    {
+      "name": "Spacedesk Client",
+      "id": "Datronicsoft.SpacedeskDriver.Client"
+    },
+    {
+      "name": "Spacedesk Server",
+      "id": "Datronicsoft.SpacedeskDriver.Server"
+    },
+    {
+      "name": "AnyDesk",
+      "id": "AnyDesk.AnyDesk"
+    }
+  ]
+}

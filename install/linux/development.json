@@ -1,0 +1,62 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for Linux.",
+  "programs": [
+    {
+      "name": "Visual Studio Code",
+      "id": "code"
+    },
+    {
+      "name": "Git",
+      "id": "git"
+    },
+    {
+      "name": "Python 3",
+      "id": "python3"
+    },
+    {
+      "name": "Node.js",
+      "id": "nodejs"
+    },
+    {
+      "name": "Docker",
+      "id": "docker.io"
+    },
+    {
+      "name": "Gimp",
+      "id": "gimp"
+    },
+    {
+      "name": "Blender",
+      "id": "blender"
+    },
+    {
+      "name": "VirtualBox",
+      "id": "virtualbox"
+    },
+    {
+      "name": "Figma",
+      "id": "figma"
+    },
+    {
+      "name": "Microsoft Teams",
+      "id": "teams"
+    },
+    {
+      "name": "MySQL Workbench",
+      "id": "mysql-workbench"
+    },
+    {
+      "name": "GitHub Desktop",
+      "id": "github-desktop"
+    },
+    {
+      "name": "XAMPP",
+      "id": "xampp"
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "id": "powershell"
+    }
+  ]
+}
