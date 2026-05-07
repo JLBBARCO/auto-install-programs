@@ -21,12 +21,9 @@ except ImportError:
     except Exception:
         psutil = None
 
-# PyInstaller packages data files into a temporary folder during execution.
-# Use this helper to get the absolute path to bundled resources whether the
-# application is running from source or from a PyInstaller-built executable.
-
-OFFICE_SETUP_REPO_PATH = "install/windows/office/setup.exe"
-OFFICE_SETTINGS_REPO_PATH = "install/windows/office/settings.xml"
+# Paths for Office installation files (fetched from GitHub RAW)
+OFFICE_SETUP_REPO_PATH = "system/windows/install/office/setup.exe"
+OFFICE_SETTINGS_REPO_PATH = "system/windows/install/office/settings.xml"
 
 WINDOWS_ADMIN_REQUIRED_IDS = {
     "adobe.acrobat.reader.64-bit",
@@ -508,11 +505,11 @@ def customization(selected_program_ids=None):
     log.log('Starting startup management flow', level="INFO")
 
     try:
-        whitelist_path = ensure_repo_file('install/windows/white_list.txt')
+        whitelist_path = ensure_repo_file('system/windows/install/white_list.txt')
         log.log('Startup whitelist downloaded from repository.', level="INFO")
     except Exception as error:
-        whitelist_path = _resource_path('install/windows/white_list.txt')
-        log.log(f'Failed to download startup whitelist from repository; using local fallback. Error: {error}', level="WARNING")
+        log.log(f'Failed to download startup whitelist from repository. Error: {error}', level="ERROR")
+        return execution_summary
 
     disableStartupMessage = custom.disable_startup_programs(whitelist_path)
     log.log(f'Disable startup: {disableStartupMessage}', level="INFO")

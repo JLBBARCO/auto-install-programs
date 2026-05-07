@@ -35,7 +35,15 @@ function Resolve-ExePath {
 
 function Resolve-LocalBuildPath {
     # Try to find the local build from the project directory
-    $scriptDir = Split-Path -Parent $PSCommandPath
+    # When script is executed via iex, $PSCommandPath may be null; use $MyInvocation as fallback
+    $scriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
+    
+    if (-not $scriptPath) {
+        # Script location unknown (likely executed via iex from web), skip local build check
+        return $null
+    }
+    
+    $scriptDir = Split-Path -Parent $scriptPath
     $buildDir = Join-Path $scriptDir "build"
     
     if (Test-Path $buildDir) {
@@ -100,12 +108,15 @@ if (-not $exePath) {
         Write-Host "[programs-manager] Tentando compilar localmente..." -ForegroundColor Yellow
         
         # Try to compile locally as last resort
-        $scriptDir = Split-Path -Parent $PSCommandPath
-        $buildScript = Join-Path $scriptDir "build.bat"
-        if (Test-Path $buildScript) {
-            Write-Host "[programs-manager] Executando build.bat..."
-            & $buildScript
-            $exePath = Resolve-LocalBuildPath
+        $scriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
+        if ($scriptPath) {
+            $scriptDir = Split-Path -Parent $scriptPath
+            $buildScript = Join-Path $scriptDir "build.bat"
+            if (Test-Path $buildScript) {
+                Write-Host "[programs-manager] Executando build.bat..."
+                & $buildScript
+                $exePath = Resolve-LocalBuildPath
+            }
         }
     }
 }
