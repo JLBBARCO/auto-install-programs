@@ -1,14 +1,8 @@
 $owner = "JLBBARCO"
 $repo = "programs-manager"
-# Branch of this script file. Set via AIP_BRANCH when you need to override the current copy.
-$ScriptBranch = $env:AIP_BRANCH
-if (-not $ScriptBranch) {
-    $ScriptBranch = "develop"
-}
-
 # Use the current user's profile directory (works on Windows reliably).
 $installRoot = Join-Path $env:USERPROFILE ".auto-install-programs"
-$expectedExePath = Join-Path $installRoot "Auto Install Programs\Auto Install Programs.exe"
+$expectedExePath = Join-Path $installRoot "Programs Manager\Programs Manager.exe"
 
 Write-Host "[programs-manager] Script em execução: $PSCommandPath"
 
@@ -77,20 +71,9 @@ if (-not $exePath) {
     Write-Host "[programs-manager] Tentando baixar versão compilada para Windows..."
 
     try {
-        if ($ScriptBranch -eq 'develop') {
-            # Prefer the latest prerelease for develop scripts
-            $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases" -UseBasicParsing
-            $pr = $releases | Where-Object { $_.prerelease -eq $true } | Select-Object -First 1
-            if ($pr) {
-                $asset = $pr.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
-            }
-        }
-
-        if (-not $asset) {
-            # Fallback to latest stable release
-            $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
-            $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
-        }
+        # Always use the latest stable release for direct-run downloads.
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
+        $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
 
         if (-not $asset) {
             throw "Asset 'Auto-Install-Programs-windows.zip' não encontrado no release."

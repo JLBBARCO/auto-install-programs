@@ -108,4 +108,7 @@ Github Actions:
 
 
 Github RAW:
-- Os arquivos "./run.ps1" e "./run.sh" serão utilizados para baixar e rodar o sistema diretamente do terminal, tanto Windows quanto Linux quanto MacOS, baixando o executável referente ao sistema operacional diretamente da Last Release;
+- Os arquivos "./run.ps1" e "./run.sh" serão utilizados para baixar e rodar o sistema diretamente do terminal, tanto Windows quanto Linux quanto MacOS, baixando o compilado referente ao sistema operacional diretamente da Last Release. Os comandos utilizados serão:
+    "irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex" para Windows;
+    "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para Linux
+    "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para MacOS

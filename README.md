@@ -37,7 +37,7 @@ Linux:
 curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
 ```
 
-macOS:
+MacOS:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
