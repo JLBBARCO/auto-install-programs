@@ -68,13 +68,27 @@ python3 -m pip install pyinstaller customtkinter psutil --break-system-packages 
 echo "✓ Dependencies installed"
 echo ""
 echo "Starting build with PyInstaller..."
-python3 -m PyInstaller --noconfirm --onedir --windowed \
-    --name "Programs Manager" \
-    --add-data "src:src" \
-    --add-data "install:install" \
-    --collect-all customtkinter \
-    --collect-all psutil \
-    "main.py"
+
+# Prepare PyInstaller command with conditional install directory
+PYINSTALLER_CMD="python3 -m PyInstaller --noconfirm --onedir --windowed \\
+    --name \"Programs Manager\" \\
+    --add-data \"src:src\""
+
+if [ -d "install" ]; then
+    echo "Adding install directory to bundle..."
+    PYINSTALLER_CMD="$PYINSTALLER_CMD \\
+    --add-data \"install:install\""
+else
+    echo "WARNING: install directory not found. App will fetch resources from GitHub."
+fi
+
+# Complete the command
+PYINSTALLER_CMD="$PYINSTALLER_CMD \\
+    --collect-all customtkinter \\
+    --collect-all psutil \\
+    \"main.py\""
+
+eval "$PYINSTALLER_CMD"
 
 echo ""
 if [ -d "dist/Programs Manager" ]; then
