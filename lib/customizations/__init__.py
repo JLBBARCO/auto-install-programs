@@ -3,6 +3,8 @@ import re
 import shutil
 import sys
 import ctypes
+import urllib.request
+import tempfile
 from pathlib import Path
 import winreg
 try:
@@ -11,19 +13,28 @@ except ModuleNotFoundError:
     from lib import log
 
 
+GITHUB_REPO_RAW_URL = "https://raw.githubusercontent.com/JLBBARCO/programs-manager/main"
+
+
+def _fetch_github_file(relative_path: str, timeout: int = 30) -> bytes:
+    """Fetch a file from GitHub RAW and return its bytes."""
+    url = f"{GITHUB_REPO_RAW_URL}/{relative_path}"
+    with urllib.request.urlopen(url, timeout=timeout) as response:
+        return response.read()
+
+
 def _resource_path(relative_path: str) -> str:
-    """Return absolute path for data files, honoring PyInstaller bundles."""
+    """Return absolute path for WRITABLE user data (logs, cache, etc).
+    
+    NOT for bundled application resources - those must be fetched from GitHub.
+    """
     if os.path.isabs(relative_path):
         return relative_path
 
     if getattr(sys, "frozen", False):
-        base = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+        base = os.path.dirname(sys.executable)
     else:
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        if os.path.exists(os.path.join(project_root, relative_path)):
-            base = project_root
-        else:
-            base = os.getcwd()
+        base = os.getcwd()
     return os.path.join(base, relative_path)
 
 
@@ -100,16 +111,13 @@ VISION_CURSOR_REGISTRY_VALUES = {
 }
 
 
-def _vision_cursor_source_path() -> Path:
-    return Path(_resource_path('install/windows/vision-cursor-black'))
-
-
 def _vision_cursor_install_path() -> Path:
     base_dir = Path(os.environ.get('LOCALAPPDATA', os.path.expanduser('~')))
     return base_dir / 'Programs Manager' / 'Vision Cursor Black'
 
 
 def _apply_windows_cursor_scheme(target_directory: Path):
+    """Apply the Vision Cursor Black scheme to Windows registry."""
     cursor_values = {key: str(target_directory / file_name) for key, file_name in VISION_CURSOR_REGISTRY_VALUES.items()}
     scheme_text = ','.join(str(target_directory / file_name) for file_name in VISION_CURSOR_REGISTRY_VALUES.values())
 
@@ -127,17 +135,19 @@ def _apply_windows_cursor_scheme(target_directory: Path):
         pass
 
 
-def _copy_vision_cursor_files(destination_directory: Path):
-    source_directory = _vision_cursor_source_path()
-    if not source_directory.exists():
-        raise FileNotFoundError(f'Vision Cursor source not found: {source_directory}')
-
+def _download_vision_cursor_files(destination_directory: Path):
+    """Download Vision Cursor files from GitHub RAW."""
     destination_directory.mkdir(parents=True, exist_ok=True)
+    
+    base_cursor_path = "system/windows/install/vision-cursor-black"
+    
     for file_name in set(VISION_CURSOR_FILES.values()):
-        source_file = source_directory / file_name
-        if not source_file.exists():
-            raise FileNotFoundError(f'Missing cursor asset: {source_file}')
-        shutil.copy2(source_file, destination_directory / file_name)
+        try:
+            file_data = _fetch_github_file(f"{base_cursor_path}/{file_name}")
+            dest_file = destination_directory / file_name
+            dest_file.write_bytes(file_data)
+        except Exception as error:
+            raise FileNotFoundError(f'Failed to download cursor asset {file_name}: {error}')
 
 
 def apply_vision_cursor_black():
@@ -146,7 +156,7 @@ def apply_vision_cursor_black():
 
     destination_directory = _vision_cursor_install_path()
     try:
-        _copy_vision_cursor_files(destination_directory)
+        _download_vision_cursor_files(destination_directory)
         _apply_windows_cursor_scheme(destination_directory)
         log.log(f'Vision Cursor Black applied from {destination_directory}.', level='INFO')
         return f'Vision Cursor Black applied from {destination_directory}.'
@@ -159,41 +169,38 @@ def _normalize_startup_name(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", value.casefold())
 
 
-def _load_whitelist_terms(whitelist_path: str):
-    resolved = _resource_path(whitelist_path)
-    if not os.path.exists(resolved):
-        raise FileNotFoundError(f"Whitelist not found: {resolved}")
-
+def _load_whitelist_terms(whitelist_content: str):
+    """Parse whitelist content and return set of normalized terms."""
     whitelist = set()
-    with open(resolved, 'r', encoding='utf-8') as whitelist_file:
-        for raw_line in whitelist_file:
-            line = raw_line.strip()
-            if not line or line.startswith('#'):
-                continue
+    for raw_line in whitelist_content.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#'):
+            continue
 
-            normalized = _normalize_startup_name(line)
-            if not normalized:
-                continue
+        normalized = _normalize_startup_name(line)
+        if not normalized:
+            continue
 
-            whitelist.add(normalized)
-            whitelist.update(LEGACY_WHITELIST_TERMS.get(normalized, set()))
+        whitelist.add(normalized)
+        whitelist.update(LEGACY_WHITELIST_TERMS.get(normalized, set()))
 
-    return whitelist, resolved
+    return whitelist
 
 
 def _is_whitelisted(entry_name: str, whitelist_terms) -> bool:
     return _normalize_startup_name(entry_name) in whitelist_terms
 
 
-def disable_startup_programs(whitelist_path="install/windows/white_list.txt"):
-    """Disable startup entries that are not present in the local whitelist."""
+def disable_startup_programs():
+    """Disable startup entries that are not present in the GitHub whitelist."""
     try:
-        whitelist_terms, resolved = _load_whitelist_terms(whitelist_path)
+        whitelist_content = _fetch_github_file('system/windows/install/white_list.txt').decode('utf-8')
+        whitelist_terms = _load_whitelist_terms(whitelist_content)
     except Exception as error:
-        return f"Startup disable aborted. {error}"
+        return f"Startup disable aborted. Failed to load whitelist from GitHub: {error}"
 
     if not whitelist_terms:
-        return f"Startup disable aborted. Whitelist is empty: {resolved}"
+        return "Startup disable aborted. Whitelist is empty."
 
     disabled_count = 0
     preserved_count = 0
@@ -230,7 +237,7 @@ def disable_startup_programs(whitelist_path="install/windows/white_list.txt"):
 
     return (
         f"Scan complete. {disabled_count} startup entries were disabled and "
-        f"{preserved_count} whitelist entries were preserved from {resolved}."
+        f"{preserved_count} whitelist entries were preserved."
     )
 
 
@@ -255,36 +262,39 @@ def save_startup_keys(output_path="programs.log"):
         return f"Error saving keys: {error}"
 
 
-def enable_startup_whitelist(whitelist_path="install/windows/white_list.txt"):
+def enable_startup_whitelist():
+    """Re-enable whitelisted startup entries from GitHub."""
     try:
-        whitelist_terms, resolved = _load_whitelist_terms(whitelist_path)
-        if not whitelist_terms:
-            return f"Whitelist is empty; nothing to re-enable: {resolved}"
-
-        activated_count = 0
-        enabled_value = b'\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-
-        for label, (root, path) in REG_PATHS.items():
-            try:
-                with winreg.OpenKey(root, path, 0, winreg.KEY_READ) as run_key:
-                    app_root = winreg.HKEY_CURRENT_USER if "HKCU" in label else winreg.HKEY_LOCAL_MACHINE
-                    app_path = APPROVED_PATHS[label]
-
-                    with winreg.CreateKey(app_root, app_path) as approved_key:
-                        index = 0
-                        while True:
-                            try:
-                                name, _, _ = winreg.EnumValue(run_key, index)
-                                if _is_whitelisted(name, whitelist_terms):
-                                    winreg.SetValueEx(approved_key, name, 0, winreg.REG_BINARY, enabled_value)
-                                    log.log(f'Re-enabled from whitelist: {name}', level="INFO")
-                                    activated_count += 1
-                                index += 1
-                            except OSError:
-                                break
-            except Exception:
-                continue
-
-        return f"Success: {activated_count} startup entries re-enabled from {resolved}."
+        whitelist_content = _fetch_github_file('system/windows/install/white_list.txt').decode('utf-8')
+        whitelist_terms = _load_whitelist_terms(whitelist_content)
     except Exception as error:
-        return f"Error in whitelist: {error}"
+        return f"Whitelist re-enable failed. Error: {error}"
+
+    if not whitelist_terms:
+        return "Whitelist is empty; nothing to re-enable."
+
+    activated_count = 0
+    enabled_value = b'\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+
+    for label, (root, path) in REG_PATHS.items():
+        try:
+            with winreg.OpenKey(root, path, 0, winreg.KEY_READ) as run_key:
+                app_root = winreg.HKEY_CURRENT_USER if "HKCU" in label else winreg.HKEY_LOCAL_MACHINE
+                app_path = APPROVED_PATHS[label]
+
+                with winreg.CreateKey(app_root, app_path) as approved_key:
+                    index = 0
+                    while True:
+                        try:
+                            name, _, _ = winreg.EnumValue(run_key, index)
+                            if _is_whitelisted(name, whitelist_terms):
+                                winreg.SetValueEx(approved_key, name, 0, winreg.REG_BINARY, enabled_value)
+                                log.log(f'Re-enabled from whitelist: {name}', level="INFO")
+                                activated_count += 1
+                            index += 1
+                        except OSError:
+                            break
+        except Exception:
+            continue
+
+    return f"Success: {activated_count} startup entries re-enabled from whitelist."

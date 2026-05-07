@@ -9,7 +9,7 @@ except ModuleNotFoundError:
     from lib import log, system
 
 GITHUB_REPOSITORY_BASE_URL = "https://raw.githubusercontent.com/JLBBARCO/programs-manager/main"
-GITHUB_INSTALL_BASE_URL = f"{GITHUB_REPOSITORY_BASE_URL}/install"
+GITHUB_SYSTEM_BASE_URL = f"{GITHUB_REPOSITORY_BASE_URL}/system"
 
 
 def _user_data_dir() -> str:
@@ -200,7 +200,7 @@ def _read_local_json(installer_path: str):
 
 
 def _fetch_remote_json(system_name: str, file_name: str):
-    payload = fetch_repo_text(f"install/{system_name.lower()}/{file_name}.json", timeout=12)
+    payload = fetch_repo_text(f"system/{system_name.lower()}/install/{file_name}.json", timeout=12)
     installer_data = json.loads(payload) if payload.strip() else {}
     return _normalize_json_payload(installer_data)
 

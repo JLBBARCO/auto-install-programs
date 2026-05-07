@@ -22,7 +22,7 @@ import os
 
 # Allow overriding branch via environment variable (e.g. AIP_BRANCH=develop)
 REPO_BRANCH = os.environ.get('AIP_BRANCH', 'main')
-INSTALL_PREFIX = "install/"
+SYSTEM_PREFIX = "system/"
 
 RAW_BASE_URL = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{REPO_BRANCH}"
 TREE_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/git/trees/{REPO_BRANCH}?recursive=1"
@@ -146,7 +146,7 @@ class More(ctk.CTkToplevel):
 		system_name = system.nameSO().lower()
 		if category_key.lower().endswith('.json') or '/' in category_key:
 			return category_key
-		return f"{INSTALL_PREFIX}{system_name}/{category_key}.json"
+		return f"{SYSTEM_PREFIX}{system_name}/install/{category_key}.json"
 
 	def _is_hidden_repo_path(self, repo_path: str) -> bool:
 		return repo_path.rsplit('/', 1)[-1].lower() == 'drivers.json'
@@ -312,10 +312,8 @@ class More(ctk.CTkToplevel):
 		self.loaded_paths.add(repo_path)
 
 	def _category_key_from_repo_path(self, repo_path: str) -> str:
-		if repo_path.startswith(INSTALL_PREFIX):
-			filename = repo_path[len(INSTALL_PREFIX):]
-		else:
-			filename = repo_path.rsplit('/', 1)[-1]
+		# Extract filename from paths like system/{so}/install/{filename}.json or custom/{filename}.py
+		filename = repo_path.rsplit('/', 1)[-1]
 		return filename.rsplit('.', 1)[0]
 
 	def _parse_winget_rows(self, output: str) -> list[dict]:
