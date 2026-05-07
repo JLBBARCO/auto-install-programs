@@ -363,6 +363,14 @@ def install_program(program, selected_program_ids=None):
     data = read_json(program)
     programs = data.get('programs', []) if data else []
 
+    try:
+        selected_summary = (
+            f"None(all)" if selected_program_ids is None else f"{len(selected_program_ids)}"
+        )
+    except Exception:
+        selected_summary = 'unknown'
+    log.log(f"install_program called for '{program}' with {len(programs)} program(s); selected={selected_summary}", level="INFO")
+
     # None means "execute all entries in this category" (legacy behavior).
     selected_id_set = None
     selected_function_set = None

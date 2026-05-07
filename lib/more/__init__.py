@@ -177,6 +177,7 @@ class More(ctk.CTkToplevel):
 		self.run_button.configure(state='normal')
 
 		for repo_path, category_key, display_name, source in file_entries:
+			log.log(f"Adding tab entry: {repo_path} (source={source})", level="INFO")
 			unique_display_name = self._unique_display_name(display_name)
 			self.repo_path_by_category_key[category_key] = repo_path
 			self.tab_label_by_category_key[category_key] = unique_display_name
@@ -288,7 +289,9 @@ class More(ctk.CTkToplevel):
 		if not programs:
 			empty_label = ctk.CTkLabel(container, text='No program names found for this file.', anchor='w')
 			empty_label.grid(row=0, column=0, padx=8, pady=8, sticky='w')
+			log.log(f"No programs for {repo_path}", level="WARNING")
 		else:
+			log.log(f"Rendering {len(programs)} program(s) for {repo_path}", level="INFO")
 			for index, program in enumerate(programs):
 				program_name = program.get('name', '').strip()
 				program_id = program.get('id', '').strip()
