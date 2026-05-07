@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 owner="JLBBARCO"
 repo="programs-manager"
-# Branch of this script file. Set to 'main' in the main branch copy, 'develop' in develop.
-ScriptBranch="develop"
+# Branch of this script file. Set via AIP_BRANCH when you need to override the current copy.
+ScriptBranch="${AIP_BRANCH:-develop}"
 
 OS_TYPE=$(uname -s)
 INSTALL_ROOT="${HOME}/.auto-install-programs"

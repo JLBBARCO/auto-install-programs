@@ -328,10 +328,10 @@ jobs:
           else
             TAG="auto-v$(date -u +'%Y.%m.%d')-${GITHUB_RUN_NUMBER}"
             if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-              NAME="Pre-release ${TAG}"
+              NAME="Pre-release"
               PRE="true"
             else
-              NAME="Auto Release ${TAG}"
+              NAME="Last Release"
               PRE="false"
             fi
           fi

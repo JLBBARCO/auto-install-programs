@@ -19,6 +19,10 @@
     {
       "name": "EaseUS Disk Copy",
       "id": "EaseUS.DiskCopy"
+    },
+    {
+      "name": "AIDA64",
+      "id": "FinalWire.AIDA64.Extreme"
     }
   ]
 }
