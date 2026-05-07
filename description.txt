@@ -112,4 +112,4 @@ Github RAW:
     "irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex" para Windows;
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para Linux
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para MacOS
-Ao rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 o sistema deverá obter o compilado da Latest Release. Mas se o usuário rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/develop/run.ps1 o sistema deverá rodar o Pre-release
+Ao rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 no terminal, o sistema deverá obter o compilado da Latest Release. Mas se o usuário rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/develop/run.ps1 o sistema deverá rodar o Pre-release

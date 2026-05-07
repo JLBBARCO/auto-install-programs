@@ -2,6 +2,11 @@
 owner="JLBBARCO"
 repo="programs-manager"
 
+# When this script is fetched from the 'develop' branch it should use the
+# latest prerelease artifact; when fetched from 'main' it should use the
+# latest stable release. Set here according to file branch.
+SCRIPT_BRANCH="develop"
+
 OS_TYPE=$(uname -s)
 INSTALL_ROOT="${HOME}/.auto-install-programs"
 mkdir -p "$INSTALL_ROOT"
@@ -18,7 +23,12 @@ fi
 if [ ! -f "$INSTALL_ROOT/$BINARY_NAME" ]; then
     echo "[programs-manager] Baixando binário nativo para $OS_TYPE..."
 
-    URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases/latest" | grep "browser_download_url" | grep "$ASSET_PATTERN" | cut -d '"' -f 4)
+    if [ "$SCRIPT_BRANCH" = "develop" ]; then
+        # Find most recent prerelease
+        URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases" | grep -A5 "\"prerelease\": true" | grep "browser_download_url" | grep "$ASSET_PATTERN" | head -n1 | cut -d '"' -f 4)
+    else
+        URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases/latest" | grep "browser_download_url" | grep "$ASSET_PATTERN" | cut -d '"' -f 4)
+    fi
 
     if [ -z "$URL" ]; then
         echo "[programs-manager] Erro: não foi possível localizar o asset para $ASSET_PATTERN"
