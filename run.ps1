@@ -4,10 +4,10 @@ $repo = "programs-manager"
 
 # Set this script's branch. When this file is fetched from:
 #  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1  -> set to 'main'
-#  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/develop/run.ps1 -> set to 'develop'
+#  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/beta/run.ps1 -> set to 'beta'
 # The branch controls whether the script downloads the latest stable release (main)
-# or the most-recent prerelease (develop).
-$ScriptBranch = 'develop'
+# or the most-recent prerelease (beta).
+$ScriptBranch = 'beta'
 # Use the current user's profile directory (works on Windows reliably).
 $installRoot = Join-Path $env:USERPROFILE ".auto-install-programs"
 $expectedExePath = Join-Path $installRoot "Programs Manager\Programs Manager.exe"
@@ -80,7 +80,7 @@ if (-not $exePath) {
 
     try {
         # Decide which release to fetch based on the script branch.
-        if ($ScriptBranch -eq 'develop') {
+        if ($ScriptBranch -eq 'beta') {
             # Find the most recent prerelease
             $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases" -UseBasicParsing
             $prerelease = $releases | Where-Object { $_.prerelease } | Sort-Object -Property published_at -Descending | Select-Object -First 1

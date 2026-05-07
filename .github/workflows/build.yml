@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - main
-      - develop
+      - beta
     paths:
       - "**/*.py"
       - "install/**"
@@ -27,7 +27,7 @@ on:
   pull_request:
     branches:
       - main
-      - develop
+      - beta
     paths:
       - "**/*.py"
       - "install/**"
@@ -288,7 +288,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/develop') && (needs.build.result == 'success' ||
+      github.ref == 'refs/heads/beta') && (needs.build.result == 'success' ||
       needs.build.result == 'skipped')
 
     steps:
@@ -327,7 +327,7 @@ jobs:
             PRE="false"
           else
             TAG="auto-v$(date -u +'%Y.%m.%d')-${GITHUB_RUN_NUMBER}"
-            if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            if [[ "${GITHUB_REF}" == "refs/heads/beta" ]]; then
               NAME="Pre-release"
               PRE="true"
             else

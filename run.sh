@@ -2,10 +2,10 @@
 owner="JLBBARCO"
 repo="programs-manager"
 
-# When this script is fetched from the 'develop' branch it should use the
+# When this script is fetched from the 'beta' branch it should use the
 # latest prerelease artifact; when fetched from 'main' it should use the
 # latest stable release. Set here according to file branch.
-SCRIPT_BRANCH="develop"
+SCRIPT_BRANCH="beta"
 
 OS_TYPE=$(uname -s)
 INSTALL_ROOT="${HOME}/.auto-install-programs"
@@ -23,7 +23,7 @@ fi
 if [ ! -f "$INSTALL_ROOT/$BINARY_NAME" ]; then
     echo "[programs-manager] Baixando binário nativo para $OS_TYPE..."
 
-    if [ "$SCRIPT_BRANCH" = "develop" ]; then
+    if [ "$SCRIPT_BRANCH" = "beta" ]; then
         # Find most recent prerelease
         URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases" | grep -A5 "\"prerelease\": true" | grep "browser_download_url" | grep "$ASSET_PATTERN" | head -n1 | cut -d '"' -f 4)
     else

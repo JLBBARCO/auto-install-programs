@@ -96,7 +96,7 @@ BACK-END:
 Github Actions:
 - O Github Actions deverá compilar o programa em cada sistema operacional. O Actions deverá utilizar os arquivos "build.bat", build.sh" e "build-mac.sh" para compilar para cada sistema operacional. Essa automação deverá armazenar a compilação em um arquivo de compactação, ex.: zip, e armazenará em um Github Release novo, mas seguindo algumas regras:
     - Se a branch do commit for a main, o Actions deverá salvar os compilados como Last Release;
-    - Já se a branch for a develop, o Actions deverá salvar como Pre-release;
+    - Já se a branch for a beta, o Actions deverá salvar como Pre-release;
 - A imagem src/assets/icon/icon.ico será utilizada como ícone do programa;
 - A pasta system não precisa ser incluída na compilação pois todos os arquivos contidos nela serão obtidos via Github RAW;
 - A automação também deverá gerar um print de cada sistema operacional utilizando o bot do Github. Esses prints serão em formato WEBP, e eles substituirão os arquivos dos caminhos:
@@ -112,4 +112,4 @@ Github RAW:
     "irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex" para Windows;
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para Linux
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para MacOS
-Ao rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 no terminal, o sistema deverá obter o compilado da Latest Release. Mas se o usuário rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/develop/run.ps1 o sistema deverá rodar o Pre-release
+Ao rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 no terminal, o sistema deverá obter o compilado da Latest Release. Mas se o usuário rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/beta/run.ps1 o sistema deverá rodar o Pre-release
