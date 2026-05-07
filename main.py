@@ -112,12 +112,12 @@ class App(ctk.CTk):  # type: ignore
         settings_frame = ctk.CTkFrame(self)
         settings_frame.grid(pady=20, padx=10, row=5, column=0, sticky="e")
 
-        self.uncheckAllOptions = ctk.CTkButton(
+        self.toggleAllOptions = ctk.CTkButton(
             settings_frame,
-            text="Uncheck all options",
-            command=self.uncheck_all_options,
+            text="Toggle all options",
+            command=self.toggle_all_options,
         )
-        self.uncheckAllOptions.grid(padx=5, pady=20, row=0, column=0)
+        self.toggleAllOptions.grid(padx=5, pady=20, row=0, column=0)
 
         button_frame = ctk.CTkFrame(self)
         button_frame.grid(pady=20, padx=10, row=5, column=1, sticky="e")
@@ -152,9 +152,30 @@ class App(ctk.CTk):  # type: ignore
             return True
         return any(system_name in self.system_name for system_name in config.supported_systems)
 
+    def _all_visible_categories_selected(self) -> bool:
+        visible_configs = [config for config in CATEGORY_CONFIGS if self._should_display_category(config)]
+        if not visible_configs:
+            return False
+
+        for config in visible_configs:
+            category_var = self.category_vars.get(config.key)
+            if category_var is None or not category_var.get():
+                return False
+        return True
+
+    def toggle_all_options(self):
+        should_select_all = not self._all_visible_categories_selected()
+
+        for config in CATEGORY_CONFIGS:
+            if not self._should_display_category(config):
+                continue
+
+            category_var = self.category_vars.get(config.key)
+            if category_var is not None:
+                category_var.set(should_select_all)
+
     def uncheck_all_options(self):
-        for checkbox in self.category_checkboxes.values():
-            checkbox.deselect()
+        self.toggle_all_options()
 
     def _build_program_tab(self, config: CategoryConfig):
         if self.program_tabview is None:
@@ -295,38 +316,41 @@ class App(ctk.CTk):  # type: ignore
 
     def _run_selected_installations(self, selected_programs_by_category=None):
         self._start_log_bridge()
-        user_uninstall_entries = []
-        user_install_entries = []
-        if selected_programs_by_category is not None:
-            user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
-            user_install_entries = selected_programs_by_category.get("user_install", [])
+        try:
+            user_uninstall_entries = []
+            user_install_entries = []
+            if selected_programs_by_category is not None:
+                user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
+                user_install_entries = selected_programs_by_category.get("user_install", [])
 
-            if user_uninstall_entries:
-                uninstall_module.user(user_uninstall_entries)
+                if user_uninstall_entries:
+                    uninstall_module.user(user_uninstall_entries)
 
-        selected_installations = self._selected_installations()
-        if not selected_installations and not selected_programs_by_category:
-            log.log("No selected categories to install.", level="INFO")
-            return
-
-        for config, installer in selected_installations:
-            if single_instance.is_installation_cancelled():
-                log.log("Installation cancelled by newer instance", level="WARNING")
+            selected_installations = self._selected_installations()
+            if not selected_installations and not selected_programs_by_category:
+                log.log("No selected categories to install.", level="INFO")
                 return
 
+            for config, installer in selected_installations:
+                if single_instance.is_installation_cancelled():
+                    log.log("Installation cancelled by newer instance", level="WARNING")
+                    return
+
+                if selected_programs_by_category is None:
+                    selected_programs = self.select_any_program(config.key)
+                else:
+                    selected_programs = selected_programs_by_category.get(config.key, [])
+
+                installer(selected_programs)
+                time.sleep(INSTALLATION_DELAY_SECONDS)
+
             if selected_programs_by_category is None:
-                selected_programs = self.select_any_program(config.key)
-            else:
-                selected_programs = selected_programs_by_category.get(config.key, [])
+                return
 
-            installer(selected_programs)
-            time.sleep(INSTALLATION_DELAY_SECONDS)
-
-        if selected_programs_by_category is None:
-            return
-
-        if user_install_entries:
-            install_module.user(user_install_entries)
+            if user_install_entries:
+                install_module.user(user_install_entries)
+        finally:
+            log.log("End system", level="INFO")
 
     def _start_log_bridge(self):
         if self._log_share_server is None:

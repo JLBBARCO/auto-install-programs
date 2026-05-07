@@ -1,0 +1,109 @@
+PT-BR UTF-8
+
+
+Descrição:
+Sistema de gerenciamento de programas para fácil instalação ou desinstalação numa possível formatação ou configuração de computador ou numa otimização.
+
+
+FRONT-END:
+- Layout Language: EN-US;
+- Primeira tela:
+    - Conterá o título variável do programas, que varia de acordo com o Sistema Operacional;
+    - Container onde aparecerá cada classe de função em forma de checklist
+    - No canto inferior esquerdo terá um botão que ao clicar seleciona ou desmarca todas as opções do container principal;
+    - No canto inferior direito, haverá um botão de "Next", que ao clicar nele o sistema fechará a primeira tela e abrirá a segunda tela, e o sistema transmitirá um array somente com os dados das opções selecionadas;
+- Segunda tela:
+    - Quando for aberta a segunda tela, o sistema irá obter do link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/ os JSONs referentes ao array retornado pela primeira tela, e mostrará esses dados no container principal;
+    - Container principal:
+        - Menu suspenso: cada opção é referente ao array recebido da primeira tela, e ao clicar numa opção específica, o programa mostrará os dados do JSON referente, organizado em ordem alfabética;
+        - Conteúdo: será mostrado um checklist dos dados do JSON referente à opção seleciona no menu suspenso;
+    - No canto inferior esquerdo, haverá um container com dois botões:
+        - Na direita, terá um botão de "Add Program". Quando clicado, ele abre uma tela com as seguintes características:
+            - No topo terá uma barra de pesquisa e um botão de "Search";
+            - Quando o usuário digitar algo na barra e clicar em search, o sistema rodará uma função do backend que lista os programas relacionados encontrados;
+            - No container principal será mostrado os dados desse array, mas em três colunas. A primeira será um botão, que alterna entre "Add" e "Remove" dependendo do click do usuário. Na segunda coluna será mostrado o nome do programa, e na terceira coluna será mostrado o id do programa;
+            - No canto inferior direito terá um botão "Submit" que fechará a tela;
+        - Na esquerda do container, terá outro botão chamado "Remove Programs", que quando clicado fará:
+            - Abrirá uma tela de ideia semelhante a do "Add Program";
+    - No canto inferior direito, haverá um botão de "RUN", que fechará a tela e dará início ao sistema principal em segundo plano;
+
+
+BACK-END:
+- Quando o usuário clicar em "Add Program" na tela secundária, o sistema irá abrir a 3.1ª tela descrita na parte de frontend. O sistema da barra de pesquisa pesquisará no sistema de gerenciador de pacotes, ex.: WinGet no Windows, e o botão que alterna entre "Add" e "Remove" adicionará o nome e id do programa referente à um array que, ao clicado, salvará esses dados num array, e após clicado em "Submit", será salvo em um JSON interno chamado user_install.json. Quando o sistema for rodar somente em segundo plano, ele lerá o user_install.json e executará um sistema que utiliza por ex.: "winget install -id <id-do-programa>" no Windows, para instalar determinado programa;
+- Quando o usuário clicar em "Remove Program" também da tela secundária, essa 3.2ª tela terá um funcionamento muito parecido do sistema do botão "Add Program". A diferença é que enquanto a tela estiver carregando, o sistema lista e mostra todos os programas instalados e salvará o array no arquivo user_uninstall.json, para ser utilizado pelo gerenciador de pacotes, ex.: "winget uninstall -id <id-do-programa>";
+- Quando o usuário clicar em "Run" na última tela, todas as telas serão fechadas e o programa será executado somente em segundo plano. Simultaneamente ao fechamento, ele salvará no arquivo log.log a seguinte mensagem: [dd/mm/aaaa hh:mm:ss] [INFO] Start system . Também abrirá o compartilhamento do arquivo log.log pela porta 8000 para o site https://programs-manager-website.vercel.app e abrirá esse site;
+- Logo após as primeiras execuções, o programa iniciará as tarefas principais na seguinte ordem:
+    - Atualizar o instalador de pacotes, exemplo Windows: Microsoft.AppInstaller;
+    - Se o user_uninstall.json existir, faça a desinstalação dos programas listados neste arquivo;
+    - Se o user_install.json existir, faça a instalação dos programas listados nele;
+    - Instalar ou atualizar se possível os programas listados nos seguintes arquivos JSON:
+        - drivers
+        - essentials
+        - screen
+        - ti_tools
+        - development
+        - server
+        - games
+        - customizations
+        Praticamente todos os arquivos JSON possuem a seguinte estrutura de dados:
+            {
+                "name": "<nome-do-programa>",
+                "id": "<id-do-programa>"
+            }
+        O único que possui dados variados é o customization.json:
+            Ele pode ter tanto essa estrutura:
+                {
+                    "name": "<nome-do-programa>",
+                    "id": "<id-do-programa>"
+                }
+            Quanto essa estrutura:
+                {
+                    "name": "<nome-da-função>",
+                    "function": "<id-da-função>"
+                }
+            Esse objeto chamado function possui um id que ao ser verificado pelo sistema, executará determinada função. Ex.:
+                {
+                    "name": "Dark Mode",
+                    "function": "dark-mode"
+                }
+            Esse array significa que se ele for executado, deverá aplicar o modo escuro no sistema operacional.
+- Ao escrever no log.log, o sistema terá quatro tópicos de mensagens:
+    - [INFO]
+    - [SUCCESS]
+    - [WARNING]
+    - [ERROR]
+    O tópico info será para informar que tal coisa começou ou aconteceu. Exemplos: "Start system", "Find and read https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/windows/install/essentials.json", "End system";
+    Já o tópico success servirá para informar que algo foi bem sucedido. Exemplos: "Port open", "Visual Studio Code installed";
+    O warning por sua vez, servirá para indicar que algo aconteceu parcialmente correto. Ex.: "Find and not read https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/windows/install/essentials.json", "Visual Studio Code updated";
+    O error servirá para algo que deu completamente errado. Ex.: "Not found https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/windows/install/essentials.json", "Visual Studio Code not installed and not updated";
+- O sistema lerá os seguintes arquivos no caminho https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/<sistema operacional>/install/:
+    - customization.json
+    - development.json
+    - drivers.json
+    - essentials.json
+    - games.json
+    - screen.json
+    - server.json
+    - ti_tools.json
+- Ele lerá também o restante dos arquivos no caminho https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/<sistema operacional>/custom/:
+    - vision-cursor-black/
+    - list_startup_programs.py
+    - listar-startup.bat
+    - white_list.txt
+    - WHITELIST_README.md
+
+
+Github Actions:
+- O Github Actions deverá compilar o programa em cada sistema operacional. O Actions deverá utilizar os arquivos "build.bat", build.sh" e "build-mac.sh" para compilar para cada sistema operacional. Essa automação deverá armazenar a compilação em um arquivo de compactação, ex.: zip, e armazenará em um Github Release novo, mas seguindo algumas regras:
+    - Se a branch do commit for a main, o Actions deverá salvar os compilados como Last Release;
+    - Já se a branch for a develop, o Actions deverá salvar como Pre-release;
+- A automação também deverá gerar um print de cada sistema operacional utilizando o bot do Github. Esses prints serão em formato WEBP, e eles substituirão os arquivos dos caminhos:
+    src/assets/img/macos.webp
+    src/assets/img/linux.webp
+    src/assets/img/windows.webp
+- Depois dos prints separados, será montada uma imagem com os três prints lado a lado, e substituirão o arquivo do caminho:
+    src/assets/img/thumbnail.webp
+
+
+Github RAW:
+- Os arquivos "./run.ps1" e "./run.sh" serão utilizados para baixar e rodar o sistema diretamente do terminal, tanto Windows quanto Linux quanto MacOS, baixando o executável referente ao sistema operacional diretamente da Last Release;

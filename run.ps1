@@ -1,7 +1,10 @@
 $owner = "JLBBARCO"
 $repo = "programs-manager"
-# Branch of this script file. Set to 'main' in the main branch copy, 'develop' in develop.
-$ScriptBranch = "develop"
+# Branch of this script file. Set via AIP_BRANCH when you need to override the current copy.
+$ScriptBranch = $env:AIP_BRANCH
+if (-not $ScriptBranch) {
+    $ScriptBranch = "develop"
+}
 
 # Use the current user's profile directory (works on Windows reliably).
 $installRoot = Join-Path $env:USERPROFILE ".auto-install-programs"

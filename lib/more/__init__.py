@@ -7,9 +7,11 @@ import urllib.request
 import customtkinter as ctk
 
 try:
+	from lib import log
 	from lib import json as json_data
 	from lib import screen, system, uninstall
 except ModuleNotFoundError:
+	from lib import log
 	from lib import json as json_data
 	from lib import screen, system, uninstall
 
@@ -431,6 +433,7 @@ class More(ctk.CTkToplevel):
 		self._reload_all_entries()
 
 	def _submit(self):
+		log.log('Start system', level='INFO')
 		selected_programs = self._collect_selected_programs()
 
 		if callable(self.run_callback):

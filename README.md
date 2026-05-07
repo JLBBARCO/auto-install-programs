@@ -242,13 +242,14 @@ Use `install/windows/list_startup_programs.py` to inspect the registry names pre
 
 #### Customization
 
-- Dark Mode
+- Dark Mode (Enable dark mode)
+- Essential Programs Initialization (Disable all programs and re-enable only essential programs on initialization to Windows)
 - Lively Wallpaper
 - Microsoft PowerToys
 - Rainmeter
 - Seelen UI
 - TranslucentTB
-- Vision Cursor
+- Vision Cursor (Alter cursor to Vision Cursor)
 
 #### Development
 

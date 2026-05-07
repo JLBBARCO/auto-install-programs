@@ -1,5 +1,4 @@
 import datetime
-import inspect
 import json
 import os
 import sys
@@ -20,6 +19,7 @@ _lock = threading.Lock()
 _server_lock = threading.Lock()
 _shared_log_server = None
 _shared_log_server_thread = None
+_shared_log_server_port = 8000
 
 
 def _now():
@@ -88,7 +88,7 @@ class _LogShareRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-def start_shared_log_server(host='127.0.0.1', port=0):
+def start_shared_log_server(host='127.0.0.1', port=_shared_log_server_port):
     global _shared_log_server
     global _shared_log_server_thread
 
@@ -96,7 +96,14 @@ def start_shared_log_server(host='127.0.0.1', port=0):
         if _shared_log_server is not None:
             return _shared_log_server
 
-        server = ThreadingHTTPServer((host, port), _LogShareRequestHandler)
+        try:
+            server = ThreadingHTTPServer((host, port), _LogShareRequestHandler)
+        except OSError as error:
+            if port != 0:
+                log(f'Port {port} unavailable for shared log server: {error}', level='WARNING')
+                server = ThreadingHTTPServer((host, 0), _LogShareRequestHandler)
+            else:
+                raise
         server.daemon_threads = True
         server_url = f'http://{server.server_address[0]}:{server.server_address[1]}'
 
@@ -106,6 +113,7 @@ def start_shared_log_server(host='127.0.0.1', port=0):
         server.server_url = server_url  # type: ignore[attr-defined]
         _shared_log_server = server
         _shared_log_server_thread = thread
+        log(f'Shared log server ready at {server_url}', level='SUCCESS')
         return server
 
 
@@ -116,26 +124,10 @@ def get_shared_log_server_url():
 
 
 def log(message, level="INFO"):
-    """Write a timestamped log entry with level, PID, thread name and caller.
-
-    Usage: log('message', level='ERROR')
-
-    Level variables:
-    level='INFO';
-    level='WARRING';
-    level='ERROR';
-    """
-    try:
-        caller = inspect.stack()[1].function
-    except Exception:
-        caller = "<unknown>"
-
     now = _now()
-    pid = os.getpid()
-    thread_name = threading.current_thread().name
 
     with _lock:
-        _log_file.write(f'[{now}] [{level}] [pid:{pid}] [thread:{thread_name}] [caller:{caller}] {message}\n')
+        _log_file.write(f'[{now}] [{level}] {message}\n')
         _log_file.flush()
 
 

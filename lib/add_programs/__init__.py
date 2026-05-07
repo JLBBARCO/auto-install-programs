@@ -1,9 +1,9 @@
-import subprocess
-import re
 try:
-    from lib import system, install, json
+    from lib import json, system
+    from lib.package_manager import search_packages
 except ModuleNotFoundError:
-    from lib import system, install, json
+    from lib import json, system
+    from lib.package_manager import search_packages
 import customtkinter as ctk
 
 title = 'Add Programs'
@@ -27,7 +27,7 @@ class searchPrograms(ctk.CTkToplevel):
         self.label = ctk.CTkLabel(self, text=title)
         self.label.grid(padx=10, pady=10, row=0, columnspan=10)
 
-        self.searchInput = ctk.CTkEntry(self, placeholder_text='Digite o nome do programa para buscar no winget')
+        self.searchInput = ctk.CTkEntry(self, placeholder_text='Enter a program name to search in winget')
         self.searchInput.grid(padx=10, pady=10, row=1, column=0, columnspan=2, sticky='ew')
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -66,66 +66,6 @@ class searchPrograms(ctk.CTkToplevel):
         if keep_headers:
             self._render_headers()
 
-    def _parse_winget_search_output(self, output):
-        results = []
-        seen_ids = set()
-
-        noise_patterns = (
-            'agree',
-            'agreements',
-            'source',
-            'msstore',
-            'no package found',
-            'no installed package found',
-        )
-
-        for line in output.splitlines():
-            raw = line.strip()
-            if not raw:
-                continue
-
-            lowered = raw.lower()
-
-            # Ignore progress bars and transfer/status lines from winget.
-            if re.search(r'\b\d{1,3}%\b', lowered):
-                continue
-            if any(char in raw for char in ('█', '▓', '▒', '▌', '▐', '■', '━', '─', '│')):
-                continue
-            if any(token in lowered for token in noise_patterns):
-                continue
-
-            # Ignore table headers and separators.
-            if raw.lower().startswith('name') and 'id' in raw.lower():
-                continue
-            if set(raw) <= {'-', ' '}:
-                continue
-            if re.fullmatch(r'[-\s]{3,}', raw):
-                continue
-
-            # Winget prints columns separated by 2+ spaces.
-            parts = re.split(r'\s{2,}', raw)
-            if len(parts) < 2:
-                continue
-
-            name = parts[0].strip()
-            program_id = parts[1].strip()
-
-            if not name or not program_id:
-                continue
-            if ' ' in program_id:
-                # IDs from winget should not contain spaces.
-                continue
-            if not re.search(r'[A-Za-z0-9]', program_id):
-                continue
-
-            key = program_id.lower()
-            if key in seen_ids:
-                continue
-            seen_ids.add(key)
-            results.append({'name': name, 'id': program_id})
-
-        return results
-
     def _is_already_added(self, program):
         current_user = json.read_json('user_install') or {}
         current_programs = current_user.get('programs', []) if isinstance(current_user, dict) else []
@@ -144,17 +84,17 @@ class searchPrograms(ctk.CTkToplevel):
 
     def _add_program(self, program):
         if self._is_already_added(program):
-            self.statusLabel.configure(text=f"'{program['name']}' ja esta na lista de User.")
+            self.statusLabel.configure(text=f"'{program['name']}' is already in the user install list.")
             return
 
         self.pending_programs.append({'name': program['name'], 'id': program['id']})
-        self.statusLabel.configure(text=f"Adicionado para salvar: {program['name']} ({program['id']})")
+        self.statusLabel.configure(text=f"Queued for save: {program['name']} ({program['id']})")
         self.search()
 
     def _render_search_results(self, programs):
         self._clear_results()
         if not programs:
-            ctk.CTkLabel(self.containerShow, text='Nenhum resultado encontrado.').grid(row=1, column=1, padx=8, pady=8, sticky='w')
+            ctk.CTkLabel(self.containerShow, text='No results found.').grid(row=1, column=1, padx=8, pady=8, sticky='w')
             return
 
         for index, program in enumerate(programs, start=1):
@@ -174,44 +114,22 @@ class searchPrograms(ctk.CTkToplevel):
     def search(self):
         query = self.searchInput.get().strip()
         if not query:
-            self.statusLabel.configure(text='Digite um nome para buscar.')
+            self.statusLabel.configure(text='Type a name to search.')
             self._clear_results()
             return
 
         system_name = system.nameSO()
         if system_name == "Windows":
             try:
-                process = subprocess.run(
-                    [
-                        'winget',
-                        'search',
-                        '--query',
-                        query,
-                        '--accept-source-agreements',
-                    ],
-                    capture_output=True,
-                    text=True,
-                    encoding='utf-8',
-                    errors='ignore',
-                    shell=False,
-                )
-                combined = (process.stdout or '') + ("\n" + process.stderr if process.stderr else '')
-                results = self._parse_winget_search_output(combined)
+                results = search_packages(query)
                 self._render_search_results(results)
-                self.statusLabel.configure(text=f'{len(results)} resultado(s) para "{query}".')
+                self.statusLabel.configure(text=f'{len(results)} result(s) for "{query}".')
             except Exception as error:
                 self._clear_results()
-                self.statusLabel.configure(text=f'Erro ao buscar no winget: {error}')
-        elif system_name == "Linux":
-            installer = install._resolve_linux_installer()
-            if installer == 'apt':
-                self.statusLabel.configure(text='Busca automatica ainda nao implementada para apt.')
-            elif installer == 'dnf':
-                self.statusLabel.configure(text='Busca automatica ainda nao implementada para dnf.')
-            elif installer == 'pacman':
-                self.statusLabel.configure(text='Busca automatica ainda nao implementada para pacman.')
-        elif system_name == 'MacOS':
-            self.statusLabel.configure(text='Busca automatica ainda nao implementada para MacOS.')
+                self.statusLabel.configure(text=f'Error searching winget: {error}')
+        else:
+            self._clear_results()
+            self.statusLabel.configure(text=f'Search is not available on {system_name}.')
 
     def cancel(self):
         try:
@@ -223,7 +141,7 @@ class searchPrograms(ctk.CTkToplevel):
     def submit(self):
         if self.pending_programs:
             inserted = json.append_programs('user', self.pending_programs)
-            self.statusLabel.configure(text=f'{inserted} programa(s) salvo(s) em user_install.json.')
+            self.statusLabel.configure(text=f'{inserted} program(s) saved to user_install.json.')
         if callable(self.on_submit):
             self.on_submit()
         try:

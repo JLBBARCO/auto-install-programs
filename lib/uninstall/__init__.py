@@ -4,84 +4,15 @@ import shutil
 
 try:
 	from lib import json, log, system
+	from lib.package_manager import list_installed_packages
 except ModuleNotFoundError:
 	from lib import json, log, system
+	from lib.package_manager import list_installed_packages
 
 
 WINDOWS_ADMIN_REQUIRED_IDS = {
 	"adobe.acrobat.reader.64-bit",
 }
-
-
-def _parse_winget_table(output: str) -> list[dict]:
-	items = []
-	seen_ids = set()
-	noise_patterns = (
-		'agree',
-		'agreements',
-		'source',
-		'upgrades available',
-		'no installed package found',
-	)
-
-	for line in output.splitlines():
-		raw = line.strip()
-		if not raw:
-			continue
-		lowered = raw.lower()
-
-		# Ignore progress/status bars and transfer lines from winget output.
-		if any(char in raw for char in ('█', '▓', '▒', '▌', '▐', '■', '━', '─', '│')):
-			continue
-		if any(token in lowered for token in noise_patterns):
-			continue
-
-		if lowered.startswith('name') and 'id' in lowered:
-			continue
-		if set(raw) <= {'-', ' '}:
-			continue
-		if re.search(r'\b\d{1,3}%\b', raw):
-			continue
-
-		parts = re.split(r'\s{2,}', raw)
-		if len(parts) < 2:
-			continue
-
-		name = str(parts[0]).strip()
-		item_id = str(parts[1]).strip()
-		if not name or not item_id:
-			continue
-		if ' ' in item_id:
-			continue
-		if not re.search(r'[A-Za-z0-9]', item_id):
-			continue
-
-		key = item_id.lower()
-		if key in seen_ids:
-			continue
-		seen_ids.add(key)
-		items.append({'name': name, 'id': item_id})
-
-	return sorted(items, key=lambda item: item['name'].lower())
-
-
-def _run_winget_list(source: str) -> list[dict]:
-	process = subprocess.run(
-		[
-			'winget',
-			'list',
-			'--source',
-			source,
-			'--accept-source-agreements',
-		],
-		capture_output=True,
-		text=True,
-		encoding='utf-8',
-		errors='ignore',
-		shell=False,
-	)
-	combined = (process.stdout or '') + ('\n' + process.stderr if process.stderr else '')
-	return _parse_winget_table(combined)
 
 
 def list_uninstallable_programs() -> list[dict]:
@@ -90,20 +21,7 @@ def list_uninstallable_programs() -> list[dict]:
 		return []
 
 	try:
-		# Only show packages managed by winget sources.
-		winget_items = _run_winget_list('winget')
-		msstore_items = _run_winget_list('msstore')
-
-		merged = []
-		seen_ids = set()
-		for item in [*winget_items, *msstore_items]:
-			item_id = str(item.get('id', '')).strip().lower()
-			if not item_id or item_id in seen_ids:
-				continue
-			seen_ids.add(item_id)
-			merged.append(item)
-
-		return sorted(merged, key=lambda item: str(item.get('name', '')).lower())
+		return list_installed_packages()
 	except Exception as error:
 		log.log(f'Failed to list uninstallable programs: {error}', level='ERROR')
 		return []
