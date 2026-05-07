@@ -206,6 +206,56 @@ class TestIntegration:
         # Se chegou aqui sem erro, está funcionando
         assert so_name is not None, "SO não foi detectado"
 
+    def test_run_pipeline_order(self, monkeypatch):
+        """Testa se a ordem do Run segue update -> uninstall -> install -> categorias."""
+        from main import App
+        from types import SimpleNamespace
+        from lib import install as install_module
+        from lib import uninstall as uninstall_module
+        from lib.install import single_instance
+        from lib import log
+
+        events: list[str] = []
+
+        def record(event_name: str):
+            events.append(event_name)
+
+        class DummyApp:
+            def _start_log_bridge(self):
+                record("bridge")
+
+            def _selected_installations(self):
+                def run_category(selected_programs):
+                    record(f"category:{selected_programs[0]['id']}")
+
+                return [
+                    (SimpleNamespace(key="essentials"), run_category),
+                ]
+
+        monkeypatch.setattr(install_module, "update", lambda: record("update"))
+        monkeypatch.setattr(uninstall_module, "user", lambda entries=None: record(f"uninstall:{len(entries or [])}"))
+        monkeypatch.setattr(install_module, "user", lambda entries=None: record(f"install:{len(entries or [])}"))
+        monkeypatch.setattr(single_instance, "is_installation_cancelled", lambda: False)
+        monkeypatch.setattr(log, "log", lambda *args, **kwargs: None)
+        monkeypatch.setattr("main.time.sleep", lambda _seconds: None)
+
+        App._run_selected_installations(
+            DummyApp(),
+            {
+                "user_uninstall": [{"name": "Remove Me", "id": "remove.me"}],
+                "user_install": [{"name": "Add Me", "id": "add.me"}],
+                "essentials": [{"name": "Core App", "id": "core.app"}],
+            },
+        )
+
+        assert events == [
+            "bridge",
+            "update",
+            "uninstall:1",
+            "install:1",
+            "category:core.app",
+        ]
+
 
 # ============================================================================
 # Fixtures para testes

@@ -7,7 +7,7 @@
       "id": "Adobe.Acrobat.Reader.64-bit"
     },
     {
-      "name": "Cloudflare Warp",
+      "name": "Cloudflare WARP",
       "id": "Cloudflare.Warp"
     },
     {
@@ -50,6 +50,7 @@
     { "name": "Camo Studio", "id": "Reincubate.CamoStudio" },
     { "name": "Tor Browser", "id": "TheTorProject.TorBrowser" },
     { "name": "Whatsapp", "id": "WhatsApp.WhatsApp" },
-    { "name": "Telegram", "id": "Telegram.TelegramDesktop" }
+    { "name": "Telegram", "id": "Telegram.TelegramDesktop" },
+    { "name": "Proton VPN", "id": "ProtonVPN.ProtonVPN" }
   ]
 }

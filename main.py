@@ -317,6 +317,8 @@ class App(ctk.CTk):  # type: ignore
     def _run_selected_installations(self, selected_programs_by_category=None):
         self._start_log_bridge()
         try:
+            install_module.update()
+
             user_uninstall_entries = []
             user_install_entries = []
             if selected_programs_by_category is not None:
@@ -325,6 +327,9 @@ class App(ctk.CTk):  # type: ignore
 
                 if user_uninstall_entries:
                     uninstall_module.user(user_uninstall_entries)
+
+                if user_install_entries:
+                    install_module.user(user_install_entries)
 
             selected_installations = self._selected_installations()
             if not selected_installations and not selected_programs_by_category:
@@ -343,12 +348,6 @@ class App(ctk.CTk):  # type: ignore
 
                 installer(selected_programs)
                 time.sleep(INSTALLATION_DELAY_SECONDS)
-
-            if selected_programs_by_category is None:
-                return
-
-            if user_install_entries:
-                install_module.user(user_install_entries)
         finally:
             log.log("End system", level="INFO")
 

@@ -82,8 +82,7 @@ class More(ctk.CTkToplevel):
 		self.options_frame.grid_columnconfigure(0, weight=1)
 		self.options_frame.grid_rowconfigure(0, weight=1)
 
-		self.tabview = ctk.CTkTabview(self.options_frame, height=320)
-		self.tabview.grid(row=0, column=0, padx=8, pady=8, sticky="nsew")
+		self.tabview = self._create_tabview()
 
 		self.status_label = ctk.CTkLabel(self.content_frame, text="Loading file list...", anchor="w")
 		self.status_label.grid(row=2, column=0, padx=10, pady=(0, 8), sticky="ew")
@@ -108,6 +107,11 @@ class More(ctk.CTkToplevel):
 		self.run_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
 
 		self._reload_all_entries()
+
+	def _create_tabview(self):
+		tabview = ctk.CTkTabview(self.options_frame, height=320)
+		tabview.grid(row=0, column=0, padx=8, pady=8, sticky="nsew")
+		return tabview
 
 	def _reload_all_entries(self):
 		self.loaded_paths.clear()
@@ -158,8 +162,12 @@ class More(ctk.CTkToplevel):
 		self.program_selection_vars.clear()
 		self.file_sources.clear()
 
-		for widget in self.tabview.winfo_children():
-			widget.destroy()
+		if self.tabview is not None:
+			try:
+				self.tabview.destroy()
+			except Exception:
+				pass
+		self.tabview = self._create_tabview()
 
 		if not file_entries:
 			self.status_label.configure(text='No install files selected.')
@@ -418,7 +426,7 @@ class More(ctk.CTkToplevel):
 
 		total = json_data.save_local_json_file('user_install', selected)
 		self.status_label.configure(text=f'Saved {total} program(s) in user_install.json.')
-		self._reload_all_entries()
+		self.after(0, self._reload_all_entries)
 
 	def _on_submit_user_uninstall(self, selected_by_section: dict[str, list[dict]]):
 		selected = selected_by_section.get('installed_programs', [])
@@ -428,7 +436,7 @@ class More(ctk.CTkToplevel):
 
 		total = json_data.save_local_json_file('user_uninstall', selected)
 		self.status_label.configure(text=f'Saved {total} program(s) in user_uninstall.json.')
-		self._reload_all_entries()
+		self.after(0, self._reload_all_entries)
 
 	def _submit(self):
 		log.log('Start system', level='INFO')
@@ -506,7 +514,8 @@ class More(ctk.CTkToplevel):
 					entry['function'] = function_name
 				selected_entries.append(entry)
 
-			selected_programs[category_key] = selected_entries
+			if selected_entries:
+				selected_programs[category_key] = selected_entries
 
 		return selected_programs
 
