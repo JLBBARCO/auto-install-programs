@@ -6,8 +6,3 @@
 
 # Keep batch scripts Windows-friendly.
 *.bat text eol=crlf
-
-
-/* --- APPENDED FROM site/{rel} --- */
-# Auto detect text files and perform LF normalization
-* text=auto
