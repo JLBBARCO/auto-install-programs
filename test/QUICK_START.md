@@ -35,24 +35,28 @@ test/
 ## 🚀 Como Executar
 
 ### **Windows (PowerShell)**
+
 ```powershell
-cd c:\Users\Reginaldo\Downloads\programs-manager
+cd c:\Users\user\Downloads\programs-manager
 .\test\run_tests.ps1
 ```
 
 ### **Linux/macOS (Bash)**
+
 ```bash
 cd ~/Downloads/programs-manager
 bash test/run_tests.sh
 ```
 
 ### **Qualquer SO (Python direto)**
+
 ```bash
 cd programs-manager
 python test/run_tests.py
 ```
 
 ### **Com pytest (opcional)**
+
 ```bash
 pytest test/test_modules.py -v
 ```
@@ -63,24 +67,27 @@ pytest test/test_modules.py -v
 
 ### **Módulos Testados**: 5 (com 21 funções)
 
-| Módulo | Funções | Status |
-|--------|---------|--------|
-| `lib.system` | 1 (nameSO) | ✓ Testada |
-| `lib.json` | 8 funções | 1 ✓ / 7 ⊘ |
-| `lib.log` | 4 funções | 1 ✓ / 3 ⊘ |
-| `lib.customizations` | 5 funções | 1 ✓ / 4 ⊘ |
-| `lib.install.single_instance` | 3 funções | 0 ✓ / 3 ⊘ |
+| Módulo                        | Funções    | Status    |
+| ----------------------------- | ---------- | --------- |
+| `lib.system`                  | 1 (nameSO) | ✓ Testada |
+| `lib.json`                    | 8 funções  | 1 ✓ / 7 ⊘ |
+| `lib.log`                     | 4 funções  | 1 ✓ / 3 ⊘ |
+| `lib.customizations`          | 5 funções  | 1 ✓ / 4 ⊘ |
+| `lib.install.single_instance` | 3 funções  | 0 ✓ / 3 ⊘ |
 
 **Legenda**: ✓ = Passou | ✗ = Falhou | ⊘ = Pulado
 
 ### **Testes Que Passaram** (4/21)
+
 - ✓ `lib.system.nameSO()` - Detecta SO corretamente
 - ✓ `lib.json.read_json()` - Lê JSON com sucesso
 - ✓ `lib.log.get_log_file_path()` - Retorna caminho válido
 - ✓ `lib.customizations._normalize_startup_name()` - Normaliza nomes
 
 ### **Testes Pulados** (17/21)
+
 Funções que requerem setup específico ou interação do sistema:
+
 - Funções de IO (write, save, fetch)
 - Funções de controle do SO
 - Funções de lock/processo (por segurança)
@@ -106,16 +113,19 @@ Duração: 0.22 segundos
 ## 📄 Formatos de Relatório
 
 ### **1. Relatório em Texto** (`test_report.txt`)
+
 - Legível em qualquer editor de texto
 - Contém resumo + detalhes de cada teste
 - Stack traces formatados para erros
 
 ### **2. Relatório em JSON** (`test_report.json`)
+
 - Dados estruturados para processamento
 - Incluindo timestamps e duração
 - Possibilita automação e análise
 
 ### **3. Relatório em HTML** (`test_report.html`)
+
 - **Interface visual interativa**
 - Dashboard com gráficos
 - Cores por status (verde/vermelho/amarelo)
@@ -155,10 +165,12 @@ class TestNovoModulo:
 ## 🔧 Configuração Avançada
 
 ### **Variáveis de Ambiente**
+
 - `TEST_DEBUG=1` - Modo verbose (não implementado yet)
 - `TEST_TIMEOUT=30` - Timeout em segundos (não implementado yet)
 
 ### **Pytest Options**
+
 ```bash
 # Modo verbose com output
 pytest test/test_modules.py -v -s
@@ -177,12 +189,12 @@ pytest test/test_modules.py -x
 
 ## 📞 Troubleshooting
 
-| Problema | Solução |
-|----------|---------|
-| `ModuleNotFoundError: lib` | Execute na raiz do projeto |
-| Encoding errors no Windows | Use Python 3.8+ |
-| Pytest não encontrado | `pip install pytest` |
-| Relatório não gerado | Verifique permissões de escrita em `test/` |
+| Problema                   | Solução                                    |
+| -------------------------- | ------------------------------------------ |
+| `ModuleNotFoundError: lib` | Execute na raiz do projeto                 |
+| Encoding errors no Windows | Use Python 3.8+                            |
+| Pytest não encontrado      | `pip install pytest`                       |
+| Relatório não gerado       | Verifique permissões de escrita em `test/` |
 
 ---
 
@@ -223,16 +235,19 @@ pytest test/test_modules.py -x
 ## ✨ Recursos Destacados
 
 ### **Formatação Inteligente**
+
 - Caracteres especiais: ✓ ✗ ⊘ 📄 ✨
 - Codificação: UTF-8 em todos os formatos
 - Timestamps: ISO 8601 em JSON
 
 ### **Flexibilidade**
+
 - Roda com Python puro (sem dependências extras)
 - Pytest opcional para testes mais estruturados
 - Scripts adaptados para cada SO
 
 ### **Informação Detalhada**
+
 - Status individual de cada função
 - Mensagens customizadas por tipo de teste
 - Stack traces completos para debugação

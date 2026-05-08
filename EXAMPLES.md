@@ -3,7 +3,7 @@
 ## Exemplo 1: Execução no Windows (PowerShell)
 
 ```powershell
-PS C:\Users\Reginaldo\Downloads\programs-manager> .\test\run_tests.ps1
+PS C:\Users\user\Downloads\programs-manager> .\test\run_tests.ps1
 
 ╔════════════════════════════════════════════════════════════════╗
 ║     Programs Manager - Sistema Automático de Testes           ║
@@ -97,7 +97,7 @@ DETALHES DOS TESTES:
 
   Módulo: lib.log
   Função: get_log_file_path
-  Mensagem: Caminho do log: C:\Users\Reginaldo\Downloads\programs-manager\log.log
+  Mensagem: Caminho do log: C:\Users\user\Downloads\programs-manager\log.log
 
 
   Módulo: lib.customizations
@@ -201,7 +201,7 @@ test/test_modules.py::TestParametrized::test_log_with_different_levels[DEBUG] PA
 O arquivo `test_report.html` pode ser aberto em qualquer navegador:
 
 ```
-1. Windows: 
+1. Windows:
    - Duplo clique em test\test_report.html
    - Ou: .\test\run_tests.ps1 report
 
@@ -250,6 +250,7 @@ O arquivo `test_report.html` pode ser aberto em qualquer navegador:
 ## Exemplo 7: Adicionar Novo Teste
 
 ### Antes (estado atual):
+
 ```python
 modules_to_test = [
     ("lib.system", ["nameSO"]),
@@ -259,6 +260,7 @@ modules_to_test = [
 ```
 
 ### Depois (com novo módulo):
+
 ```python
 modules_to_test = [
     ("lib.system", ["nameSO"]),
@@ -269,6 +271,7 @@ modules_to_test = [
 ```
 
 ### Resultado na próxima execução:
+
 ```
 Total de testes: 23  (era 21)
 Passou: 5+        (pode aumentar)
@@ -286,7 +289,7 @@ Se um teste falhar, o relatório mostra:
   Módulo: lib.json
   Função: read_json
   Erro: FileNotFoundError: essentials.json not found
-  
+
   Stack Trace:
   Traceback (most recent call last):
     File "test/run_tests.py", line 87, in test_function
@@ -301,22 +304,25 @@ Se um teste falhar, o relatório mostra:
 ## Dicas de Uso
 
 ### 1. **Acompanhar progresso em tempo real**
+
 ```bash
 # Terminal deixado aberto durante execução
 watch -n 5 "cat test/test_report.txt"
 ```
 
 ### 2. **Compartilhar resultados**
+
 ```bash
 # Copiar relatório para compartilhar
 cp test/test_report.html ~/Desktop/results.html
 ```
 
 ### 3. **Automatizar com CI/CD**
+
 ```yaml
 - name: Run Tests
   run: python test/run_tests.py
-  
+
 - name: Upload Report
   uses: actions/upload-artifact@v4
   with:
@@ -325,6 +331,7 @@ cp test/test_report.html ~/Desktop/results.html
 ```
 
 ### 4. **Filtrar apenas testes que falharam**
+
 ```bash
 # Usando grep
 grep "✗ FAILED" test/test_report.txt

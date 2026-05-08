@@ -33,7 +33,7 @@ DETALHES DOS TESTES:
 
   Módulo: lib.log
   Função: get_log_file_path
-  Mensagem: Caminho do log: C:\Users\Reginaldo\Downloads\programs-manager\log.log
+  Mensagem: Caminho do log: C:\Users\user\Downloads\programs-manager\log.log
 
 
   Módulo: lib.customizations

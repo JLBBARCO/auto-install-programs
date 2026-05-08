@@ -60,7 +60,7 @@
 ═══════════════════════════════════════════════════════════════════════════
 
    Windows (PowerShell):
-   $ cd c:\Users\Reginaldo\Downloads\programs-manager
+   $ cd c:\Users\user\Downloads\programs-manager
    $ .\test\run_tests.ps1
 
    Linux/macOS (Bash):
