@@ -4,6 +4,8 @@ build/
 dist/
 venv/
 .venv/
+.pytest_cache/
+.ruff_cache/
 *.spec
 *.log
 test.*
