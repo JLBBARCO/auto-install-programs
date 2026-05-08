@@ -1,4 +1,5 @@
 # 🧪 Sistema de Testes - Programs Manager
+
 ## Configuração Concluída com Sucesso! ✓
 
 ---
@@ -9,18 +10,18 @@ Um **sistema de testes automático, escalável e multiplataforma** foi criado pa
 
 ### **10 arquivos criados em `test/`:**
 
-| Arquivo | Tamanho | Propósito |
-|---------|---------|----------|
-| `run_tests.py` | 20.3 KB | Sistema automático de testes |
-| `test_modules.py` | 8.8 KB | Testes estruturados com pytest |
-| `conftest.py` | 927 B | Configuração do pytest |
-| `run_tests.ps1` | 3.9 KB | Script Windows PowerShell |
-| `run_tests.sh` | 2.5 KB | Script Linux/macOS Bash |
-| `README.md` | 5.9 KB | Documentação completa |
-| `QUICK_START.md` | 6.5 KB | Guia rápido |
-| `test_report.html` | 11.8 KB | Relatório visual interativo |
-| `test_report.json` | 5.9 KB | Dados estruturados |
-| `test_report.txt` | 3.8 KB | Relatório em texto |
+| Arquivo            | Tamanho | Propósito                      |
+| ------------------ | ------- | ------------------------------ |
+| `run_tests.py`     | 20.3 KB | Sistema automático de testes   |
+| `test_modules.py`  | 8.8 KB  | Testes estruturados com pytest |
+| `conftest.py`      | 927 B   | Configuração do pytest         |
+| `run_tests.ps1`    | 3.9 KB  | Script Windows PowerShell      |
+| `run_tests.sh`     | 2.5 KB  | Script Linux/macOS Bash        |
+| `README.md`        | 5.9 KB  | Documentação completa          |
+| `QUICK_START.md`   | 6.5 KB  | Guia rápido                    |
+| `test_report.html` | 11.8 KB | Relatório visual interativo    |
+| `test_report.json` | 5.9 KB  | Dados estruturados             |
+| `test_report.txt`  | 3.8 KB  | Relatório em texto             |
 
 **Total:** ~70 KB de código e documentação
 
@@ -31,24 +32,28 @@ Um **sistema de testes automático, escalável e multiplataforma** foi criado pa
 ### **Para executar os testes:**
 
 #### **1️⃣ Windows (PowerShell)**
+
 ```powershell
-cd c:\Users\Reginaldo\Downloads\programs-manager
+cd c:\Users\user\Downloads\programs-manager
 .\test\run_tests.ps1
 ```
 
 #### **2️⃣ Linux/macOS (Terminal)**
+
 ```bash
 cd ~/Downloads/programs-manager
 bash test/run_tests.sh
 ```
 
 #### **3️⃣ Qualquer plataforma (Python direto)**
+
 ```bash
 cd programs-manager
 python test/run_tests.py
 ```
 
 #### **4️⃣ Com pytest (mais detalhado)**
+
 ```bash
 pip install pytest
 pytest test/test_modules.py -v
@@ -76,11 +81,13 @@ pytest test/test_modules.py -v
 ## 📄 Como Interpretar os Relatórios
 
 ### **test_report.txt** - Relatório de Terminal
+
 - Texto puro, legível em qualquer editor
 - Mostra resumo e detalhes de cada teste
 - Ideal para compartilhar por email/chat
 
 ### **test_report.json** - Dados para Análise
+
 ```json
 {
   "total": 21,
@@ -90,10 +97,12 @@ pytest test/test_modules.py -v
   "success_rate": 19.0
 }
 ```
+
 - Estruturado para análise programática
 - Possibilita integração com ferramentas
 
 ### **test_report.html** - Dashboad Visual
+
 - Abra no navegador para visualização
 - Cores: Verde (passou), Vermelho (falhou), Amarelo (pulado)
 - Responsivo para mobile
@@ -103,12 +112,14 @@ pytest test/test_modules.py -v
 ## 📝 Funções Testadas
 
 ### **✓ Testes que Passam (4)**
+
 1. `lib.system.nameSO()` - Detecta sistema operacional
 2. `lib.json.read_json()` - Lê arquivo JSON de configuração
 3. `lib.log.get_log_file_path()` - Retorna caminho do arquivo de log
 4. `lib.customizations._normalize_startup_name()` - Normaliza nomes de programas
 
 ### **⊘ Testes Pulados (17)**
+
 - Funções que requerem argumentos específicos
 - Funções de I/O que precisam de setup
 - Funções de segurança não testadas por proteção
@@ -148,16 +159,19 @@ pytest test/test_modules.py -v
 ## 💡 Recursos Especiais
 
 ### **Formatação Rich**
+
 - Caracteres especiais: ✓ ✗ ⊘ (unicode)
 - Códigos de cor no terminal
 - Formatação automática
 
 ### **Cross-Platform**
+
 - Windows: PowerShell com cores
 - Linux/macOS: Bash com cores
 - Python: Funciona em todos
 
 ### **Extensível**
+
 - Fácil adicionar novos módulos
 - Fixture system com pytest
 - Testes parametrizados
@@ -240,6 +254,7 @@ Se encontrar problemas:
 Sistema de testes **completo, documentado e pronto para produção**!
 
 Você agora pode:
+
 - ✓ Executar testes automaticamente
 - ✓ Gerar relatórios visuais
 - ✓ Adicionar novos testes facilmente
@@ -250,5 +265,5 @@ Você agora pode:
 
 ---
 
-*Sistema de testes criado com ❤️ para Programs Manager*  
-*Última atualização: 2 de Maio de 2026*
+_Sistema de testes criado com ❤️ para Programs Manager_  
+_Última atualização: 2 de Maio de 2026_

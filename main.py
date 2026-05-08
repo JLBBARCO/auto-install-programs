@@ -392,7 +392,7 @@ class App(ctk.CTk):  # type: ignore
         if not server_url:
             return
 
-        site_url = f"https://programs-manager-website.vercel.app/?{urlencode({'logUrl': f'{server_url}/log.log', 'logPort': str(getattr(self._log_share_server, 'server_address', ('', 0))[1]), 'logFile': 'log.log'})}"
+        site_url = f"https://programs-manager-jlbbarco.vercel.app/?{urlencode({'logUrl': f'{server_url}/log.log', 'logPort': str(getattr(self._log_share_server, 'server_address', ('', 0))[1]), 'logFile': 'log.log'})}"
 
         try:
             webbrowser.open(site_url, new=1, autoraise=True)
@@ -420,10 +420,22 @@ class App(ctk.CTk):  # type: ignore
 
     def run(self):
         selected_configs = self._selected_category_configs()
-        menu_items = [(config.key, config.label) for config in selected_configs]
 
-        if not menu_items:
-            log.log("No category selected on the main screen; opening secondary screen for user-managed actions.", level="INFO")
+        # If the user didn't select any categories on the main screen, expose
+        # all available category files in the secondary "More" screen so the
+        # user can pick items there (matches description.txt behavior).
+        if not selected_configs:
+            log.log(
+                "No category selected on the main screen; exposing all categories in secondary screen.",
+                level="INFO",
+            )
+            menu_items = [
+                (config.key, config.label)
+                for config in CATEGORY_CONFIGS
+                if config.installer_name and config.include_in_tabs and config.key != "drivers"
+            ]
+        else:
+            menu_items = [(config.key, config.label) for config in selected_configs]
 
         self.more_window = more.More(
             self,
