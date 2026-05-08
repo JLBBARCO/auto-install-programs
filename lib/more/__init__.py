@@ -20,7 +20,7 @@ REPO_OWNER = "JLBBARCO"
 REPO_NAME = "programs-manager"
 import os
 
-# Allow overriding branch via environment variable (e.g. AIP_BRANCH=develop)
+# Allow overriding branch via environment variable (e.g. AIP_BRANCH=beta)
 REPO_BRANCH = os.environ.get('AIP_BRANCH', 'main')
 SYSTEM_PREFIX = "system/"
 
@@ -47,6 +47,7 @@ class More(ctk.CTkToplevel):
 		self.checkbox_containers: dict[str, ctk.CTkScrollableFrame] = {}
 		self.loaded_paths: set[str] = set()
 		self.loading_paths: set[str] = set()
+		self.reload_generation = 0
 		self.file_sources: dict[str, str] = {}
 		self.tool_windows: list[ctk.CTkToplevel] = []
 
@@ -114,12 +115,13 @@ class More(ctk.CTkToplevel):
 		return tabview
 
 	def _reload_all_entries(self):
+		self.reload_generation += 1
 		self.loaded_paths.clear()
 		self.loading_paths.clear()
 
 		base_entries = self._build_base_entries()
 		local_entries = self._build_local_entries()
-		self._populate_file_menu(base_entries + local_entries)
+		self._populate_file_menu(base_entries + local_entries, self.reload_generation)
 
 	def _build_base_entries(self) -> list[tuple[str, str, str, str]]:
 		file_entries: list[tuple[str, str, str, str]] = []
@@ -155,7 +157,7 @@ class More(ctk.CTkToplevel):
 	def _is_hidden_repo_path(self, repo_path: str) -> bool:
 		return repo_path.rsplit('/', 1)[-1].lower() == 'drivers.json'
 
-	def _populate_file_menu(self, file_entries: list[tuple[str, str, str, str]]):
+	def _populate_file_menu(self, file_entries: list[tuple[str, str, str, str]], generation: int):
 		self.repo_path_by_category_key.clear()
 		self.tab_label_by_category_key.clear()
 		self.checkbox_containers.clear()
@@ -177,6 +179,7 @@ class More(ctk.CTkToplevel):
 		self.run_button.configure(state='normal')
 
 		for repo_path, category_key, display_name, source in file_entries:
+			log.log(f"Adding tab entry: {repo_path} (source={source})", level="INFO")
 			unique_display_name = self._unique_display_name(display_name)
 			self.repo_path_by_category_key[category_key] = repo_path
 			self.tab_label_by_category_key[category_key] = unique_display_name
@@ -188,7 +191,7 @@ class More(ctk.CTkToplevel):
 			container.grid_columnconfigure(0, weight=1)
 			self.checkbox_containers[category_key] = container
 			self.program_selection_vars[category_key] = {}
-			self._ensure_file_loaded(category_key, repo_path, source)
+			self._ensure_file_loaded(category_key, repo_path, source, generation)
 
 		first_category_key = file_entries[0][1]
 		first_label = self.tab_label_by_category_key[first_category_key]
@@ -204,19 +207,19 @@ class More(ctk.CTkToplevel):
 			counter += 1
 		return candidate
 
-	def _ensure_file_loaded(self, category_key: str, repo_path: str, source: str):
+	def _ensure_file_loaded(self, category_key: str, repo_path: str, source: str, generation: int):
 		if repo_path in self.loaded_paths or repo_path in self.loading_paths:
 			return
 
 		self.loading_paths.add(repo_path)
 		loader = threading.Thread(
 			target=self._load_file_content_worker,
-			args=(category_key, repo_path, source),
+			args=(generation, category_key, repo_path, source),
 			daemon=True,
 		)
 		loader.start()
 
-	def _load_file_content_worker(self, category_key: str, repo_path: str, source: str):
+	def _load_file_content_worker(self, generation: int, category_key: str, repo_path: str, source: str):
 		try:
 			if source == 'local':
 				payload = self._extract_local_payload(category_key)
@@ -227,7 +230,7 @@ class More(ctk.CTkToplevel):
 					content = response.read().decode('utf-8', errors='ignore')
 				payload = self._extract_program_payload(content)
 
-			self.after(0, self._update_content, category_key, repo_path, payload)
+			self.after(0, self._update_content, generation, category_key, repo_path, payload)
 		except urllib.error.HTTPError as error:
 			self.after(0, self._show_error, f"HTTP error loading {repo_path}: {error.code}")
 		except urllib.error.URLError as error:
@@ -276,7 +279,10 @@ class More(ctk.CTkToplevel):
 
 		return sorted(entries, key=lambda entry: entry['name'].lower())
 
-	def _update_content(self, category_key: str, repo_path: str, programs: list[dict[str, str]]):
+	def _update_content(self, generation: int, category_key: str, repo_path: str, programs: list[dict[str, str]]):
+		if generation != self.reload_generation:
+			return
+
 		container = self.checkbox_containers.get(category_key)
 		if container is None:
 			self.loaded_paths.add(repo_path)
@@ -288,7 +294,9 @@ class More(ctk.CTkToplevel):
 		if not programs:
 			empty_label = ctk.CTkLabel(container, text='No program names found for this file.', anchor='w')
 			empty_label.grid(row=0, column=0, padx=8, pady=8, sticky='w')
+			log.log(f"No programs for {repo_path}", level="WARNING")
 		else:
+			log.log(f"Rendering {len(programs)} program(s) for {repo_path}", level="INFO")
 			for index, program in enumerate(programs):
 				program_name = program.get('name', '').strip()
 				program_id = program.get('id', '').strip()

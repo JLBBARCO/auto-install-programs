@@ -2,15 +2,20 @@
 owner="JLBBARCO"
 repo="programs-manager"
 
+# When this script is fetched from the 'beta' branch it should use the
+# latest prerelease artifact; when fetched from 'main' it should use the
+# latest stable release. Set here according to file branch.
+SCRIPT_BRANCH="beta"
+
 OS_TYPE=$(uname -s)
-INSTALL_ROOT="${HOME}/.auto-install-programs"
+INSTALL_ROOT="${HOME}/.programs-manager"
 mkdir -p "$INSTALL_ROOT"
 
 if [ "$OS_TYPE" == "Linux" ]; then
-    ASSET_PATTERN="Auto-Install-Programs-linux.tar.gz"
+    ASSET_PATTERN="programs-manager-linux.tar.gz"
     BINARY_NAME="Programs Manager/Programs Manager"
 else
-    ASSET_PATTERN="Auto-Install-Programs-macos.tar.gz"
+    ASSET_PATTERN="programs-manager-macos.tar.gz"
     BINARY_NAME="Programs Manager.app/Contents/MacOS/Programs Manager"
 fi
 
@@ -18,7 +23,12 @@ fi
 if [ ! -f "$INSTALL_ROOT/$BINARY_NAME" ]; then
     echo "[programs-manager] Baixando binário nativo para $OS_TYPE..."
 
-    URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases/latest" | grep "browser_download_url" | grep "$ASSET_PATTERN" | cut -d '"' -f 4)
+    if [ "$SCRIPT_BRANCH" = "beta" ]; then
+        # Find most recent prerelease
+        URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases" | grep -A5 "\"prerelease\": true" | grep "browser_download_url" | grep "$ASSET_PATTERN" | head -n1 | cut -d '"' -f 4)
+    else
+        URL=$(curl -s "https://api.github.com/repos/$owner/$repo/releases/latest" | grep "browser_download_url" | grep "$ASSET_PATTERN" | cut -d '"' -f 4)
+    fi
 
     if [ -z "$URL" ]; then
         echo "[programs-manager] Erro: não foi possível localizar o asset para $ASSET_PATTERN"

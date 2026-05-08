@@ -1,4 +1,4 @@
-# Auto Installation Programs
+# Programs Manager
 
 Programs Manager is a cross-platform installer and startup manager. The Windows build includes installer categories plus custom actions such as startup management and system customization.
 
@@ -43,14 +43,14 @@ MacOS:
 curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
 ```
 
-Optional branch override (useful for testing `develop`):
+Optional branch override (useful for testing `beta`):
 
 ```powershell
-$env:AIP_BRANCH='develop'; irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
+$env:AIP_BRANCH='beta'; irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
 ```
 
 ```bash
-AIP_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+AIP_BRANCH=beta curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
 ```
 
 ## Current scope
@@ -89,7 +89,7 @@ Behavior notes:
 
 ## Build and CI
 
-The main build workflow runs on Python 3.12 and is configured for the `main` and `develop` branches. It triggers when Python files, install data, workflow files, the README, `requirements.txt`, or platform build scripts change. Pushes to `develop` publish GitHub pre-releases; pushes to `main` publish regular releases.
+The main build workflow runs on Python 3.12 and is configured for the `main` and `beta` branches. It triggers when Python files, install data, workflow files, the README, `requirements.txt`, or platform build scripts change. Pushes to `beta` publish GitHub pre-releases; pushes to `main` publish regular releases.
 
 The macOS installer workflow uses Python 3.12 and creates a package with `pkgbuild` after the app bundle is produced.
 

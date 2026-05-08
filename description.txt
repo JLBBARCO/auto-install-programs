@@ -1,11 +1,16 @@
 PT-BR UTF-8
 
 
-Descrição:
+Descrição do programa:
 Sistema de gerenciamento de programas para fácil instalação ou desinstalação numa possível formatação ou configuração de computador ou numa otimização.
 
 
-FRONT-END:
+Descrição do site:
+Site que receberá os dados do arquivo log.log gerado pela execução do programa. Quando o programa é executado, ele abre uma aba no navegador com este site. Este projeto irá monitorar e retornar ao usuário os dados do arquivo em tempo real para que o usuário possa saber o progresso do programa.
+Esse site será salvo no Github e terá hospedagem vinculada na Vercel. Qualquer coisa que precisar, poderá utilizar tanto o Github Actions quanto o Back-end da Vercel para que algumas funcionalidades funcionem corretamente.
+
+
+FRONT-END programa:
 - Layout Language: EN-US;
 - Primeira tela:
     - Conterá o título variável do programas, que varia de acordo com o Sistema Operacional;
@@ -28,10 +33,27 @@ FRONT-END:
     - No canto inferior direito, haverá um botão de "RUN", que fechará a tela e dará início ao sistema principal em segundo plano;
 
 
-BACK-END:
+FRONT-END site:
+- Layout Language: EN-US;
+- Na primeira tela, será mostrado três contêineres com os dados obtidos do Back-end com as seguintes informações:
+    - Cada contêiner conterá um tamanho fixo, com uma barra de rolagem horizontal. Os dados serão mostrados de forma que os mais antigos aparecerão acima e os mais recentes aparecerão abaixo. O contêiner terá rolagem automática para enfatizar os últimos dados, mas se o usuário rolar para cima manualmente, a rolagem automática é pausada até o usuário rolar novamente ao fim dos dados;
+    - Os dados serão recebidos da seguinte forma:
+        - [01/01/2000 00:00:00] [INFO]
+        - [01/01/2000 00:00:00] [SUCCESS]
+        - [01/01/2000 00:00:00] [WARNING]
+        - [01/01/2000 00:00:00] [ERROR]
+    - Os contêineres serão organizados de acordo com os resultados {INFO, WARNING, ERROR} e mostrarão somente os dados referentes;
+    - O dado que será recebido será do tipo: [01/06/2026 12:30:45] [SUCCESS] Visual Studio Code installed; E o que será mostrado para o usuário será da seguinte forma: 01/06/2026 12:30:45 | Visual Studio installed; Com a data e hora na cor #808080 e a informação na cor padrão de texto do site;
+- Abaixo, a segunda tela só aparecerá se o arquivo possuir um histórico extenso.
+- Esse histórico será definido pelo cálculo de tolerância de 1 minuto de atraso a partir da abertura do site. Ex.: se no arquivo possuir a datação [01/06/2026 00:00:00] e o site possuir a datação [01/06/2026 00:01:00], a informação da linha será mostrada na tela principal. Agora, se a datação do arquivo for a mesma, mas do site for [01/06/2026 00:01:01], essa informação será mostrada na tela secundária onde será a partição de histórico de execuções antigas. Esse sistema de filtro servirá para que o site de ênfase aos dados atuais, mas se o usuário quiser ver os dados de outras execuções ele consegue. O tempo de 1 minuto de tolerância a partir da execução do programa em relação a datação do site é para que se o site demorar para carregar, os dados da execução atual não irão para o histórico geral.
+- Se o time hate for expedido, ao invés de aparecer a tela principal e secundária descritas acima, será mostrada uma mensagem dizendo que a porta 8000 não foi aberta ou o arquivo não foi compartilhado, e pede ao usuário que faça refresh na página ou reexecute o programa. Logo abaixo será mostrado um botão que levará ao repositório https://github.com/JLBBARCO/programs-manager ;
+- No rodapé, terá um card que carregará as informações do JSON obtido do repositório de portfólio pelo Back-end, utilizará o dado "url" para ser o href do link, o "name" será utilizado na sub-tag title do link, e o "iconName" será utilizado para dizer qual ícone será inserido dentro do link. A organização do container será em display flex, flex-direction row;
+
+
+BACK-END programa:
 - Quando o usuário clicar em "Add Program" na tela secundária, o sistema irá abrir a 3.1ª tela descrita na parte de frontend. O sistema da barra de pesquisa pesquisará no sistema de gerenciador de pacotes, ex.: WinGet no Windows, e o botão que alterna entre "Add" e "Remove" adicionará o nome e id do programa referente à um array que, ao clicado, salvará esses dados num array, e após clicado em "Submit", será salvo em um JSON interno chamado user_install.json. Quando o sistema for rodar somente em segundo plano, ele lerá o user_install.json e executará um sistema que utiliza por ex.: "winget install -id <id-do-programa>" no Windows, para instalar determinado programa;
 - Quando o usuário clicar em "Remove Program" também da tela secundária, essa 3.2ª tela terá um funcionamento muito parecido do sistema do botão "Add Program". A diferença é que enquanto a tela estiver carregando, o sistema lista e mostra todos os programas instalados e salvará o array no arquivo user_uninstall.json, para ser utilizado pelo gerenciador de pacotes, ex.: "winget uninstall -id <id-do-programa>";
-- Quando o usuário clicar em "Run" na última tela, todas as telas serão fechadas e o programa será executado somente em segundo plano. Simultaneamente ao fechamento, ele salvará no arquivo log.log a seguinte mensagem: [dd/mm/aaaa hh:mm:ss] [INFO] Start system . Também abrirá o compartilhamento do arquivo log.log pela porta 8000 para o site https://programs-manager-website.vercel.app e abrirá esse site;
+- Quando o usuário clicar em "Run" na última tela, todas as telas serão fechadas e o programa será executado somente em segundo plano. Simultaneamente ao fechamento, ele salvará no arquivo log.log a seguinte mensagem: [dd/mm/aaaa hh:mm:ss] [INFO] Start system . Também abrirá o compartilhamento do arquivo log.log pela porta 8000 para o site https://programs-manager.vercel.app e abrirá esse site;
 - Logo após as primeiras execuções, o programa iniciará as tarefas principais na seguinte ordem:
     - Atualizar o instalador de pacotes, exemplo Windows: Microsoft.AppInstaller;
     - Se o user_uninstall.json existir, faça a desinstalação dos programas listados neste arquivo;
@@ -96,7 +118,7 @@ BACK-END:
 Github Actions:
 - O Github Actions deverá compilar o programa em cada sistema operacional. O Actions deverá utilizar os arquivos "build.bat", build.sh" e "build-mac.sh" para compilar para cada sistema operacional. Essa automação deverá armazenar a compilação em um arquivo de compactação, ex.: zip, e armazenará em um Github Release novo, mas seguindo algumas regras:
     - Se a branch do commit for a main, o Actions deverá salvar os compilados como Last Release;
-    - Já se a branch for a develop, o Actions deverá salvar como Pre-release;
+    - Já se a branch for a beta, o Actions deverá salvar como Pre-release;
 - A imagem src/assets/icon/icon.ico será utilizada como ícone do programa;
 - A pasta system não precisa ser incluída na compilação pois todos os arquivos contidos nela serão obtidos via Github RAW;
 - A automação também deverá gerar um print de cada sistema operacional utilizando o bot do Github. Esses prints serão em formato WEBP, e eles substituirão os arquivos dos caminhos:
@@ -112,3 +134,14 @@ Github RAW:
     "irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex" para Windows;
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para Linux
     "curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash" para MacOS
+Ao rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 no terminal, o sistema deverá obter o compilado da Latest Release. Mas se o usuário rodar o link https://raw.githubusercontent.com/JLBBARCO/programs-manager/beta/run.ps1 o sistema deverá rodar o Pre-release
+
+
+BACK-END site:
+- A cada vez que o site for aberto, ele armazenará temporariamente a data e hora de loading para ser utilizado pelos sistemas de filtros;
+- Quando o site for carregado, ele irá monitorar a porta 8000 por 30 segundos. Se ela não for aberta ou não for compartilhado o arquivo log.log por ela, o site irá parar de monitorar ela até que o usuário faça um refresh;
+- O sistema de filtro por datação será com base na seguinte informação com data e hora de exemplo:
+    [01/01/2000 00:00:00] [INFO] Start system
+- O sistema só irá parar de monitorar o arquivo quando a informação mais recente for:
+    [01/01/2000 00:00:00] [INFO] End system
+- O sistema irá ler o https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json e inserirá os dados no container de contato do rodapé. A requisição desse json será feita pela Vercel a cada hora para que não tenha muitas requisições no github e que o site fique leve para o usuário;

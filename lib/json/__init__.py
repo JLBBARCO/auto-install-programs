@@ -119,7 +119,7 @@ def read_local_json_file(file_name: str) -> Dict:
 def save_local_json_file(file_name: str, programs: List[Dict], description: str = '') -> int:
     file_stem = str(file_name).strip().replace('.json', '')
     target_path = _user_data_file_path(file_stem)
-    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+    # Defer creating directories until we actually need to write a file.
 
     current_payload = read_local_json_file(file_stem)
     existing_programs = current_payload.get('programs', []) if isinstance(current_payload, dict) else []
@@ -150,12 +150,24 @@ def save_local_json_file(file_name: str, programs: List[Dict], description: str 
             output_program['function'] = normalized_program['function']
         merged_programs.append(output_program)
 
+    # If there are no valid programs to save, avoid creating an empty file.
+    if not merged_programs:
+        # If an existing file is present but now empty, remove it to avoid
+        # leaving a useless placeholder on the user's Downloads folder.
+        try:
+            if os.path.exists(target_path):
+                os.remove(target_path)
+        except Exception:
+            pass
+        return 0
+
     payload = {
         'name': file_stem.replace('_', ' ').title(),
         'description': description,
         'programs': merged_programs,
     }
 
+    os.makedirs(os.path.dirname(target_path), exist_ok=True)
     with open(target_path, 'w', encoding='utf-8') as target_file:
         json.dump(payload, target_file, indent=2, ensure_ascii=False)
 

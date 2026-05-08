@@ -135,6 +135,12 @@ def uninstall_programs(selected_program_entries=None):
 	data = json.read_json('user_uninstall')
 	programs = data.get('programs', []) if isinstance(data, dict) else []
 
+	try:
+		selected_count = 0 if selected_program_entries is None else len(selected_program_entries)
+	except Exception:
+		selected_count = -1
+	log.log(f"uninstall_programs called with {len(programs)} available entries; selected_count={selected_count}", level='INFO')
+
 	selected_ids = None
 	if selected_program_entries is not None:
 		selected_ids = {

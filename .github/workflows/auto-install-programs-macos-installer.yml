@@ -1,4 +1,4 @@
-name: build-auto-install-programs-macos-installer
+name: build-programs-manager-macos-installer
 
 on:
   push:
@@ -35,8 +35,8 @@ jobs:
       - name: Verify app bundle exists
         shell: bash
         run: |
-          if [[ ! -d "dist/Auto Install Programs.app" ]]; then
-            echo "App bundle not found at dist/Auto Install Programs.app"
+          if [[ ! -d "dist/Programs Manager.app" ]]; then
+            echo "App bundle not found at dist/Programs Manager.app"
             exit 1
           fi
 
@@ -44,15 +44,15 @@ jobs:
         shell: bash
         run: |
           pkgbuild \
-            --component "dist/Auto Install Programs.app" \
+            --component "dist/Programs Manager.app" \
             --install-location /Applications \
-            --identifier "com.jlbbarco.auto-install-programs" \
-            "auto-install-programs-macos-installer.pkg"
+            --identifier "com.jlbbarco.programs-manager" \
+            "programs-manager-macos-installer.pkg"
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer
-          path: auto-install-programs-macos-installer.pkg
+          path: programs-manager-macos-installer.pkg
           if-no-files-found: error
           retention-days: 30

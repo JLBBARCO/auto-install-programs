@@ -13,6 +13,7 @@ Taxa de sucesso: 19.0%
 ```
 
 **Testes executados com sucesso:**
+
 - `lib.system.nameSO()` - Detecta SO corretamente
 - `lib.json.read_json()` - Lê configurações JSON
 - `lib.log.get_log_file_path()` - Caminho do log
@@ -23,17 +24,20 @@ Taxa de sucesso: 19.0%
 ## 🐛 2. Erro macOS GitHub Actions - CORRIGIDO
 
 ### Problema Original
+
 ```
 Failed to capture screenshot: Unable to determine the active window bounds
 Error: Process completed with exit code 1.
 ```
 
 ### Causa
+
 No macOS, quando o script é executado em CI/CD (GitHub Actions), a detecção de janela ativa por `osascript` falhava e lançava exceção crítica.
 
 ### Solução Implementada em `scripts/ci_screenshot.py`
 
 **Mudança 1: Fallback para full-screen no macOS**
+
 ```python
 # ANTES: Lançava exceção quando não conseguia detectar janela
 if bbox is None:
@@ -46,6 +50,7 @@ if bbox is None:
 ```
 
 **Mudança 2: Adicionada estratégia PID-based para macOS**
+
 ```python
 # Nova função _get_window_bbox_macos_by_pid()
 # Tenta localizar a janela do processo por PID usando ps + osascript
@@ -53,6 +58,7 @@ if bbox is None:
 ```
 
 **Mudança 3: Otimização da estratégia de captura no macOS**
+
 ```python
 # Antes: Tentava apenas active window
 if sys.platform == 'darwin':
@@ -93,11 +99,11 @@ Fallback para full-screen ← ANTES FALHA CRÍTICA!
 
 ## 🔄 Comparação Entre SO
 
-| SO | Método 1 | Método 2 | Método 3 |
-|----|----------|----------|---------|
-| **Windows** | Active Window | - | - |
-| **macOS** | PID-based (NEW) | Active Window | Full-screen (fallback) |
-| **Linux** | PID-based (xdotool) | - | Full-screen (fallback) |
+| SO          | Método 1            | Método 2      | Método 3               |
+| ----------- | ------------------- | ------------- | ---------------------- |
+| **Windows** | Active Window       | -             | -                      |
+| **macOS**   | PID-based (NEW)     | Active Window | Full-screen (fallback) |
+| **Linux**   | PID-based (xdotool) | -             | Full-screen (fallback) |
 
 ---
 
@@ -106,21 +112,23 @@ Fallback para full-screen ← ANTES FALHA CRÍTICA!
 **Arquivo alterado:** `scripts/ci_screenshot.py`
 
 ### Adições:
+
 1. ✅ Função `_get_window_bbox_macos_by_pid()` (50 linhas)
    - Localiza janela por PID no macOS
    - Com retry e timeout
    - Validação de coordenadas
 
 ### Modificações:
+
 1. ✅ `capture_active_window()` - Adicionado fallback
    - De: Erro crítico → Fallback suave
-   
 2. ✅ `launch_and_capture()` - Estratégia macOS melhorada
    - Tenta PID-based primeiro
    - Fallback para active window
    - Fallback final para full-screen
 
 ### Compatibilidade:
+
 - ✅ Totalmente retrocompatível
 - ✅ Sem mudanças de API
 - ✅ Sem novas dependências
@@ -146,13 +154,13 @@ Fallback para full-screen ← ANTES FALHA CRÍTICA!
 
 ## ✨ Benefícios da Correção
 
-| Antes | Depois |
-|-------|--------|
-| ❌ macOS builds falhavam | ✅ macOS builds succedem |
-| ❌ Erro crítico sem fallback | ✅ Fallback suave para full-screen |
-| ❌ Sem retry | ✅ Retry automático até 12s |
-| ❌ 1 estratégia de captura | ✅ 3 estratégias escalonadas |
-| ❌ Sem mensagens informativas | ✅ Avisos úteis no log |
+| Antes                         | Depois                             |
+| ----------------------------- | ---------------------------------- |
+| ❌ macOS builds falhavam      | ✅ macOS builds succedem           |
+| ❌ Erro crítico sem fallback  | ✅ Fallback suave para full-screen |
+| ❌ Sem retry                  | ✅ Retry automático até 12s        |
+| ❌ 1 estratégia de captura    | ✅ 3 estratégias escalonadas       |
+| ❌ Sem mensagens informativas | ✅ Avisos úteis no log             |
 
 ---
 
@@ -162,10 +170,10 @@ O workflow do GitHub agora:
 
 ```yaml
 - run: xvfb-run -s "-screen 0 1920x1080x24" \
-       python scripts/ci_screenshot.py \
-       screenshots/screenshot-macos.webp \
-       --wait-seconds 8 \
-       --launch "dist/Auto Install Programs/Auto Install Programs"
+    python scripts/ci_screenshot.py \
+    screenshots/screenshot-macos.webp \
+    --wait-seconds 8 \
+    --launch "dist/Programs Manager/Programs Manager"
 ```
 
 **Resultado esperado:** ✅ Sucesso (sem erro)

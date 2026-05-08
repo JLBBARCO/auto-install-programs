@@ -139,19 +139,19 @@ Depois que o programa foi compilado com PyInstaller:
 **Windows**:
 
 ```text
-dist/Auto Install Programs/install/Windows/white_list.txt
+dist/Programs Manager/install/Windows/white_list.txt
 ```
 
 **Linux**:
 
 ```text
-dist/Auto Install Programs/install/Windows/white_list.txt
+dist/Programs Manager/install/Windows/white_list.txt
 ```
 
 **macOS**:
 
 ```text
-dist/Auto Install Programs/open dist/Auto\ Install\ Programs.app/Contents/Resources/install/Windows/white_list.txt
+dist/Programs Manager/open dist/Auto\ Install\ Programs.app/Contents/Resources/install/Windows/white_list.txt
 ```
 
 Você pode editar o arquivo e executar o programa novamente.

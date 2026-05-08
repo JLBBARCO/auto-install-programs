@@ -316,26 +316,55 @@ class App(ctk.CTk):  # type: ignore
 
     def _run_selected_installations(self, selected_programs_by_category=None):
         self._start_log_bridge()
+        log.log('Starting run pipeline', level='INFO')
         try:
             install_module.update()
 
-            user_uninstall_entries = []
-            user_install_entries = []
+            # Always read local user-managed files so they are processed even when
+            # no explicit selection payload is provided by the More window.
+            try:
+                local_uninstall = json.read_json('user_uninstall') or {}
+                local_install = json.read_json('user_install') or {}
+                user_uninstall_entries = local_uninstall.get('programs', []) if isinstance(local_uninstall, dict) else []
+                user_install_entries = local_install.get('programs', []) if isinstance(local_install, dict) else []
+            except Exception:
+                user_uninstall_entries = []
+                user_install_entries = []
+
+            # If the caller passed explicit selections, prefer them for this run.
             if selected_programs_by_category is not None:
-                user_uninstall_entries = selected_programs_by_category.get("user_uninstall", [])
-                user_install_entries = selected_programs_by_category.get("user_install", [])
+                user_uninstall_entries = selected_programs_by_category.get("user_uninstall", user_uninstall_entries)
+                user_install_entries = selected_programs_by_category.get("user_install", user_install_entries)
 
-                if user_uninstall_entries:
-                    uninstall_module.user(user_uninstall_entries)
+            log.log(
+                f"Run payload: selected_payload_present={selected_programs_by_category is not None} "
+                f"user_uninstall_count={len(user_uninstall_entries)} user_install_count={len(user_install_entries)}",
+                level='INFO',
+            )
 
-                if user_install_entries:
-                    install_module.user(user_install_entries)
+            # Process uninstall entries first (if any), then install entries.
+            if user_uninstall_entries:
+                try:
+                    log.log(f"Calling uninstall_module.user() with {len(user_uninstall_entries)} entries", level='INFO')
+                    result_uninstall = uninstall_module.user(user_uninstall_entries)
+                    log.log(f"uninstall_module.user() returned: {result_uninstall}", level='INFO')
+                except Exception as error:
+                    log.log(f"Error during uninstall_module.user(): {error}", level='ERROR')
+            if user_install_entries:
+                try:
+                    log.log(f"Calling install_module.user() with {len(user_install_entries)} entries", level='INFO')
+                    result_install = install_module.user(user_install_entries)
+                    log.log(f"install_module.user() returned: {result_install}", level='INFO')
+                except Exception as error:
+                    log.log(f"Error during install_module.user(): {error}", level='ERROR')
 
             selected_installations = self._selected_installations()
-            if not selected_installations and not selected_programs_by_category:
-                log.log("No selected categories to install.", level="INFO")
+            # If there are no category installers and no user files selected, nothing to do.
+            if not selected_installations and not user_uninstall_entries and not user_install_entries and not selected_programs_by_category:
+                log.log("No selected categories to install and no user files present.", level="INFO")
                 return
 
+            log.log(f"Category installers to run: {len(selected_installations)}", level="INFO")
             for config, installer in selected_installations:
                 if single_instance.is_installation_cancelled():
                     log.log("Installation cancelled by newer instance", level="WARNING")
@@ -346,6 +375,7 @@ class App(ctk.CTk):  # type: ignore
                 else:
                     selected_programs = selected_programs_by_category.get(config.key, [])
 
+                log.log(f"Running installer for category '{config.key}' with {len(selected_programs) if selected_programs is not None else 0} selected entries", level="INFO")
                 installer(selected_programs)
                 time.sleep(INSTALLATION_DELAY_SECONDS)
         finally:
@@ -362,7 +392,7 @@ class App(ctk.CTk):  # type: ignore
         if not server_url:
             return
 
-        site_url = f"https://programs-manager-website.vercel.app/?{urlencode({'logUrl': f'{server_url}/log.log', 'logPort': str(getattr(self._log_share_server, 'server_address', ('', 0))[1]), 'logFile': 'log.log'})}"
+        site_url = f"https://programs-manager.vercel.app/?{urlencode({'logUrl': f'{server_url}/log.log', 'logPort': str(getattr(self._log_share_server, 'server_address', ('', 0))[1]), 'logFile': 'log.log'})}"
 
         try:
             webbrowser.open(site_url, new=1, autoraise=True)

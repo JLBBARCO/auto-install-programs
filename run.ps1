@@ -1,7 +1,15 @@
+# Repository info
 $owner = "JLBBARCO"
 $repo = "programs-manager"
+
+# Set this script's branch. When this file is fetched from:
+#  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1  -> set to 'main'
+#  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/beta/run.ps1 -> set to 'beta'
+# The branch controls whether the script downloads the latest stable release (main)
+# or the most-recent prerelease (beta).
+$ScriptBranch = 'beta'
 # Use the current user's profile directory (works on Windows reliably).
-$installRoot = Join-Path $env:USERPROFILE ".auto-install-programs"
+$installRoot = Join-Path $env:USERPROFILE ".programs-manager"
 $expectedExePath = Join-Path $installRoot "Programs Manager\Programs Manager.exe"
 
 Write-Host "[programs-manager] Script em execução: $PSCommandPath"
@@ -16,7 +24,7 @@ function Resolve-ExePath {
         return $ExpectedPath
     }
 
-    $foundExe = Get-ChildItem -Path $Root -Filter "Auto Install Programs.exe" -Recurse -File -ErrorAction SilentlyContinue |
+    $foundExe = Get-ChildItem -Path $Root -Filter "Programs Manager.exe" -Recurse -File -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime -Descending |
         Select-Object -First 1
 
@@ -41,7 +49,7 @@ function Resolve-LocalBuildPath {
     $buildDir = Join-Path $scriptDir "build"
     
     if (Test-Path $buildDir) {
-        $foundExe = Get-ChildItem -Path $buildDir -Filter "Auto Install Programs.exe" -Recurse -File -ErrorAction SilentlyContinue |
+        $foundExe = Get-ChildItem -Path $buildDir -Filter "Programs Manager.exe" -Recurse -File -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending |
             Select-Object -First 1
         
@@ -71,12 +79,21 @@ if (-not $exePath) {
     Write-Host "[programs-manager] Tentando baixar versão compilada para Windows..."
 
     try {
-        # Always use the latest stable release for direct-run downloads.
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
-        $asset = $release.assets | Where-Object { $_.name -eq "Auto-Install-Programs-windows.zip" } | Select-Object -First 1
+        # Decide which release to fetch based on the script branch.
+        if ($ScriptBranch -eq 'beta') {
+            # Find the most recent prerelease
+            $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases" -UseBasicParsing
+            $prerelease = $releases | Where-Object { $_.prerelease } | Sort-Object -Property published_at -Descending | Select-Object -First 1
+            if (-not $prerelease) { throw "No prerelease found." }
+            $asset = $prerelease.assets | Where-Object { $_.name -eq "programs-manager-windows.zip" } | Select-Object -First 1
+        } else {
+            # Stable channel: use latest stable release endpoint
+            $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
+            $asset = $release.assets | Where-Object { $_.name -eq "programs-manager-windows.zip" } | Select-Object -First 1
+        }
 
         if (-not $asset) {
-            throw "Asset 'Auto-Install-Programs-windows.zip' não encontrado no release."
+            throw "Asset 'programs-manager-windows.zip' não encontrado na release escolhida." 
         }
 
         $zipTemp = Join-Path $env:TEMP "aip_win.zip"
@@ -89,7 +106,7 @@ if (-not $exePath) {
     } catch {
         Write-Host "[programs-manager] Erro ao baixar: $_" -ForegroundColor Yellow
         Write-Host "[programs-manager] Tentando compilar localmente..." -ForegroundColor Yellow
-        
+
         # Try to compile locally as last resort
         $scriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
         if ($scriptPath) {

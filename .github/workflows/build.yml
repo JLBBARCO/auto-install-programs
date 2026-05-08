@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - main
-      - develop
+      - beta
     paths:
       - "**/*.py"
       - "install/**"
@@ -27,7 +27,7 @@ on:
   pull_request:
     branches:
       - main
-      - develop
+      - beta
     paths:
       - "**/*.py"
       - "install/**"
@@ -216,7 +216,7 @@ jobs:
           cd dist
 
           PACKAGE_SOURCE=""
-          for candidate in "Programs Manager" "Auto Install Programs" "Programs Manager.app" "Auto Install Programs.app"; do
+          for candidate in "Programs Manager" "Programs Manager" "Programs Manager.app" "Programs Manager.app"; do
             if [[ -e "$candidate" ]]; then
               PACKAGE_SOURCE="$candidate"
               break
@@ -236,17 +236,17 @@ jobs:
           echo "Packaging source: $PACKAGE_SOURCE"
 
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            7z a -tzip "Auto-Install-Programs-${{ matrix.artifact-name }}.zip" "$PACKAGE_SOURCE"
+            7z a -tzip "programs-manager-${{ matrix.artifact-name }}.zip" "$PACKAGE_SOURCE"
           else
-            tar -czf "Auto-Install-Programs-${{ matrix.artifact-name }}.tar.gz" "$PACKAGE_SOURCE"
+            tar -czf "programs-manager-${{ matrix.artifact-name }}.tar.gz" "$PACKAGE_SOURCE"
           fi
 
       - name: Upload artifacts
         if: steps.should_build.outputs.should_build == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: auto-install-programs-${{ matrix.artifact-name }}
-          path: dist/Auto-Install-Programs-${{ matrix.artifact-name }}.*
+          name: programs-manager-${{ matrix.artifact-name }}
+          path: dist/programs-manager-${{ matrix.artifact-name }}.*
           retention-days: 30
 
       - name: Install screenshot dependencies
@@ -288,7 +288,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/develop') && (needs.build.result == 'success' ||
+      github.ref == 'refs/heads/beta') && (needs.build.result == 'success' ||
       needs.build.result == 'skipped')
 
     steps:
@@ -327,7 +327,7 @@ jobs:
             PRE="false"
           else
             TAG="auto-v$(date -u +'%Y.%m.%d')-${GITHUB_RUN_NUMBER}"
-            if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            if [[ "${GITHUB_REF}" == "refs/heads/beta" ]]; then
               NAME="Pre-release"
               PRE="true"
             else
