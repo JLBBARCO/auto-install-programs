@@ -4,7 +4,7 @@ interface FetchLogStreamOptions {
 
 export async function* fetchLogStream(
   url: string,
-  options: FetchLogStreamOptions = {},
+  options: FetchLogStreamOptions = {}
 ) {
   const res = await fetch(url, {
     headers: { Accept: "text/plain" },
@@ -16,7 +16,9 @@ export async function* fetchLogStream(
   }
 
   if (!res.body) {
-    throw new Error("Resposta sem body - verifique se o servidor expõe o arquivo.");
+    throw new Error(
+      "Resposta sem body - verifique se o servidor expõe o arquivo."
+    );
   }
 
   const reader = res.body.getReader();
@@ -28,7 +30,7 @@ export async function* fetchLogStream(
 
     if (done) {
       buffer += decoder.decode();
-      const finalLines = buffer.split(/\r?\n/).filter((line) => line.trim());
+      const finalLines = buffer.split(/\r?\n/).filter(line => line.trim());
 
       for (const line of finalLines) {
         yield line;
@@ -47,4 +49,25 @@ export async function* fetchLogStream(
       }
     }
   }
+}
+
+/**
+ * Fetcha o arquivo de log completo (sem streaming)
+ * Útil para polling periódico após a conexão inicial terminar
+ */
+export async function fetchLogOnce(
+  url: string,
+  signal?: AbortSignal
+): Promise<string[]> {
+  const res = await fetch(url, {
+    headers: { Accept: "text/plain" },
+    signal,
+  });
+
+  if (!res.ok) {
+    throw new Error(`Servidor na porta 8000 respondeu ${res.status}`);
+  }
+
+  const text = await res.text();
+  return text.split(/\r?\n/).filter(line => line.trim());
 }

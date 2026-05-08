@@ -4,7 +4,7 @@ import {
   LOG_SERVER_URL,
   LOG_TOLERANCE_MS,
 } from "@/constants/app";
-import { fetchLogStream } from "@/lib/logFetcher";
+import { fetchLogStream, fetchLogOnce } from "@/lib/logFetcher";
 import {
   bucketLogLevel,
   classifyLogSection,
@@ -30,6 +30,9 @@ interface UseLogMonitorResult extends LogBuckets {
   monitorError: Error | null;
 }
 
+// Intervalo de polling para atualizar o log após a conexão inicial terminar (em ms)
+const LOG_POLL_INTERVAL_MS = 5000; // 5 segundos
+
 /**
  * Hook customizado para monitorar logs em tempo real
  *
@@ -38,6 +41,7 @@ interface UseLogMonitorResult extends LogBuckets {
  * - Fazer parse das linhas
  * - Classificar e bucketizar os logs
  * - Gerenciar timeout e cancelamento
+ * - Fazer polling periódico após a conexão terminar
  * - Retornar estado atualizado
  *
  * @returns Estado dos logs e status do monitoramento
@@ -53,7 +57,10 @@ export function useLogMonitor(): UseLogMonitorResult {
   // Refs para lifecycle seguro
   const controllerRef = useRef<AbortController | null>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const loadTimeRef = useRef(new Date());
+  const processedLinesRef = useRef<Set<string>>(new Set());
+  const isPollingRef = useRef(false);
 
   // Função pura para bucketizar log
   const appendLog = useCallback(
@@ -80,6 +87,71 @@ export function useLogMonitor(): UseLogMonitorResult {
     []
   );
 
+  // Função para processar linhas (usada tanto no streaming quanto no polling)
+  const processLogLine = useCallback(
+    (rawLine: string): boolean => {
+      const lineKey = rawLine.trim();
+      if (processedLinesRef.current.has(lineKey)) {
+        return false; // Já foi processada
+      }
+
+      const parsed = parseLogLine(rawLine);
+      if (!parsed) {
+        return false;
+      }
+
+      processedLinesRef.current.add(lineKey);
+
+      const section = classifyLogSection(parsed.timestamp, loadTimeRef.current);
+      const entry: LogEntry = {
+        timestamp: parsed.timestampRaw,
+        level: parsed.level,
+        message: parsed.message,
+      };
+
+      appendLog(entry, section);
+      return parsed.message.trim().toLowerCase() === "end system";
+    },
+    [appendLog]
+  );
+
+  // Função para fazer polling periódico
+  const startPolling = useCallback(() => {
+    if (isPollingRef.current) return;
+    isPollingRef.current = true;
+
+    const poll = async () => {
+      try {
+        const lines = await fetchLogOnce(
+          LOG_SERVER_URL,
+          controllerRef.current?.signal
+        );
+
+        // Processar apenas novas linhas
+        let systemEnded = false;
+        for (const line of lines) {
+          if (processLogLine(line)) {
+            systemEnded = true;
+          }
+        }
+
+        // Se encontrou "End system", parar de fazer polling
+        if (systemEnded) {
+          isPollingRef.current = false;
+          if (pollIntervalRef.current) {
+            window.clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+        }
+      } catch (err) {
+        // Erro ao fazer polling, mas não marca como erro fatal
+        // Continua tentando
+      }
+    };
+
+    pollIntervalRef.current = window.setInterval(poll, LOG_POLL_INTERVAL_MS);
+  }, [processLogLine]);
+
   useEffect(() => {
     const controller = new AbortController();
     controllerRef.current = controller;
@@ -91,6 +163,8 @@ export function useLogMonitor(): UseLogMonitorResult {
       setIsLoading(false);
       setMonitorError(new Error("Timeout ao conectar na porta 8000"));
       controller.abort();
+      // Iniciar polling após timeout
+      startPolling();
     }, LOG_MONITOR_TIMEOUT_MS);
 
     timeoutIdRef.current = timeoutId;
@@ -100,31 +174,18 @@ export function useLogMonitor(): UseLogMonitorResult {
         for await (const rawLine of fetchLogStream(LOG_SERVER_URL, {
           signal: controller.signal,
         })) {
-          const parsed = parseLogLine(rawLine);
-
-          if (!parsed) {
-            continue;
-          }
-
-          const section = classifyLogSection(
-            parsed.timestamp,
-            loadTimeRef.current
-          );
-          const entry: LogEntry = {
-            timestamp: parsed.timestampRaw,
-            level: parsed.level,
-            message: parsed.message,
-          };
-
-          appendLog(entry, section);
           setIsLoading(false);
 
-          if (parsed.message.trim().toLowerCase() === "end system") {
+          if (processLogLine(rawLine)) {
+            // "End system" encontrado
             controller.abort();
             window.clearTimeout(timeoutId);
             return;
           }
         }
+        // Stream terminou normalmente sem "End system", iniciar polling
+        setIsLoading(false);
+        startPolling();
       } catch (err) {
         if (!controller.signal.aborted && !didTimeout) {
           setMonitorError(
@@ -133,6 +194,8 @@ export function useLogMonitor(): UseLogMonitorResult {
               : new Error("Erro desconhecido ao monitorar logs")
           );
           setIsLoading(false);
+          // Iniciar polling mesmo com erro
+          startPolling();
         }
       }
     };
@@ -142,11 +205,16 @@ export function useLogMonitor(): UseLogMonitorResult {
     // Cleanup
     return () => {
       window.clearTimeout(timeoutId);
+      if (pollIntervalRef.current) {
+        window.clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
       controller.abort();
       controllerRef.current = null;
       timeoutIdRef.current = null;
+      isPollingRef.current = false;
     };
-  }, [appendLog]);
+  }, [processLogLine, startPolling]);
 
   return {
     info,
