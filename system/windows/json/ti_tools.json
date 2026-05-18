@@ -1,11 +1,13 @@
 {
-  "programs": [
+  "data": [
     {
       "name": "Rufus",
+      "type": "install",
       "id": "Rufus.Rufus"
     },
     {
       "name": "Ventoy",
+      "type": "install",
       "id": "Ventoy.Ventoy"
     },
     {
@@ -14,14 +16,17 @@
     },
     {
       "name": "EaseUS Todo Backup",
+      "type": "install",
       "id": "EaseUS.TodoBackup"
     },
     {
       "name": "EaseUS Disk Copy",
+      "type": "install",
       "id": "EaseUS.DiskCopy"
     },
     {
       "name": "AIDA64",
+      "type": "install",
       "id": "FinalWire.AIDA64.Extreme"
     }
   ]

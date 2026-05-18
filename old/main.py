@@ -5,14 +5,13 @@ import sys
 import time
 import webbrowser
 from urllib.parse import urlencode
-from dataclasses import dataclass
 
 try:
-    from lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
+    from old.lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
     from lib.install import single_instance
 except ModuleNotFoundError:
     # Compatibility mode for executions where "src" is already the working root.
-    from lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
+    from old.lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
     from lib.install import single_instance
 
 try:
@@ -29,33 +28,8 @@ if getattr(sys, "frozen", False):
     os.chdir(os.path.dirname(sys.executable))
 
 APP_TITLE_TEMPLATE = "{system_name} Programs Manager"
-GRID_PADDING_X = 20
-GRID_PADDING_Y = 5
-PROGRAM_TAB_ROW = 10
+
 INSTALLATION_DELAY_SECONDS = 3
-
-
-@dataclass(frozen=True)
-class CategoryConfig:
-    key: str
-    label: str
-    row: int
-    default_selected: bool = False
-    supported_systems: tuple[str, ...] = ()
-    include_in_tabs: bool = True
-    installer_name: str | None = None
-
-
-CATEGORY_CONFIGS = (
-    CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization"),
-    CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development"),
-    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="drivers"),
-    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essentials"),
-    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="games"),
-    CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen"),
-    CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server"),
-    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), installer_name="ti_tools", include_in_tabs=False),
-)
 
 
 class App(ctk.CTk):  # type: ignore
@@ -64,8 +38,7 @@ class App(ctk.CTk):  # type: ignore
 
         self.system_name = system.nameSO()
         self.program_selection_vars = {}
-        self.category_vars = {}
-        self.category_checkboxes = {}
+        
         self.add_programs_window = None
         self.more_window = None
         self.program_tabview = None
@@ -97,17 +70,6 @@ class App(ctk.CTk):  # type: ignore
         subtitle = ctk.CTkLabel(self, text="Select the programs you want to install:")
         subtitle.grid(pady=10, padx=10, columnspan=2, row=1)
 
-    def _build_options_frame(self):
-        self.options_frame = ctk.CTkFrame(self)
-        self.options_frame.grid(row=3, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
-
-        for col in range(8):
-            self.options_frame.grid_columnconfigure(col, weight=1)
-        self.options_frame.grid_rowconfigure(PROGRAM_TAB_ROW - 1, weight=1)
-
-        for config in CATEGORY_CONFIGS:
-            self._create_category_checkbox(config)
-
     def _build_action_buttons(self):
         settings_frame = ctk.CTkFrame(self)
         settings_frame.grid(pady=20, padx=10, row=5, column=0, sticky="e")
@@ -125,57 +87,7 @@ class App(ctk.CTk):  # type: ignore
         run_button = ctk.CTkButton(button_frame, text="Next", command=self.run)
         run_button.grid(padx=5, pady=20, column=0, row=0)
 
-    def _create_category_checkbox(self, config: CategoryConfig):
-        variable = ctk.BooleanVar(value=config.default_selected)
-        checkbox = ctk.CTkCheckBox(
-            self.options_frame,
-            text=config.label,
-            variable=variable,
-            onvalue=True,
-            offvalue=False,
-        )
-
-        self.category_vars[config.key] = variable
-        self.category_checkboxes[config.key] = checkbox
-
-        if self._should_display_category(config):
-            checkbox.grid(
-                padx=GRID_PADDING_X,
-                pady=GRID_PADDING_Y,
-                row=config.row,
-                column=0,
-                sticky="w",
-            )
-
-    def _should_display_category(self, config: CategoryConfig) -> bool:
-        if not config.supported_systems:
-            return True
-        return any(system_name in self.system_name for system_name in config.supported_systems)
-
-    def _all_visible_categories_selected(self) -> bool:
-        visible_configs = [config for config in CATEGORY_CONFIGS if self._should_display_category(config)]
-        if not visible_configs:
-            return False
-
-        for config in visible_configs:
-            category_var = self.category_vars.get(config.key)
-            if category_var is None or not category_var.get():
-                return False
-        return True
-
-    def toggle_all_options(self):
-        should_select_all = not self._all_visible_categories_selected()
-
-        for config in CATEGORY_CONFIGS:
-            if not self._should_display_category(config):
-                continue
-
-            category_var = self.category_vars.get(config.key)
-            if category_var is not None:
-                category_var.set(should_select_all)
-
-    def uncheck_all_options(self):
-        self.toggle_all_options()
+    
 
     def _build_program_tab(self, config: CategoryConfig):
         if self.program_tabview is None:

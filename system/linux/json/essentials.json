@@ -1,41 +1,45 @@
 {
   "name": "Essentials",
   "description": "Essential programs for a functional Linux system.",
-  "programs": [
-    {
-      "name": "Free Download Manager",
-      "id": ""
-    },
+  "data": [
     {
       "name": "Google Chrome",
+      "type": "install",
       "id": "google-chrome-stable"
     },
     {
       "name": "Mozilla Firefox",
+      "type": "install",
       "id": "firefox"
     },
     {
       "name": "VLC",
+      "type": "install",
       "id": "vlc"
     },
     {
       "name": "WhatsApp (Desktop)",
+      "type": "install",
       "id": "whatsapp-for-linux"
     },
     {
       "name": "Telegram",
+      "type": "install",
       "id": "telegram-desktop"
     },
     {
       "name": "Spotify",
+      "type": "install",
       "id": "spotify-client"
     },
     {
       "name": "Git",
+      "type": "install",
       "id": "git"
     },
     {
       "name": "Curl",
+      "type": "install",
       "id": "curl"
     }
   ]

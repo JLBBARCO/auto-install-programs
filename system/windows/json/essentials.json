@@ -1,56 +1,91 @@
 {
   "name": "Essentials",
   "description": "Essential programs for a functional Windows system.",
-  "programs": [
+  "data": [
     {
       "name": "Adobe Acrobat",
+      "type": "install",
       "id": "Adobe.Acrobat.Reader.64-bit"
     },
     {
       "name": "Cloudflare WARP",
+      "type": "install",
       "id": "Cloudflare.Warp"
     },
     {
       "name": "Free Download Manager",
+      "type": "install",
       "id": "SoftDeluxe.FreeDownloadManager"
     },
     {
       "name": "Google Chrome",
+      "type": "install",
       "id": "Google.Chrome"
     },
     {
       "name": "Google Drive",
+      "type": "install",
       "id": "Google.Drive"
     },
     {
       "name": "Mozilla Firefox",
+      "type": "install",
       "id": "Mozilla.Firefox"
     },
     {
       "name": "Spotify",
+      "type": "install",
       "id": "Spotify.Spotify"
     },
     {
       "name": "VLC",
+      "type": "install",
       "id": "VideoLAN.VLC"
     },
     {
       "name": "WinRAR",
+      "type": "install",
       "id": "RARLab.WinRAR"
     },
     {
       "name": "Microsoft Office",
+      "type": "install",
       "id": "Microsoft.Office"
     },
     {
       "name": "Notion",
+      "type": "install",
       "id": "Notion.Notion"
     },
-    { "name": "Obsidian", "id": "Obsidian.Obsidian" },
-    { "name": "Camo Studio", "id": "Reincubate.CamoStudio" },
-    { "name": "Tor Browser", "id": "TheTorProject.TorBrowser" },
-    { "name": "Whatsapp", "id": "WhatsApp.WhatsApp" },
-    { "name": "Telegram", "id": "Telegram.TelegramDesktop" },
-    { "name": "Proton VPN", "id": "ProtonVPN.ProtonVPN" }
+    {
+      "name": "Obsidian",
+      "type": "install",
+      "id": "Obsidian.Obsidian"
+    },
+    {
+      "name": "Camo Studio",
+      "type": "install",
+      "id": "Reincubate.CamoStudio"
+    },
+    {
+      "name": "Tor Browser",
+      "type": "install",
+      "id": "TheTorProject.TorBrowser"
+    },
+    {
+      "name": "Whatsapp",
+      "type": "install",
+      "id": "WhatsApp.WhatsApp"
+    },
+    {
+      "name": "Telegram",
+      "type": "install",
+      "id": "Telegram.TelegramDesktop"
+    },
+    {
+      "name": "Proton VPN",
+      "type": "install",
+      "id": "ProtonVPN.ProtonVPN"
+    }
   ]
 }

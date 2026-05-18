@@ -1,73 +1,90 @@
 {
   "name": "Development",
   "description": "Development tools and environments for Windows.",
-  "programs": [
+  "data": [
     {
       "name": "Blender",
+      "type": "install",
       "id": "BlenderFoundation.Blender"
     },
     {
       "name": "Docker Desktop",
+      "type": "install",
       "id": "Docker.DockerDesktop"
     },
     {
       "name": "Figma",
+      "type": "install",
       "id": "Figma.Figma"
     },
     {
       "name": "Gimp",
+      "type": "install",
       "id": "GIMP.GIMP.3"
     },
     {
       "name": "Git",
+      "type": "install",
       "id": "Git.Git"
     },
     {
       "name": "GitHub Desktop",
+      "type": "install",
       "id": "GitHub.GitHubDesktop"
     },
     {
       "name": "Java Runtime Environment",
+      "type": "install",
       "id": "Oracle.JavaRuntimeEnvironment"
     },
     {
       "name": "Microsoft Teams",
+      "type": "install",
       "id": "Microsoft.Teams"
     },
     {
       "name": "MySQL Workbench",
+      "type": "install",
       "id": "Oracle.MySQLWorkbench"
     },
     {
       "name": "Node.js",
+      "type": "install",
       "id": "OpenJS.NodeJS"
     },
     {
       "name": "Visual Studio Code",
+      "type": "install",
       "id": "Microsoft.VisualStudioCode"
     },
     {
       "name": "Python 3.12",
+      "type": "install",
       "id": "Python.Python.3.12"
     },
     {
       "name": "Python Install Manager",
+      "type": "install",
       "id": "Python.PythonInstallManager"
     },
     {
       "name": "VirtualBox",
+      "type": "install",
       "id": "Oracle.VirtualBox"
     },
     {
       "name": "XAMPP",
+      "type": "install",
       "id": "ApacheFriends.Xampp.8.1"
     },
     {
       "name": "Postman",
+      "type": "install",
       "id": "Postman.Postman"
     },
     {
       "name": "Microsoft PowerShell",
+      "type": "install",
       "id": "Microsoft.PowerShell"
     }
   ]

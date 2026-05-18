@@ -1,61 +1,75 @@
 {
   "name": "Development",
   "description": "Development tools and environments for macOS.",
-  "programs": [
+  "data": [
     {
       "name": "Visual Studio Code",
+      "type": "install",
       "id": "visual-studio-code"
     },
     {
       "name": "Microsoft Teams",
+      "type": "install",
       "id": "microsoft-teams"
     },
     {
       "name": "GIMP",
+      "type": "install",
       "id": "gimp"
     },
     {
       "name": "GitHub Desktop",
+      "type": "install",
       "id": "github"
     },
     {
       "name": "MySQL Workbench",
+      "type": "install",
       "id": "mysql-workbench"
     },
     {
       "name": "XAMPP",
+      "type": "install",
       "id": "xampp"
     },
     {
       "name": "Docker",
+      "type": "install",
       "id": "docker"
     },
     {
       "name": "VirtualBox",
+      "type": "install",
       "id": "virtualbox"
     },
     {
       "name": "Figma",
+      "type": "install",
       "id": "figma"
     },
     {
       "name": "Blender",
+      "type": "install",
       "id": "blender"
     },
     {
       "name": "Git",
+      "type": "install",
       "id": "git"
     },
     {
       "name": "Python 3.12",
+      "type": "install",
       "id": "python@3.12"
     },
     {
       "name": "Node.js",
+      "type": "install",
       "id": "node"
     },
     {
       "name": "Microsoft PowerShell",
+      "type": "install",
       "id": "powershell"
     }
   ]

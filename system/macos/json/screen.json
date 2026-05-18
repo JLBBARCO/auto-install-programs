@@ -1,9 +1,10 @@
 {
   "name": "Screen",
   "description": "Remote access and display tools for macOS.",
-  "programs": [
+  "data": [
     {
       "name": "AnyDesk",
+      "type": "install",
       "id": "anydesk"
     }
   ]

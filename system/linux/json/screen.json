@@ -1,17 +1,20 @@
 {
   "name": "Screen",
   "description": "Remote access and display tools for Linux.",
-  "programs": [
+  "data": [
     {
       "name": "AnyDesk",
+      "type": "install",
       "id": "anydesk"
     },
     {
       "name": "Git",
+      "type": "install",
       "id": "git"
     },
     {
       "name": "VNC Server",
+      "type": "install",
       "id": "tightvncserver"
     }
   ]

@@ -1,17 +1,20 @@
 {
   "name": "Drivers",
   "description": "Essential drivers for your Windows system.",
-  "programs": [
+  "data": [
     {
       "name": "NVIDIA Drivers",
+      "type": "install",
       "id": "Nvidia.GeForceExperience"
     },
     {
       "name": "AMD Radeon Drivers",
+      "type": "install",
       "id": "AMD.RadeonSoftware"
     },
     {
       "name": "Intel Graphics Drivers",
+      "type": "install",
       "id": "Intel.IntelDriverAndSupportAssistant"
     }
   ]

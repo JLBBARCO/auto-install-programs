@@ -1,33 +1,40 @@
 {
   "name": "Games",
   "description": "A collection of games and gaming platforms for Windows.",
-  "programs": [
+  "data": [
     {
       "name": "Xbox App",
+      "type": "install",
       "id": "Microsoft.XboxApp"
     },
     {
       "name": "Steam",
+      "type": "install",
       "id": "Valve.Steam"
     },
     {
       "name": "Epic Games Launcher",
+      "type": "install",
       "id": "EpicGames.EpicGamesLauncher"
     },
     {
       "name": "Google Play Games",
+      "type": "install",
       "id": "Google.PlayGames"
     },
     {
       "name": "Discord",
+      "type": "install",
       "id": "Discord.Discord"
     },
     {
       "name": "Radmin VPN",
+      "type": "install",
       "id": "Famatech.RadminVPN"
     },
     {
       "name": "CurseForge",
+      "type": "install",
       "id": "Overwolf.CurseForge"
     }
   ]
