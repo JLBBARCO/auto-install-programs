@@ -17,9 +17,9 @@ class CategoryConfig:
 CATEGORY_CONFIGS = (
     CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization.json"),
     CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development.json"),
-    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="drivers.json"),
-    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essentials.json"),
-    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="games.json"),
+    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="driver.json"),
+    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essential.json"),
+    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="game.json"),
     CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen.json"),
     CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server.json"),
     CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), installer_name="ti_tools.json", include_in_tabs=False),

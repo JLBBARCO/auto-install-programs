@@ -6,13 +6,15 @@ import time
 import webbrowser
 from urllib.parse import urlencode
 
+from program.old.lib import add_programs, install as install_module, more, screen, uninstall as uninstall_module
+
 try:
-    from old.lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
-    from lib.install import single_instance
+    from old.lib import json, log, system
+    from program.old.lib.install import single_instance
 except ModuleNotFoundError:
     # Compatibility mode for executions where "src" is already the working root.
-    from old.lib import add_programs, install as install_module, json, log, more, screen, system, uninstall as uninstall_module
-    from lib.install import single_instance
+    from old.lib import json, log, system
+    from program.old.lib.install import single_instance
 
 try:
     import customtkinter as ctk

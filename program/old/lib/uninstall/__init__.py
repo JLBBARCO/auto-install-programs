@@ -2,12 +2,14 @@ import re
 import subprocess
 import shutil
 
+from program.lib import json, log
+
 try:
-	from lib import json, log, system
-	from lib.package_manager import list_installed_packages
+	from program.lib import system
+	from program.old.lib.package_manager import list_installed_packages
 except ModuleNotFoundError:
-	from lib import json, log, system
-	from lib.package_manager import list_installed_packages
+	from program.lib import system
+	from program.old.lib.package_manager import list_installed_packages
 
 
 WINDOWS_ADMIN_REQUIRED_IDS = {

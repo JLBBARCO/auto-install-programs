@@ -8,9 +8,9 @@ import tempfile
 from pathlib import Path
 import winreg
 try:
-    from lib import log
+    from program.lib import log
 except ModuleNotFoundError:
-    from lib import log
+    from program.lib import log
 
 
 GITHUB_REPO_RAW_URL = "https://raw.githubusercontent.com/JLBBARCO/programs-manager/main"

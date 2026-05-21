@@ -5,12 +5,14 @@ import shutil
 import time
 import importlib
 import sys
+
+from program.lib import log
 try:
-    from lib.json import _resource_path, ensure_repo_file, read_json
-    from lib import log, system
+    from program.lib.json import _resource_path, ensure_repo_file, read_json
+    from program.lib import system
 except ModuleNotFoundError:
-    from lib.json import _resource_path, ensure_repo_file, read_json
-    from lib import log, system
+    from program.lib.json import _resource_path, ensure_repo_file, read_json
+    from program.lib import system
 
 try:
     import psutil
@@ -351,9 +353,9 @@ def _run_custom_function(function_key: str) -> str:
 
     if normalized_key == 'vision-cursor':
         try:
-            from lib import customizations as customizations_module
+            from program.old.lib import customizations as customizations_module
         except ModuleNotFoundError:
-            from lib import customizations as customizations_module
+            from program.old.lib import customizations as customizations_module
         return customizations_module.apply_vision_cursor_black()
 
     return f'Unsupported custom function: {normalized_key}'
@@ -507,9 +509,9 @@ def customization(selected_program_ids=None):
         return execution_summary
     
     try:
-        import lib.customizations as custom
+        import program.old.lib.customizations as custom
     except ModuleNotFoundError:
-        import lib.customizations as custom
+        import program.old.lib.customizations as custom
     log.log('Starting startup management flow', level="INFO")
 
     try:

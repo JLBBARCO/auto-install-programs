@@ -1,5 +1,5 @@
 import json, os, sys
-from lib import log
+from program.lib import log
 
 
 def read_json(file_path: str):

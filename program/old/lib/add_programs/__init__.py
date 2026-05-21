@@ -1,10 +1,12 @@
 try:
-    from lib import json, system
-    from lib.package_manager import search_packages
+    from program.lib import system
+    from program.old.lib.package_manager import search_packages
 except ModuleNotFoundError:
-    from lib import json, system
-    from lib.package_manager import search_packages
+    from program.lib import system
+    from program.old.lib.package_manager import search_packages
 import customtkinter as ctk
+
+from program.lib import json
 
 title = 'Add Programs'
 

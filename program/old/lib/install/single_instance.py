@@ -20,9 +20,9 @@ except ImportError:
         sys.exit("psutil is required. Install dependencies and run again.")
 
 try:
-    from lib import log
+    from program.lib import log
 except ModuleNotFoundError:
-    from lib import log
+    from program.lib import log
 
 # Lock file path - stores the PID of the currently running installation
 LOCK_FILE = os.path.join(os.path.expanduser('~'), '.auto_install_programs.lock')

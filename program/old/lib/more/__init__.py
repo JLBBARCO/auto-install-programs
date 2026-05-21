@@ -6,14 +6,17 @@ import urllib.request
 
 import customtkinter as ctk
 
+from program.lib import system
+from program.old.lib import screen
+
 try:
-	from lib import log
-	from lib import json as json_data
-	from lib import screen, system, uninstall
+	from program.lib import log
+	from program.lib import json as json_data
+	from program.old.lib import uninstall
 except ModuleNotFoundError:
-	from lib import log
-	from lib import json as json_data
-	from lib import screen, system, uninstall
+	from program.lib import log
+	from program.lib import json as json_data
+	from program.old.lib import uninstall
 
 
 REPO_OWNER = "JLBBARCO"

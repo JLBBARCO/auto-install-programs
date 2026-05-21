@@ -1,10 +1,12 @@
 import re
 import subprocess
 
+from program.lib import log
+
 try:
-	from lib import log, system
+	from program.lib import system
 except ModuleNotFoundError:
-	from lib import log, system
+	from program.lib import system
 
 
 WINDOWS_NOISE_PATTERNS = (
