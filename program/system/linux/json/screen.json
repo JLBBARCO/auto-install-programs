@@ -5,17 +5,20 @@
     {
       "name": "AnyDesk",
       "type": "install",
-      "id": "anydesk"
+      "id": "anydesk",
+      "checkbox": true
     },
     {
       "name": "Git",
       "type": "install",
-      "id": "git"
+      "id": "git",
+      "checkbox": true
     },
     {
       "name": "VNC Server",
       "type": "install",
-      "id": "tightvncserver"
+      "id": "tightvncserver",
+      "checkbox": true
     }
   ]
 }

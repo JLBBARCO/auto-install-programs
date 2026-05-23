@@ -5,7 +5,8 @@
     {
       "name": "AnyDesk",
       "type": "install",
-      "id": "anydesk"
+      "id": "anydesk",
+      "checkbox": true
     }
   ]
 }

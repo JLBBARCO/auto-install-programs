@@ -5,37 +5,56 @@
     {
       "name": "Xbox App",
       "type": "install",
-      "id": "Microsoft.XboxApp"
+      "id": "Microsoft.XboxApp",
+      "checkbox": true
     },
     {
       "name": "Steam",
       "type": "install",
-      "id": "Valve.Steam"
+      "id": "Valve.Steam",
+      "checkbox": true
     },
     {
       "name": "Epic Games Launcher",
       "type": "install",
-      "id": "EpicGames.EpicGamesLauncher"
+      "id": "EpicGames.EpicGamesLauncher",
+      "checkbox": true
     },
     {
       "name": "Google Play Games",
       "type": "install",
-      "id": "Google.PlayGames"
+      "id": "Google.PlayGames",
+      "checkbox": true
     },
     {
       "name": "Discord",
       "type": "install",
-      "id": "Discord.Discord"
+      "id": "Discord.Discord",
+      "checkbox": true
     },
     {
       "name": "Radmin VPN",
       "type": "install",
-      "id": "Famatech.RadminVPN"
+      "id": "Famatech.RadminVPN",
+      "checkbox": true
     },
     {
       "name": "CurseForge",
       "type": "install",
-      "id": "Overwolf.CurseForge"
+      "id": "Overwolf.CurseForge",
+      "checkbox": true
+    },
+    {
+      "name": "GOG Galaxy",
+      "type": "install",
+      "id": "GOG.Galaxy",
+      "checkbox": true
+    },
+    {
+      "name": "BlueStacks",
+      "type": "install",
+      "id": "BlueStack.BlueStacks",
+      "checkbox": true
     }
   ]
 }

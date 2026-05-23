@@ -5,42 +5,50 @@
     {
       "name": "Lively Wallpaper",
       "type": "install",
-      "id": "9NTM2QC6QWS7"
+      "id": "9NTM2QC6QWS7",
+      "checkbox": true
     },
     {
       "name": "Rainmeter",
       "type": "install",
-      "id": "Rainmeter.Rainmeter"
+      "id": "Rainmeter.Rainmeter",
+      "checkbox": true
     },
     {
       "name": "TranslucentTB",
       "type": "install",
-      "id": "CharlesMilette.TranslucentTB"
+      "id": "CharlesMilette.TranslucentTB",
+      "checkbox": true
     },
     {
       "name": "Microsoft PowerToys",
       "type": "install",
-      "id": "Microsoft.PowerToys"
+      "id": "Microsoft.PowerToys",
+      "checkbox": true
     },
     {
       "name": "Dark Mode ",
       "type": "function",
-      "id": "dark-mode"
+      "id": "dark-mode",
+      "checkbox": true
     },
     {
       "name": "Seelen UI",
       "type": "install",
-      "id": "SeelenUI.SeelenUI"
+      "id": "SeelenUI.SeelenUI",
+      "checkbox": true
     },
     {
       "name": "Vision Cursor",
       "type": "function",
-      "id": "vision-cursor"
+      "id": "vision-cursor",
+      "checkbox": true
     },
     {
       "name": "Essential Programs Initialization",
       "type": "function",
-      "id": "essential-programs-initialization"
+      "id": "essential-programs-initialization",
+      "checkbox": true
     }
   ]
 }

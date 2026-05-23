@@ -5,52 +5,62 @@
     {
       "name": "Google Chrome",
       "type": "install",
-      "id": "google-chrome"
+      "id": "google-chrome",
+      "checkbox": true
     },
     {
       "name": "Mozilla Firefox",
       "type": "install",
-      "id": "firefox"
+      "id": "firefox",
+      "checkbox": true
     },
     {
       "name": "VLC",
       "type": "install",
-      "id": "vlc"
+      "id": "vlc",
+      "checkbox": true
     },
     {
       "name": "The Unarchiver",
       "type": "install",
-      "id": "the-unarchiver"
+      "id": "the-unarchiver",
+      "checkbox": true
     },
     {
       "name": "WhatsApp",
       "type": "install",
-      "id": "whatsapp"
+      "id": "whatsapp",
+      "checkbox": true
     },
     {
       "name": "Telegram",
       "type": "install",
-      "id": "telegram"
+      "id": "telegram",
+      "checkbox": true
     },
     {
       "name": "Spotify",
       "type": "install",
-      "id": "spotify"
+      "id": "spotify",
+      "checkbox": true
     },
     {
       "name": "Google Drive",
       "type": "install",
-      "id": "google-drive"
+      "id": "google-drive",
+      "checkbox": true
     },
     {
       "name": "Cloudflare WARP",
       "type": "install",
-      "id": "cloudflare-warp"
+      "id": "cloudflare-warp",
+      "checkbox": true
     },
     {
       "name": "Adobe Acrobat Reader",
       "type": "install",
-      "id": "adobe-acrobat-reader"
+      "id": "adobe-acrobat-reader",
+      "checkbox": true
     }
   ]
 }

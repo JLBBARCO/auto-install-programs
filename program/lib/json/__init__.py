@@ -2,6 +2,19 @@ import json, os, sys
 from program.lib import log
 
 
+def read_external_json(file: str):
+    pass
+
+def read_internal_json(file: str):
+    path = os.path.join(os.path.dirname(__file__), file)
+    file_path = fr'{path}\{file}'
+    try:
+        json = read_json(file_path)
+        return json if isinstance(json, dict) else {}
+    except Exception as e:
+        log.log(f"Failed to read internal JSON file '{file}': {e}")
+        return {}
+
 def read_json(file_path: str):
     with open(file_path, 'r', encoding='utf-8') as f:
         data = f.read().strip()

@@ -5,17 +5,20 @@
     {
       "name": "NVIDIA Drivers",
       "type": "install",
-      "id": "Nvidia.GeForceExperience"
+      "id": "Nvidia.GeForceExperience",
+      "checkbox": true
     },
     {
       "name": "AMD Radeon Drivers",
       "type": "install",
-      "id": "AMD.RadeonSoftware"
+      "id": "AMD.RadeonSoftware",
+      "checkbox": true
     },
     {
       "name": "Intel Graphics Drivers",
       "type": "install",
-      "id": "Intel.IntelDriverAndSupportAssistant"
+      "id": "Intel.IntelDriverAndSupportAssistant",
+      "checkbox": true
     }
   ]
 }

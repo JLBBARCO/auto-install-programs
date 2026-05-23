@@ -5,52 +5,62 @@
     {
       "name": "SSH Server",
       "type": "install",
-      "id": "openssh-server"
+      "id": "openssh-server",
+      "checkbox": true
     },
     {
       "name": "Vim (Editor)",
       "type": "install",
-      "id": "vim"
+      "id": "vim",
+      "checkbox": true
     },
     {
       "name": "Curl & Wget",
       "type": "install",
-      "id": "curl wget"
+      "id": "curl wget",
+      "checkbox": true
     },
     {
       "name": "HTOP (Monitorização)",
       "type": "install",
-      "id": "htop"
+      "id": "htop",
+      "checkbox": true
     },
     {
       "name": "Net-Tools (Rede)",
       "type": "install",
-      "id": "net-tools"
+      "id": "net-tools",
+      "checkbox": true
     },
     {
       "name": "Git",
       "type": "install",
-      "id": "git"
+      "id": "git",
+      "checkbox": true
     },
     {
       "name": "Nginx",
       "type": "install",
-      "id": "nginx"
+      "id": "nginx",
+      "checkbox": true
     },
     {
       "name": "Docker",
       "type": "install",
-      "id": "docker.io / docker"
+      "id": "docker.io / docker",
+      "checkbox": true
     },
     {
       "name": "UFW Firewall",
       "type": "install",
-      "id": "ufw"
+      "id": "ufw",
+      "checkbox": true
     },
     {
       "name": "Firewalld",
       "type": "install",
-      "id": "firewalld"
+      "id": "firewalld",
+      "checkbox": true
     }
   ]
 }

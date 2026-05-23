@@ -3,31 +3,37 @@
     {
       "name": "Rufus",
       "type": "install",
-      "id": "Rufus.Rufus"
+      "id": "Rufus.Rufus",
+      "checkbox": true
     },
     {
       "name": "Ventoy",
       "type": "install",
-      "id": "Ventoy.Ventoy"
+      "id": "Ventoy.Ventoy",
+      "checkbox": true
     },
     {
       "name": "BIOS",
-      "function": "path-to-bios"
+      "function": "path-to-bios",
+      "checkbox": true
     },
     {
       "name": "EaseUS Todo Backup",
       "type": "install",
-      "id": "EaseUS.TodoBackup"
+      "id": "EaseUS.TodoBackup",
+      "checkbox": true
     },
     {
       "name": "EaseUS Disk Copy",
       "type": "install",
-      "id": "EaseUS.DiskCopy"
+      "id": "EaseUS.DiskCopy",
+      "checkbox": true
     },
     {
       "name": "AIDA64",
       "type": "install",
-      "id": "FinalWire.AIDA64.Extreme"
+      "id": "FinalWire.AIDA64.Extreme",
+      "checkbox": true
     }
   ]
 }

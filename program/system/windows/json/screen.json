@@ -5,17 +5,20 @@
     {
       "name": "Spacedesk Client",
       "type": "install",
-      "id": "Datronicsoft.SpacedeskDriver.Client"
+      "id": "Datronicsoft.SpacedeskDriver.Client",
+      "checkbox": true
     },
     {
       "name": "Spacedesk Server",
       "type": "install",
-      "id": "Datronicsoft.SpacedeskDriver.Server"
+      "id": "Datronicsoft.SpacedeskDriver.Server",
+      "checkbox": true
     },
     {
       "name": "AnyDesk",
       "type": "install",
-      "id": "AnyDesk.AnyDesk"
+      "id": "AnyDesk.AnyDesk",
+      "checkbox": true
     }
   ]
 }

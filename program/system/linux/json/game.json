@@ -5,12 +5,14 @@
     {
       "name": "Steam",
       "type": "install",
-      "id": "steam"
+      "id": "steam",
+      "checkbox": true
     },
     {
       "name": "Discord",
       "type": "install",
-      "id": "discord"
+      "id": "discord",
+      "checkbox": true
     }
   ]
 }

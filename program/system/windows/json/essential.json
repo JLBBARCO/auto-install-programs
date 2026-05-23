@@ -5,87 +5,104 @@
     {
       "name": "Adobe Acrobat",
       "type": "install",
-      "id": "Adobe.Acrobat.Reader.64-bit"
+      "id": "Adobe.Acrobat.Reader.64-bit",
+      "checkbox": true
     },
     {
       "name": "Cloudflare WARP",
       "type": "install",
-      "id": "Cloudflare.Warp"
+      "id": "Cloudflare.Warp",
+      "checkbox": true
     },
     {
       "name": "Free Download Manager",
       "type": "install",
-      "id": "SoftDeluxe.FreeDownloadManager"
+      "id": "SoftDeluxe.FreeDownloadManager",
+      "checkbox": true
     },
     {
       "name": "Google Chrome",
       "type": "install",
-      "id": "Google.Chrome"
+      "id": "Google.Chrome",
+      "checkbox": true
     },
     {
       "name": "Google Drive",
       "type": "install",
-      "id": "Google.Drive"
+      "id": "Google.Drive",
+      "checkbox": true
     },
     {
       "name": "Mozilla Firefox",
       "type": "install",
-      "id": "Mozilla.Firefox"
+      "id": "Mozilla.Firefox",
+      "checkbox": true
     },
     {
       "name": "Spotify",
       "type": "install",
-      "id": "Spotify.Spotify"
+      "id": "Spotify.Spotify",
+      "checkbox": true
     },
     {
       "name": "VLC",
       "type": "install",
-      "id": "VideoLAN.VLC"
+      "id": "VideoLAN.VLC",
+      "checkbox": true
     },
     {
       "name": "WinRAR",
       "type": "install",
-      "id": "RARLab.WinRAR"
+      "id": "RARLab.WinRAR",
+      "checkbox": true
     },
     {
       "name": "Microsoft Office",
       "type": "install",
-      "id": "Microsoft.Office"
+      "id": "Microsoft.Office",
+      "checkbox": true
     },
     {
       "name": "Notion",
       "type": "install",
-      "id": "Notion.Notion"
+      "id": "Notion.Notion",
+      "checkbox": true
     },
     {
       "name": "Obsidian",
       "type": "install",
-      "id": "Obsidian.Obsidian"
+      "id": "Obsidian.Obsidian",
+      "checkbox": true
     },
     {
       "name": "Camo Studio",
       "type": "install",
-      "id": "Reincubate.CamoStudio"
+      "id": "Reincubate.CamoStudio",
+      "checkbox": true
     },
     {
       "name": "Tor Browser",
       "type": "install",
-      "id": "TheTorProject.TorBrowser"
+      "id": "TheTorProject.TorBrowser",
+      "checkbox": true
     },
     {
       "name": "Whatsapp",
       "type": "install",
-      "id": "WhatsApp.WhatsApp"
+      "id": "WhatsApp.WhatsApp",
+      "checkbox": true
     },
     {
       "name": "Telegram",
       "type": "install",
-      "id": "Telegram.TelegramDesktop"
+      "id": "Telegram.TelegramDesktop",
+      "checkbox": true
     },
     {
       "name": "Proton VPN",
       "type": "install",
-      "id": "ProtonVPN.ProtonVPN"
+      "id": "ProtonVPN.ProtonVPN",
+      "checkbox": true
     }
   ]
 }

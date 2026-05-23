@@ -5,87 +5,104 @@
     {
       "name": "Blender",
       "type": "install",
-      "id": "BlenderFoundation.Blender"
+      "id": "BlenderFoundation.Blender",
+      "checkbox": true
     },
     {
       "name": "Docker Desktop",
       "type": "install",
-      "id": "Docker.DockerDesktop"
+      "id": "Docker.DockerDesktop",
+      "checkbox": true
     },
     {
       "name": "Figma",
       "type": "install",
-      "id": "Figma.Figma"
+      "id": "Figma.Figma",
+      "checkbox": true
     },
     {
       "name": "Gimp",
       "type": "install",
-      "id": "GIMP.GIMP.3"
+      "id": "GIMP.GIMP.3",
+      "checkbox": true
     },
     {
       "name": "Git",
       "type": "install",
-      "id": "Git.Git"
+      "id": "Git.Git",
+      "checkbox": true
     },
     {
       "name": "GitHub Desktop",
       "type": "install",
-      "id": "GitHub.GitHubDesktop"
+      "id": "GitHub.GitHubDesktop",
+      "checkbox": true
     },
     {
       "name": "Java Runtime Environment",
       "type": "install",
-      "id": "Oracle.JavaRuntimeEnvironment"
+      "id": "Oracle.JavaRuntimeEnvironment",
+      "checkbox": true
     },
     {
       "name": "Microsoft Teams",
       "type": "install",
-      "id": "Microsoft.Teams"
+      "id": "Microsoft.Teams",
+      "checkbox": true
     },
     {
       "name": "MySQL Workbench",
       "type": "install",
-      "id": "Oracle.MySQLWorkbench"
+      "id": "Oracle.MySQLWorkbench",
+      "checkbox": true
     },
     {
       "name": "Node.js",
       "type": "install",
-      "id": "OpenJS.NodeJS"
+      "id": "OpenJS.NodeJS",
+      "checkbox": true
     },
     {
       "name": "Visual Studio Code",
       "type": "install",
-      "id": "Microsoft.VisualStudioCode"
+      "id": "Microsoft.VisualStudioCode",
+      "checkbox": true
     },
     {
       "name": "Python 3.12",
       "type": "install",
-      "id": "Python.Python.3.12"
+      "id": "Python.Python.3.12",
+      "checkbox": true
     },
     {
       "name": "Python Install Manager",
       "type": "install",
-      "id": "Python.PythonInstallManager"
+      "id": "Python.PythonInstallManager",
+      "checkbox": true
     },
     {
       "name": "VirtualBox",
       "type": "install",
-      "id": "Oracle.VirtualBox"
+      "id": "Oracle.VirtualBox",
+      "checkbox": true
     },
     {
       "name": "XAMPP",
       "type": "install",
-      "id": "ApacheFriends.Xampp.8.1"
+      "id": "ApacheFriends.Xampp.8.1",
+      "checkbox": true
     },
     {
       "name": "Postman",
       "type": "install",
-      "id": "Postman.Postman"
+      "id": "Postman.Postman",
+      "checkbox": true
     },
     {
       "name": "Microsoft PowerShell",
       "type": "install",
-      "id": "Microsoft.PowerShell"
+      "id": "Microsoft.PowerShell",
+      "checkbox": true
     }
   ]
 }

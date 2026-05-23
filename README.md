@@ -1,321 +1,309 @@
-# Programs Manager
+# Gerenciador de Programas
 
-Programs Manager is a cross-platform installer and startup manager. The Windows build includes installer categories plus custom actions such as startup management and system customization.
+Gerenciador de Programas é um instalador e desinstalador multi-plataforma e gerenciador de inicialização. A versão do Windows inclui categorias de instalador, além de ações personalizadas, como gerenciamento de inicialização e personalização do sistema.
 
-## More information
+## Ícone do sistema
 
-- [macOS](#macos)
-- [Linux](#linux)
-- [Windows](#windows)
+![Ícone do sistema](src/assets/icon/icon.ico)
 
-## Interface
+## Programa
 
-![UI](src/assets/img/thumbnail.webp)
+Sistema de gerenciamento de programas para fácil instalação ou desinstalação numa possível formatação ou configuração de computador ou numa otimização.
 
-## Packaging
+### FRONT-END Programa
 
-The project is packaged with PyInstaller using `build.bat` on Windows, `build.sh` on Linux, and `build-mac.sh` on macOS. Both `src` and `install` are bundled into the executable so runtime configuration and Windows assets remain available.
+#### Program Language
 
-Runtime data written locally:
+EN-US
 
-- `programs.log` — registry startup dump produced by the startup manager actions.
-- `log.log` — shared runtime log exposed to the background log bridge.
+#### Primeira tela
 
-## One-line run (no manual download)
+Conterá o título variável do programas, que varia de acordo com o Sistema Operacional.
 
-Run directly from the terminal without cloning the repository. The script fetches/updates source code into a local cache and launches the app.
+Container onde aparecerá cada classe de função em forma de checklist.
 
-Windows PowerShell:
+No canto inferior esquerdo terá um botão que ao clicar seleciona ou desmarca todas as opções do container principal.
 
-```powershell
-irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
-```
+No canto inferior direito, haverá um botão de "Next", que ao clicar nele o sistema fechará a primeira tela e abrirá a segunda tela, e o sistema transmitirá um array somente com os dados das opções selecionadas.
 
-Linux:
+#### Segunda tela
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
-```
+##### Container principal
 
-MacOS:
+Quando for aberta a segunda tela, o sistema irá mostrará os dados do array _data_ que está dentro de cada object do array _json_data_, e mostrará esses dados no container principal.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
-```
+##### Menu suspenso
 
-Optional branch override (useful for testing `beta`):
+Cada opção é referente à variável _name_ dentro do object no array _json_data_ recebido do sistema de leitura de JSON, e ao clicar numa opção específica, o programa mostrará os dados do JSON referente, organizado em ordem alfabética no container de conteúdo.
 
-```powershell
-$env:AIP_BRANCH='beta'; irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
-```
+##### Conteúdo
 
-```bash
-AIP_BRANCH=beta curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
-```
+Será mostrado um checklist dos dados do JSON referente à opção seleciona no menu suspenso, com as seguintes características:
 
-## Current scope
+- Primeira coluna terá o checkbox;
+- Segunda coluna terá o nome da função;
+- Terceira coluna terá o tipo da função, se é _install_, _uninstall_ ou _function_.
 
-The Windows flow currently exposes these actions:
+##### Container de Botões
 
-- Disable startup entries that are not listed in the repository whitelist.
-- Re-enable startup entries listed in the repository whitelist.
-- Install categories from the Windows JSON files, including custom `function` entries.
-- Apply the Vision Cursor Black fallback from `install/windows/vision-cursor-black` when the function is selected.
-- Run uninstall selections before install selections in the same execution flow.
-- Support Windows category entries that use either `id` or `function`, including `ti_tools.json`.
+No canto inferior esquerdo, haverá um container com dois botões:
 
-Startup resources (category JSON files, whitelist, Office deployment files) are downloaded from the repository at runtime when needed.
+- Na direita, terá um botão de _Add Program_. Quando clicado, ele abre a tela 3.1 com as seguintes características:
+  - No topo terá uma barra de pesquisa e um botão de _Search_;
+  - Quando o usuário digitar algo na barra e clicar em _Search_ ou apertar enter, o sistema rodará uma função do backend que retorna um objeto com os programas relacionados encontrados;
+  - No container principal será mostrado os dados desse objeto, mas em três colunas:
+  - A primeira será um botão, que alterna entre _Add_ e _Remove_ dependendo do click do usuário;
+  - Na segunda coluna será mostrado o nome do programa;
+  - Na terceira coluna será mostrado o id do programa;
 
-## Configuration (JSON schema)
+- Na esquerda do container, terá outro botão chamado _Remove Programs_, que quando clicado fará:
+  - Abrirá a tela 3.2 com layout semelhante a 3.1;
 
-Category files in `install/windows/*.json` follow a simple schema. Each file contains a top-level `programs` array with entries that use one of two keys to define an action:
+##### Botão de execução
 
-- `id` — package identifier used by the system package manager (e.g., `winget`, `brew`, `apt`). When present, the installer uses the package manager to install the program.
-- `function` — a repository-defined custom action. The installer dispatches these to internal handlers instead of a package manager.
+No canto inferior direito da tela 2, haverá um botão de _RUN_, que fechará a tela e dará início ao sistema principal em segundo plano.
 
-Example entries:
+### BACK-END Programa
+
+#### JSON
+
+##### Escrita em JSON
+
+Quando for chamada função de geração de JSONs, o sistema verificará se o arquivo `user.json` existe no caminho `C:\Users\<user>\Downloads\Programs Manager`. Se não existir, ele cria o arquivo e insere a seguinte estrutura:
 
 ```json
-{ "name": "Rufus", "id": "Rufus.Rufus" }
-{ "name": "Dark Mode", "function": "dark-mode" }
-{ "name": "BIOS", "function": "path-to-bios" }
+{
+  "name": "User",
+  "description": "User data generated after execution of write system",
+  "data": []
+}
 ```
 
-Behavior notes:
+##### Leitura de JSON
 
-- If an entry provides both `id` and `function`, `function` will take precedence and the custom handler will run.
-- Supported built-in `function` keys include `dark-mode`, `path-to-bios`, and `vision-cursor`. Custom handlers are implemented in `lib.install._run_custom_function` and `lib.customizations`.
-- The GUI and `install` module accept either store `id` values or `function` keys and will present entries accordingly.
+###### JSON Interno
 
-## Build and CI
+A leitura do JSON interno funciona praticamente igual ao sistema de [Escrita em JSON](#escrita-em-json), a diferença é que ao invés de escrever, esse sistema irá somente ler o arquivo e salvará os dados desse arquivo no array _json_data_.
 
-The main build workflow runs on Python 3.12 and is configured for the `main` and `beta` branches. It triggers when Python files, install data, workflow files, the README, `requirements.txt`, or platform build scripts change. Pushes to `beta` publish GitHub pre-releases; pushes to `main` publish regular releases.
+###### JSON Externo
 
-The macOS installer workflow uses Python 3.12 and creates a package with `pkgbuild` after the app bundle is produced.
+A leitura de JSON externo utilizará o Github RAW no link `https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/program/system/<sistema_operacional>/json/<nome_do_arquivo>.json` e salvará os dados de cada JSON lido no array _json_data_.
 
-On each successful platform build, the CI workflow launches the compiled app, captures a screenshot for Windows, Linux, and macOS, updates `src/assets/img/windows.webp`, `src/assets/img/linux.webp`, `src/assets/img/macos.webp`, and rebuilds `src/assets/img/thumbnail.webp` from those three images.
+#### log.log
 
-## macOS
+Ao escrever no log.log, o sistema terá quatro tópicos de mensagens:
 
-The macOS section is organized around these areas:
+- \[INFO\]
+- \[WARNING\]
+- \[ERROR\]
 
-- [Developer Tools](#developer-tools)
-- [Essential Programs](#essential-programs)
-- [Screen](#screen)
+O tópico _INFO_ será para informar que tal coisa começou ou aconteceu. Exemplos: `Start system`, `Find and read essentials.json`, `End system`.
 
-![macOS screenshot](src/assets/img/macos.webp)
+Já o tópico _WARNING_, servirá para indicar que algo aconteceu parcialmente correto. Ex.: `Find and not read essentials.json`, `Visual Studio Code updated`.
 
-### Essential programs
+E o _ERROR_ servirá para algo que deu completamente errado. Ex.: `Not found essentials.json`, `Visual Studio Code not installed and not updated`.
 
-- Adobe Acrobat
-- Cloudflare Warp
-- Free Download Manager
-- Google Chrome
-- Google Drive
-- Mozilla Firefox
-- Spotify
-- Telegram
-- The Unarchiver
-- VLC
-- WhatsApp
+#### _Add Program_ na tela 2
 
-### Screen
+Quando o usuário clicar em _Add Program_ na tela secundária, o sistema irá abrir a tela 3.1 descrita na parte de frontend. O sistema da barra de pesquisa pesquisará no sistema de gerenciador de pacotes, _ex.: WinGet no Windows_, e o botão que alterna entre _Add_ e _Remove_ que adicionará o nome e id do programa referente à um object que, quando clicado no botão _Submit_, esse object será salvo no arquivo user.json, no fim do array _data_, com na seguinte estrutura:
 
-- AnyDesk
+```json
+{
+  "name": "<nome_do_programa>",
+  "type": "install",
+  "checkbox": "selected",
+  "id": "<id_do_programa>"
+}
+```
 
-### Developer Tools
+#### _Remove Program_ na tela 2
 
-- Blender
-- Docker
-- Figma
-- GIMP
-- GitHub
-- Microsoft Teams
-- MySQL Workbench
-- VirtualBox
-- Visual Studio Code
-- XAMPP
+Quando o usuário clicar em _Remove Program_ também da tela secundária, abrirá a tela 3.2 que terá um funcionamento muito parecido da tela 2.1. A diferença é que enquanto a tela estiver carregando, o sistema listará e mostra todos os programas instalados e salvará o array no final do array _data_ no arquivo user, com a seguinte estrutura:
 
-## Linux
+```json
+{
+  "name": "<nome_do_programa>",
+  "type": "uninstall",
+  "checkbox": "selected",
+  "id": "<id_do_programa>"
+}
+```
 
-The Linux section is organized around these areas:
+para ser utilizado pelo gerenciador de pacotes, ex.: `winget uninstall -id <id-do-programa>`.
 
-- [Developer Tools](#developer-tools)
-- [Drivers](#drivers)
-- [Essential Programs](#essential-programs-1)
-- [Server Tools](#server-tools)
-- [Screen](#screen-1)
+#### Configurações padrão do Terminal Windows, Linux e MacOS
 
-![Linux screenshot](src/assets/img/linux.webp)
+Para Windows, todos os comandos _WinGet_ terão que possuir o comando `--accept-source-agreements --accept-package-agreements >nul 2>&1` no final da linha para filtrar barras de progresso e aceitar termos de serviço automaticamente.
 
-### Drivers
+Para Linux/MacOS, todos os comandos Bash/Zsh terão que possuir ao final da linha o comando `> /dev/null 2>&1`
 
-The system analyzes the graphics card and installs the appropriate drivers.
+E se tiver alguma execução em PowerShell, a execução terá que inserir no final da linha o comando `*> $null`
 
-- AMD
-- Intel
-- NVIDIA
+#### Execução em segundo plano
 
-### Essential programs
+Quando o usuário clicar em _RUN_ na tela 2, todas as telas serão fechadas e o programa continuará somente em segundo plano. Simultaneamente ao fechamento, ele salvará no arquivo log.log a seguinte mensagem: `[dd/mm/aaaa hh:mm:ss] [INFO] Start system`. Também abrirá o compartilhamento do arquivo log.log em localhost HTTP na porta 9999 e abrirá o site [Programs Manager Website](https://programs-manager-website.vercel.app).
 
-- Curl
-- Free Download Manager
-- Git
-- Google Chrome
-- Mozilla Firefox
-- Spotify
-- Telegram
-- VLC
-- WhatsApp
+Logo após as primeiras execuções, o programa iniciará as tarefas principais na seguinte ordem:
 
-### Screen
+- Atualizar o gerenciador de pacotes, exemplo Windows: _Microsoft.AppInstaller_;
+- Chamar o sistema do [JSON Interno](#json-interno) e salvar esses dados no array _json_data_;
+- Obter os dados pelo [JSON Externo](#json-externo) e irá salvá-los também no array _json_data_;
+- Enquanto o sistema estiver lendo os arquivos JSONs, ele escreverá a seguinte mensagem no log.log para cada JSON:
+  - Se for lido com sucesso:
 
-- AnyDesk
-- Git
-- VNC Server
+    ````log
+    [dd/mm/aaaa hh:mm:ss] [INFO] Read <nome_do_arquivo> successfully```
+    ````
 
-### Developer Tools
+  - Se der erro:
 
-- Arduino IDE
-- Blender
-- Docker
-- GIMP
-- Git
-- Node.js
-- Python 3
-- VirtualBox
-- Visual Studio Code
+    ````log
+    [dd/mm/aaaa hh:mm:ss] [ERROR] Read <nome_do_arquivo> with error <erro>```
+    ````
 
-### Server Tools
+- Fazer um loop para cada object no _json_data_ e separar os seguintes dados:
+  - O sistema faz outro loop para os dados do array _data_ e faz o seguinte com os objects:
+    - Se o _type_ do object for `install`, salvará o object no array _install_;
+    - Se o _type_ do object for `uninstall`, salvará o object no array _uninstall_;
+    - Se o _type_ do object for `function`, salvará o object no array _function_;
+- Depois executa cada função de acordo:
+  - Primeiro desinstala os programas listados no array _uninstall_, utilizando o gerenciador de pacotes. Ex.: `winget uninstall -id <id_do_programa>`;
+  - Depois executa os da _function_, que verificará as funções no sistema e executará a função referente ao dado;
+  - Por fim, instalará os programas listados no _install_, também utilizando
 
-- Curl & Wget
-- Git
-- htop
-- net-tools
-- SSH server
-- Vim
+## Site
 
-## Windows
+Site que receberá os dados do arquivo log.log gerado pela execução do programa. Quando o programa é executado, ele abre uma aba no navegador com este site. Este projeto irá monitorar e retornar ao usuário os dados do arquivo em tempo real para que o usuário possa saber o progresso do programa.
 
-The Windows app combines startup management, install categories, and system customization.
+Esse site será salvo no Github e terá hospedagem vinculada na Vercel.
 
-The Linux section is organized around these areas:
+### FRONT-END Site
 
-- [Behavior](#behavior)
-- [Installations and Modifications](#installations-and-modifications)
-- [Safety](#safety)
-- [Whitelist](#whitelist)
+#### Site Language
 
-![Windows screenshot](src/assets/img/windows.webp)
+EN-US
 
-### Behavior
+#### Tela principal
 
-- Disable startup entries that are not on the repository whitelist.
-- Re-enable startup entries that are on the repository whitelist.
-- Save the current registry startup dump to `programs.log` after each action.
-- Run uninstall selections before install selections when both are chosen.
-- Support JSON entries that use either `id` or `function`.
-- Open the shared log bridge for the runtime site when the app starts a run session.
+Será mostrado três contêineres com os dados obtidos do Back-end com as seguintes informações:
 
-### Safety
+- Cada contêiner conterá uma altura fixa, com uma barra de rolagem horizontal. Os dados serão mostrados de forma que os mais antigos aparecerão acima e os mais recentes aparecerão abaixo. O contêiner terá rolagem automática para enfatizar os últimos dados, mas se o usuário rolar para cima manualmente, a rolagem automática é pausada até o usuário rolar novamente ao fim dos dados;
+- Os dados serão recebidos da seguinte forma:
+  - Para informações:
 
-- The whitelist is downloaded from the repository and cached locally at runtime.
-- Matching is normalized and exact; broad substring matches were removed to avoid false positives.
-- Theme, mouse precision, power plan, Explorer restarts, and other deprecated Windows-only actions are kept isolated behind explicit functions.
+    ```log
+    [dd/mm/aaaa hh:mm:ss] [INFO] <mensagem>
+    ```
 
-### Whitelist
+  - Para semi-erros:
 
-Allowed startup keys are defined in `install/windows/white_list.txt` in the repository.
+    ```log
+    [dd/mm/aaaa hh:mm:ss] [WARNING] <mensagem>
+    ```
 
-Use `install/windows/list_startup_programs.py` to inspect the registry names present on your machine and adjust the whitelist if needed.
+  - Para erros completos
 
-### Installations and Modifications
+    ```log
+    [dd/mm/aaaa hh:mm:ss] [ERROR] <mensagem>
+    ```
 
-- [Customization](#customization)
-- [Development](#development)
-- [Drivers](#drivers-1)
-- [Essential Programs](#essential-programs-2)
-- [Games](#games)
-- [Screen](#screen-2)
-- [Customization](#customization)
-- [TI Tools](#ti-tools)
+- Os contêineres serão organizados de acordo com os resultados `INFO`, `WARNING` e `ERROR` e mostrarão somente os dados referentes;
+- O dado que será recebido será do tipo: `[01/06/2026 12:30:45] [SUCCESS] Visual Studio Code installed`, e o que será mostrado para o usuário será da seguinte forma: `01/06/2026 12:30:45 | Visual Studio installed`, com a data e hora na cor `#808080` e a informação na cor padrão de texto do site;
+- Abaixo, a segunda parte só aparecerá se o arquivo possuir um histórico além de somente o histórico da atual execução;
+- Esse histórico será definido pelo cálculo de tolerância de 1 minuto de atraso a partir da abertura do site. Ex.: se no arquivo possuir a datação `[01/06/2026 00:00:00]` e o site possuir a datação `[01/06/2026 00:01:00]`, a informação da linha será mostrada na tela principal. Agora, se a datação do arquivo for a mesma, mas do site for `[01/06/2026 00:01:01]`, essa informação será mostrada na segunda parte onde será a partição de histórico de execuções anteriores. Esse sistema de filtro servirá para que o site de ênfase aos dados atuais, mas se o usuário quiser ver os dados de outras execuções ele consegue. O tempo de 1 minuto de tolerância a partir da execução do programa em relação a datação do site é para que se o site demorar para carregar, os dados da execução atual não irão para o histórico geral;
 
-#### Customization
+#### Rodapé
 
-- Dark Mode (Enable dark mode)
-- Essential Programs Initialization (Disable all programs and re-enable only essential programs on initialization to Windows)
-- Lively Wallpaper
-- Microsoft PowerToys
-- Rainmeter
-- Seelen UI
-- TranslucentTB
-- Vision Cursor (Alter cursor to Vision Cursor)
+##### Container de contato
 
-#### Development
+Nesse container será mostrado os contatos obtidos pelo [Contato](#contato) em forma de itens redondos, mostrando à primeira vista somente os ícones. O card terá um sistema em que ao passar o mouse por cima será mostrado o conteúdo da variável _name_, tipo o que a tag `title=""` faz. Carregará as informações do JSON obtido do repositório de portfólio pelo Back-end, e utilizando o dado _url_ para ser o href do link, e o _iconName_ será utilizado para dizer qual ícone será inserido dentro do link. A organização do container será assim:
 
-- Blender
-- Docker
-- Figma
-- GIMP
-- Git
-- Github Desktop
-- Java Runtime Environment
-- Microsoft PowerShell
-- Microsoft Teams
-- MySQL
-- Node.JS
-- Postman
-- Python 3.12
-- Python Install Manager
-- VirtualBox
-- Visual Studio Code
-- XAMPP
+```css
+display: flex;
+flex-flow: row wrap;
+justify-content: space-between;
+align-items: center;
+```
 
-#### Drivers
+#### Tela de Erro
 
-The system analyzes the graphics card and installs the appropriate drivers.
+Se o time hate for expedido, ao invés de aparecer a tela principal e secundária descritas acima, será mostrada uma mensagem dizendo que a porta 9999 não foi aberta ou o arquivo não foi compartilhado, e pede ao usuário que faça refresh na página ou reexecute o programa. Logo abaixo será mostrado um botão que levará ao repositório [Programs Manager](https://github.com/JLBBARCO/programs-manager).
 
-- AMD
-- Intel
-- NVIDIA
+### BACK-END Site
 
-#### Essential Programs
+A cada vez que o site for aberto, ele armazenará temporariamente a data e hora de loading para ser utilizado pelos sistemas de filtros.
 
-- Adobe Acrobat
-- Camo Studio
-- Cloudflare Warp
-- Free Download Manager
-- Google Chrome
-- Google Drive
-- Microsoft Office
-- Mozilla Firefox
-- Notion
-- Obsidian
-- Spotify
-- Tor Browser
-- VLC
-- WinRAR
+O sistema de filtro por datação será com base na seguinte informação com data e hora de exemplo:
 
-#### Games
+```json
+  [dd/mm/aaaa hh:mm:ss] [INFO] Start system
+```
 
-- CurseForge
-- Discord
-- Epic Games Launcher
-- Google Play Games
-- Radmin VPN
-- Steam
-- Xbox App
+O sistema só irá parar de monitorar o arquivo quando a informação mais recente for:
 
-#### Screen
+```json
+  [dd/mm/aaaa hh:mm:ss] [INFO] End system
+```
 
-- AnyDesk
-- Spacedesk Client
-- Spacedesk Server
+#### Análise da porta
 
-#### TI Tools
+Quando o site for carregado, ele irá monitorar a porta 9999 por 30 segundos. Se ela não for aberta ou não for compartilhado o arquivo log.log por ela, o site irá parar de monitorar ela até que o usuário faça um refresh.
 
-- Bios Shortcut
-- EaseUS DiskCopy
-- EaseUS Todo Backup
-- Rufus
-- Ventoy
+#### Contato
+
+O site irá obter os contatos do [JSON](https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json) e o sistema fará um loop com o array _cards_ e para cada object será criado um card com os dados relacionados, assim como previsto no [Rodapé](#rodapé).
+
+A requisição desse json será feita pela Vercel a cada hora para que não tenha muitas requisições no github e que o site fique leve para o usuário.
+
+## Github Actions
+
+O Github Actions deverá compilar o programa em cada sistema operacional somente quando for branch main/master ou develop.
+
+O Actions deverá utilizar os arquivos "build.bat", build.sh" e "build-mac.sh" para compilar para cada sistema operacional. Essa automação deverá armazenar a compilação em um arquivo de compactação, ex.: zip, e armazenará em um Github Release novo, mas seguindo algumas regras:
+
+Se a branch do commit for a main, o Actions deverá salvar os compilados como Last Release;
+
+Já se a branch for a beta, o Actions deverá salvar como Pre-release;
+
+A pasta system não precisa ser incluída na compilação pois todos os arquivos contidos nela serão obtidos via Github RAW.
+
+A automação também deverá gerar um print de cada sistema operacional utilizando o bot do Github. Esses prints serão em formato WEBP, e eles substituirão os arquivos:
+
+![Print MacOS](src/assets/img/macos.webp)
+![Print Linux](src/assets/img/linux.webp)
+![Print Windows](src/assets/img/windows.webp)
+
+Depois dos prints separados, será montada uma imagem com os três prints lado a lado, e substituirão o arquivo do caminho:
+![Print from all system prints compiled](src/assets/img/thumbnail.webp)
+
+## Github RAW
+
+Os arquivos "./run.ps1" e "./run.sh" serão utilizados para baixar e rodar o sistema diretamente do terminal, tanto Windows quanto Linux quanto MacOS, baixando o compilado referente ao sistema operacional diretamente da Last Release. Os comandos utilizados serão:
+
+- Windows:
+
+  ```powershell
+  irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
+  ```
+
+- Linux:
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+  ```
+
+- MacOS:
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+  ```
+
+Branch opcional sobrescrita (utilizado para testes `develop`):
+
+```powershell
+$env:AIP_BRANCH='develop'; irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
+```
+
+```bash
+AIP_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+```
