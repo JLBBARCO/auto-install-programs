@@ -1,5 +1,5 @@
-from program.lib import system
-from program.lib import log, screen_primary
+from lib import system
+from lib import log, screen_primary
 
 theme = "system"
 operational_system = system.nameSO()

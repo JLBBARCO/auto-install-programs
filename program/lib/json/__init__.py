@@ -1,11 +1,11 @@
 import json, os, sys
-from program.lib import log
 
 
 def read_external_json(file: str):
     pass
 
-def read_internal_json(file: str):
+
+def read_internal_json(file: str, log):
     path = os.path.join(os.path.dirname(__file__), file)
     file_path = fr'{path}\{file}'
     try:
@@ -14,6 +14,7 @@ def read_internal_json(file: str):
     except Exception as e:
         log.log(f"Failed to read internal JSON file '{file}': {e}")
         return {}
+
 
 def read_json(file_path: str):
     with open(file_path, 'r', encoding='utf-8') as f:

@@ -9,28 +9,15 @@ python -m pip install pyinstaller customtkinter psutil
 
 echo Iniciando o Build com PyInstaller...
 
-if exist "install" (
-    echo Adding install directory to bundle...
-    python -m PyInstaller --noconfirm --onedir --windowed ^
-        --name "Programs Manager" ^
-        --icon "src/assets/icon/icon.ico" ^
-        --add-data "src;src" ^
-        --add-data "install;install" ^
-        --collect-all customtkinter ^
-        --collect-all psutil ^
-        --noupx ^
-        "main.py"
-) else (
-    echo WARNING: install directory not found. Building without it...
-    python -m PyInstaller --noconfirm --onedir --windowed ^
-        --name "Programs Manager" ^
-        --icon "src/assets/icon/icon.ico" ^
-        --add-data "src;src" ^
-        --collect-all customtkinter ^
-        --collect-all psutil ^
-        --noupx ^
-        "main.py"
-)
+echo Adding install directory to bundle...
+python -m PyInstaller --noconfirm --onedir --windowed ^
+    --name "Programs Manager" ^
+    --icon "src/assets/icon/icon.ico" ^
+    --add-data "program/lib;lib" ^
+    --collect-all customtkinter ^
+    --collect-all psutil ^
+    --noupx ^
+    "program/main.py"
 
 if errorlevel 1 (
     echo.
