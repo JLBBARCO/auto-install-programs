@@ -1,75 +1,79 @@
-# Gerenciador de Programas
+# Programs Manager
 
-Gerenciador de Programas é um instalador e desinstalador multi-plataforma e gerenciador de inicialização. A versão do Windows inclui categorias de instalador, além de ações personalizadas, como gerenciamento de inicialização e personalização do sistema.
+Programs Manager is a cross-platform installer/uninstaller and startup manager. The Windows build includes installer categories and additional custom actions such as startup management and system personalization.
 
-## Ícone do sistema
+## Contents
 
-![Ícone do sistema](src/assets/icon/icon.ico)
+- [Program](#program)
+  - [Frontend](#frontend-program)
+  - [Backend](#backend-program)
+- [Website](#website)
+  - [Frontend](#frontend-site)
+  - [Backend](#backend-site)
+- [GitHub Actions](#github-actions)
+- [GitHub RAW](#github-raw)
+  - [Run](#run)
 
-## Programa
+## System icon
 
-Sistema de gerenciamento de programas para fácil instalação ou desinstalação numa possível formatação ou configuração de computador ou numa otimização.
+![System icon](src/assets/icon/icon.ico)
 
-### FRONT-END Programa
+## Program
 
-#### Program Language
+This is a program manager for easy installation or removal of software when preparing a machine, reconfiguring it, or performing an optimization.
 
-EN-US
+### Frontend (Program)
 
-#### Primeira tela
+#### UI language
 
-Conterá o título variável do programas, que varia de acordo com o Sistema Operacional.
+English (En-US)
 
-Container onde aparecerá cada classe de função em forma de checklist.
+#### First screen
 
-No canto inferior esquerdo terá um botão que ao clicar seleciona ou desmarca todas as opções do container principal.
+- The title is dynamic and reflects the detected operating system.
+- A container shows each function category as a checklist.
+- Bottom-left: a button to select or deselect all checkboxes in the main container.
+- Bottom-right: a "Next" button that closes the first screen and opens the second screen, passing an array containing only the selected options.
 
-No canto inferior direito, haverá um botão de "Next", que ao clicar nele o sistema fechará a primeira tela e abrirá a segunda tela, e o sistema transmitirá um array somente com os dados das opções selecionadas.
+#### Second screen
 
-#### Segunda tela
+##### Main container
 
-##### Container principal
+When the second screen opens, it displays the `data` array from each JSON object present in the `json_data` array and shows those entries in the main container.
 
-Quando for aberta a segunda tela, o sistema irá mostrará os dados do array _data_ que está dentro de cada object do array _json_data_, e mostrará esses dados no container principal.
+##### Dropdown menu (tabs)
 
-##### Menu suspenso
+Each tab corresponds to the `name` field of a JSON object loaded by the JSON reader; selecting a tab shows that JSON's entries in alphabetical order in the content container.
 
-Cada opção é referente à variável _name_ dentro do object no array _json_data_ recebido do sistema de leitura de JSON, e ao clicar numa opção específica, o programa mostrará os dados do JSON referente, organizado em ordem alfabética no container de conteúdo.
+##### Content
 
-##### Conteúdo
+The content panel displays a checklist for the selected JSON with these columns:
 
-Será mostrado um checklist dos dados do JSON referente à opção seleciona no menu suspenso, com as seguintes características:
+- First column: checkbox
+- Second column: function name
+- Third column: function type (`install`, `uninstall`, or `function`)
 
-- Primeira coluna terá o checkbox;
-- Segunda coluna terá o nome da função;
-- Terceira coluna terá o tipo da função, se é _install_, _uninstall_ ou _function_.
+##### Button container
 
-##### Container de Botões
+Bottom-left contains two buttons:
 
-No canto inferior esquerdo, haverá um container com dois botões:
+- `Add Program`: opens a search dialog (screen 3.1) with:
+  - a search input and a Search button at the top;
+  - when the user searches, the backend queries the package manager and returns matching programs;
+  - the results are shown in three columns: an action button (toggles Add/Remove), program name, and program id.
+- `Remove Programs`: opens a removal dialog (screen 3.2) with a similar layout to 3.1.
 
-- Na direita, terá um botão de _Add Program_. Quando clicado, ele abre a tela 3.1 com as seguintes características:
-  - No topo terá uma barra de pesquisa e um botão de _Search_;
-  - Quando o usuário digitar algo na barra e clicar em _Search_ ou apertar enter, o sistema rodará uma função do backend que retorna um objeto com os programas relacionados encontrados;
-  - No container principal será mostrado os dados desse objeto, mas em três colunas:
-  - A primeira será um botão, que alterna entre _Add_ e _Remove_ dependendo do click do usuário;
-  - Na segunda coluna será mostrado o nome do programa;
-  - Na terceira coluna será mostrado o id do programa;
+##### Run button
 
-- Na esquerda do container, terá outro botão chamado _Remove Programs_, que quando clicado fará:
-  - Abrirá a tela 3.2 com layout semelhante a 3.1;
+Bottom-right has a `RUN` button that closes the UI and starts the main background process.
 
-##### Botão de execução
-
-No canto inferior direito da tela 2, haverá um botão de _RUN_, que fechará a tela e dará início ao sistema principal em segundo plano.
-
-### BACK-END Programa
+### Backend (Program)
 
 #### JSON
 
-##### Escrita em JSON
+##### Writing JSON
 
-Quando for chamada função de geração de JSONs, o sistema verificará se o arquivo `user.json` existe no caminho `C:\Users\<user>\Downloads\Programs Manager`. Se não existir, ele cria o arquivo e insere a seguinte estrutura:
+When the program writes JSON, it checks for `user.json` in `C:\Users\<user>\Downloads\Programs Manager`. If the file does not exist, it is created with the following structure:
 
 ```json
 {
@@ -79,144 +83,121 @@ Quando for chamada função de geração de JSONs, o sistema verificará se o ar
 }
 ```
 
-##### Leitura de JSON
+##### Reading JSON
 
-###### JSON Interno
+###### Internal JSON
 
-A leitura do JSON interno funciona praticamente igual ao sistema de [Escrita em JSON](#escrita-em-json), a diferença é que ao invés de escrever, esse sistema irá somente ler o arquivo e salvará os dados desse arquivo no array _json_data_.
+Internal JSON reading behaves like the write flow, except it only reads the file and places the result into the `json_data` array.
 
-###### JSON Externo
+###### External JSON
 
-A leitura de JSON externo utilizará o Github RAW no link `https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/program/system/<sistema_operacional>/json/<nome_do_arquivo>.json` e salvará os dados de cada JSON lido no array _json_data_.
+External JSON is fetched from GitHub RAW using the URL:
+`https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/program/system/<operating_system>/json/<file_name>.json` and each JSON payload is added to `json_data`.
 
-#### log.log
+#### Logging (`log.log`)
 
-Ao escrever no log.log, o sistema terá quatro tópicos de mensagens:
+Log messages use three severity tags:
 
-- \[INFO\]
-- \[WARNING\]
-- \[ERROR\]
+- `[INFO]`
+- `[WARNING]`
+- `[ERROR]`
 
-O tópico _INFO_ será para informar que tal coisa começou ou aconteceu. Exemplos: `Start system`, `Find and read essentials.json`, `End system`.
+`[INFO]` indicates normal progress (examples: `Start system`, `Find and read essentials.json`, `End system`).
+`[WARNING]` denotes partial or recoverable problems (examples: `Find and not read essentials.json`, `Visual Studio Code updated`).
+`[ERROR]` is used for fatal failures (examples: `Not found essentials.json`, `Visual Studio Code not installed and not updated`).
 
-Já o tópico _WARNING_, servirá para indicar que algo aconteceu parcialmente correto. Ex.: `Find and not read essentials.json`, `Visual Studio Code updated`.
+#### Add Program (screen 2)
 
-E o _ERROR_ servirá para algo que deu completamente errado. Ex.: `Not found essentials.json`, `Visual Studio Code not installed and not updated`.
-
-#### _Add Program_ na tela 2
-
-Quando o usuário clicar em _Add Program_ na tela secundária, o sistema irá abrir a tela 3.1 descrita na parte de frontend. O sistema da barra de pesquisa pesquisará no sistema de gerenciador de pacotes, _ex.: WinGet no Windows_, e o botão que alterna entre _Add_ e _Remove_ que adicionará o nome e id do programa referente à um object que, quando clicado no botão _Submit_, esse object será salvo no arquivo user.json, no fim do array _data_, com na seguinte estrutura:
+When the user clicks `Add Program`, the search UI queries the system package manager (e.g., WinGet on Windows). Selected items are saved into `user.json` appended to the `data` array as:
 
 ```json
 {
-  "name": "<nome_do_programa>",
+  "name": "<program_name>",
   "type": "install",
-  "checkbox": "selected",
-  "id": "<id_do_programa>"
+  "checkbox": true,
+  "id": "<program_id>"
 }
 ```
 
-#### _Remove Program_ na tela 2
+#### Remove Program (screen 2)
 
-Quando o usuário clicar em _Remove Program_ também da tela secundária, abrirá a tela 3.2 que terá um funcionamento muito parecido da tela 2.1. A diferença é que enquanto a tela estiver carregando, o sistema listará e mostra todos os programas instalados e salvará o array no final do array _data_ no arquivo user, com a seguinte estrutura:
+When the user clicks `Remove Programs`, the UI lists installed packages and selected items are saved into `user.json` as:
 
 ```json
 {
-  "name": "<nome_do_programa>",
+  "name": "<program_name>",
   "type": "uninstall",
-  "checkbox": "selected",
-  "id": "<id_do_programa>"
+  "checkbox": true,
+  "id": "<program_id>"
 }
 ```
 
-para ser utilizado pelo gerenciador de pacotes, ex.: `winget uninstall -id <id-do-programa>`.
+Those entries are intended for package-manager commands such as `winget uninstall -id <program_id>`.
 
-#### Configurações padrão do Terminal Windows, Linux e MacOS
+#### Default terminal flags
 
-Para Windows, todos os comandos _WinGet_ terão que possuir o comando `--accept-source-agreements --accept-package-agreements >nul 2>&1` no final da linha para filtrar barras de progresso e aceitar termos de serviço automaticamente.
+- Windows: WinGet commands should include `--accept-source-agreements --accept-package-agreements >nul 2>&1` to suppress progress and accept agreements.
+- Linux/macOS: shell commands should redirect output to `/dev/null` with `> /dev/null 2>&1` when appropriate.
+- PowerShell runs should redirect to `$null` when needed (e.g. `*> $null`).
 
-Para Linux/MacOS, todos os comandos Bash/Zsh terão que possuir ao final da linha o comando `> /dev/null 2>&1`
+#### Background execution
 
-E se tiver alguma execução em PowerShell, a execução terá que inserir no final da linha o comando `*> $null`
+When the user presses `RUN`, all windows close and the program continues running in the background. It writes `[dd/mm/yyyy hh:mm:ss] [INFO] Start system` to `log.log`, exposes `log.log` via an HTTP endpoint on `localhost:9999`, and opens the Programs Manager website: `https://programs-manager-website.vercel.app`.
 
-#### Execução em segundo plano
+Startup tasks are executed in this order:
 
-Quando o usuário clicar em _RUN_ na tela 2, todas as telas serão fechadas e o programa continuará somente em segundo plano. Simultaneamente ao fechamento, ele salvará no arquivo log.log a seguinte mensagem: `[dd/mm/aaaa hh:mm:ss] [INFO] Start system`. Também abrirá o compartilhamento do arquivo log.log em localhost HTTP na porta 9999 e abrirá o site [Programs Manager Website](https://programs-manager-website.vercel.app).
-
-Logo após as primeiras execuções, o programa iniciará as tarefas principais na seguinte ordem:
-
-- Atualizar o gerenciador de pacotes, exemplo Windows: _Microsoft.AppInstaller_;
-- Chamar o sistema do [JSON Interno](#json-interno) e salvar esses dados no array _json_data_;
-- Obter os dados pelo [JSON Externo](#json-externo) e irá salvá-los também no array _json_data_;
-- Enquanto o sistema estiver lendo os arquivos JSONs, ele escreverá a seguinte mensagem no log.log para cada JSON:
-  - Se for lido com sucesso:
-
-    ````log
-    [dd/mm/aaaa hh:mm:ss] [INFO] Read <nome_do_arquivo> successfully```
-    ````
-
-  - Se der erro:
-
-    ````log
-    [dd/mm/aaaa hh:mm:ss] [ERROR] Read <nome_do_arquivo> with error <erro>```
-    ````
-
-- Fazer um loop para cada object no _json_data_ e separar os seguintes dados:
-  - O sistema faz outro loop para os dados do array _data_ e faz o seguinte com os objects:
-    - Se o _type_ do object for `install`, salvará o object no array _install_;
-    - Se o _type_ do object for `uninstall`, salvará o object no array _uninstall_;
-    - Se o _type_ do object for `function`, salvará o object no array _function_;
-- Depois executa cada função de acordo:
-  - Primeiro desinstala os programas listados no array _uninstall_, utilizando o gerenciador de pacotes. Ex.: `winget uninstall -id <id_do_programa>`;
-  - Depois executa os da _function_, que verificará as funções no sistema e executará a função referente ao dado;
-  - Por fim, instalará os programas listados no _install_, também utilizando
-
-## Site
-
-Site que receberá os dados do arquivo log.log gerado pela execução do programa. Quando o programa é executado, ele abre uma aba no navegador com este site. Este projeto irá monitorar e retornar ao usuário os dados do arquivo em tempo real para que o usuário possa saber o progresso do programa.
-
-Esse site será salvo no Github e terá hospedagem vinculada na Vercel.
-
-### FRONT-END Site
-
-#### Site Language
-
-EN-US
-
-#### Tela principal
-
-Será mostrado três contêineres com os dados obtidos do Back-end com as seguintes informações:
-
-- Cada contêiner conterá uma altura fixa, com uma barra de rolagem horizontal. Os dados serão mostrados de forma que os mais antigos aparecerão acima e os mais recentes aparecerão abaixo. O contêiner terá rolagem automática para enfatizar os últimos dados, mas se o usuário rolar para cima manualmente, a rolagem automática é pausada até o usuário rolar novamente ao fim dos dados;
-- Os dados serão recebidos da seguinte forma:
-  - Para informações:
+- Update the package manager (example: Microsoft.AppInstaller on Windows)
+- Read internal JSON and store it into `json_data`
+- Fetch external JSON and append it to `json_data`
+- For each JSON read, log success or failure:
+  - Success:
 
     ```log
-    [dd/mm/aaaa hh:mm:ss] [INFO] <mensagem>
+    [dd/mm/yyyy hh:mm:ss] [INFO] Read <file_name> successfully
     ```
 
-  - Para semi-erros:
+  - Failure:
 
     ```log
-    [dd/mm/aaaa hh:mm:ss] [WARNING] <mensagem>
+    [dd/mm/yyyy hh:mm:ss] [ERROR] Read <file_name> with error <error>
     ```
 
-  - Para erros completos
+- Process the `json_data` array and separate entries by type: `install`, `uninstall`, and `function`.
+- Execute actions in this order:
+  1. Uninstall packages listed in `uninstall` (e.g. `winget uninstall -id <program_id>`)
+  2. Run `function` entries (execute configured functions)
+  3. Install packages listed in `install`
 
-    ```log
-    [dd/mm/aaaa hh:mm:ss] [ERROR] <mensagem>
-    ```
+## Website
 
-- Os contêineres serão organizados de acordo com os resultados `INFO`, `WARNING` e `ERROR` e mostrarão somente os dados referentes;
-- O dado que será recebido será do tipo: `[01/06/2026 12:30:45] [SUCCESS] Visual Studio Code installed`, e o que será mostrado para o usuário será da seguinte forma: `01/06/2026 12:30:45 | Visual Studio installed`, com a data e hora na cor `#808080` e a informação na cor padrão de texto do site;
-- Abaixo, a segunda parte só aparecerá se o arquivo possuir um histórico além de somente o histórico da atual execução;
-- Esse histórico será definido pelo cálculo de tolerância de 1 minuto de atraso a partir da abertura do site. Ex.: se no arquivo possuir a datação `[01/06/2026 00:00:00]` e o site possuir a datação `[01/06/2026 00:01:00]`, a informação da linha será mostrada na tela principal. Agora, se a datação do arquivo for a mesma, mas do site for `[01/06/2026 00:01:01]`, essa informação será mostrada na segunda parte onde será a partição de histórico de execuções anteriores. Esse sistema de filtro servirá para que o site de ênfase aos dados atuais, mas se o usuário quiser ver os dados de outras execuções ele consegue. O tempo de 1 minuto de tolerância a partir da execução do programa em relação a datação do site é para que se o site demorar para carregar, os dados da execução atual não irão para o histórico geral;
+The website displays the `log.log` output in real time while the program runs. The UI groups log lines by severity (`INFO`, `WARNING`, `ERROR`) and shows recent entries first, with automatic scrolling unless the user scrolls up.
 
-#### Rodapé
+### Frontend (Site)
 
-##### Container de contato
+#### Language
 
-Nesse container será mostrado os contatos obtidos pelo [Contato](#contato) em forma de itens redondos, mostrando à primeira vista somente os ícones. O card terá um sistema em que ao passar o mouse por cima será mostrado o conteúdo da variável _name_, tipo o que a tag `title=""` faz. Carregará as informações do JSON obtido do repositório de portfólio pelo Back-end, e utilizando o dado _url_ para ser o href do link, e o _iconName_ será utilizado para dizer qual ícone será inserido dentro do link. A organização do container será assim:
+English (En-US)
+
+#### Main view
+
+- Three containers display `INFO`, `WARNING`, and `ERROR` messages.
+- Each container has a fixed height and horizontal scrollbar. Older messages appear above newer messages.
+- Incoming log lines follow these formats:
+
+  ```log
+  [dd/mm/yyyy hh:mm:ss] [INFO] <message>
+  [dd/mm/yyyy hh:mm:ss] [WARNING] <message>
+  [dd/mm/yyyy hh:mm:ss] [ERROR] <message>
+  ```
+
+- Example input line: `[01/06/2026 12:30:45] [SUCCESS] Visual Studio Code installed` is displayed as `01/06/2026 12:30:45 | Visual Studio installed` with the timestamp colored `#808080`.
+- The site partitions historical runs: entries older than 1 minute compared to the site's load timestamp are shown in a separate history section.
+
+#### Footer — Contact container
+
+Contact cards are loaded from a remote JSON and displayed as circular icon buttons. Hovering shows the contact `name`. The JSON `url` becomes the card link and `iconName` indicates the icon to display.
+
+CSS layout example:
 
 ```css
 display: flex;
@@ -225,84 +206,79 @@ justify-content: space-between;
 align-items: center;
 ```
 
-#### Tela de Erro
+#### Error page
 
-Se o time hate for expedido, ao invés de aparecer a tela principal e secundária descritas acima, será mostrada uma mensagem dizendo que a porta 9999 não foi aberta ou o arquivo não foi compartilhado, e pede ao usuário que faça refresh na página ou reexecute o programa. Logo abaixo será mostrado um botão que levará ao repositório [Programs Manager](https://github.com/JLBBARCO/programs-manager).
+If the site cannot access the `log.log` port (9999) or the file is not shared, an error page is shown with a refresh button and a link to the GitHub repository: `https://github.com/JLBBARCO/programs-manager`.
 
-### BACK-END Site
+### Backend (Site)
 
-A cada vez que o site for aberto, ele armazenará temporariamente a data e hora de loading para ser utilizado pelos sistemas de filtros.
+The site temporarily records the page load time and uses it to partition current-run logs from historical logs. Monitoring stops when the latest log line contains `[INFO] End system`.
 
-O sistema de filtro por datação será com base na seguinte informação com data e hora de exemplo:
+#### Port probe
 
-```json
-  [dd/mm/aaaa hh:mm:ss] [INFO] Start system
-```
+On load the site probes `localhost:9999` for 30 seconds. If the log endpoint is not available, monitoring is paused until the user refreshes.
 
-O sistema só irá parar de monitorar o arquivo quando a informação mais recente for:
+#### Contacts source
 
-```json
-  [dd/mm/aaaa hh:mm:ss] [INFO] End system
-```
+Contact data is fetched from:
 
-#### Análise da porta
+`https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json` and cached by Vercel hourly to minimize GitHub requests.
 
-Quando o site for carregado, ele irá monitorar a porta 9999 por 30 segundos. Se ela não for aberta ou não for compartilhado o arquivo log.log por ela, o site irá parar de monitorar ela até que o usuário faça um refresh.
+## GitHub Actions
 
-#### Contato
+GitHub Actions should build the program for each OS when the branch is `main` or `develop`.
 
-O site irá obter os contatos do [JSON](https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json) e o sistema fará um loop com o array _cards_ e para cada object será criado um card com os dados relacionados, assim como previsto no [Rodapé](#rodapé).
+Use `build.bat`, `build.sh`, and `build-mac.sh` to produce OS-specific builds, package them (e.g. zip), and attach them to a GitHub Release. Rules:
 
-A requisição desse json será feita pela Vercel a cada hora para que não tenha muitas requisições no github e que o site fique leve para o usuário.
+- `main` branch builds are published as the Last Release
+- `beta` branch builds are published as Pre-release
 
-## Github Actions
+The `system` folder is not included in the build artifacts because those files are fetched at runtime via GitHub RAW.
 
-O Github Actions deverá compilar o programa em cada sistema operacional somente quando for branch main/master ou develop.
-
-O Actions deverá utilizar os arquivos "build.bat", build.sh" e "build-mac.sh" para compilar para cada sistema operacional. Essa automação deverá armazenar a compilação em um arquivo de compactação, ex.: zip, e armazenará em um Github Release novo, mas seguindo algumas regras:
-
-Se a branch do commit for a main, o Actions deverá salvar os compilados como Last Release;
-
-Já se a branch for a beta, o Actions deverá salvar como Pre-release;
-
-A pasta system não precisa ser incluída na compilação pois todos os arquivos contidos nela serão obtidos via Github RAW.
-
-A automação também deverá gerar um print de cada sistema operacional utilizando o bot do Github. Esses prints serão em formato WEBP, e eles substituirão os arquivos:
+Actions should also capture screenshots for each OS as WEBP and replace these files in the repository:
 
 ![Print MacOS](src/assets/img/macos.webp)
 ![Print Linux](src/assets/img/linux.webp)
 ![Print Windows](src/assets/img/windows.webp)
 
-Depois dos prints separados, será montada uma imagem com os três prints lado a lado, e substituirão o arquivo do caminho:
+An aggregated thumbnail combining the three screenshots will replace:
 ![Print from all system prints compiled](src/assets/img/thumbnail.webp)
 
-## Github RAW
+## GitHub RAW
 
-Os arquivos "./run.ps1" e "./run.sh" serão utilizados para baixar e rodar o sistema diretamente do terminal, tanto Windows quanto Linux quanto MacOS, baixando o compilado referente ao sistema operacional diretamente da Last Release. Os comandos utilizados serão:
+### Run
 
-- Windows:
+Use `./run.ps1` and `./run.sh` to download and run the appropriate build for Windows, Linux, or macOS directly from the Last Release.
 
-  ```powershell
-  irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
-  ```
+Examples:
 
-- Linux:
+Windows (PowerShell):
 
-  ```bash
-  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
-  ```
+```powershell
+irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
+```
 
-- MacOS:
+Linux:
 
-  ```bash
-  curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
-  ```
+```bash
+curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+```
 
-Branch opcional sobrescrita (utilizado para testes `develop`):
+macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
+```
+
+Optional branch override (useful for testing, e.g. `develop`):
+
+PowerShell:
 
 ```powershell
 $env:AIP_BRANCH='develop'; irm https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1 | iex
 ```
+
+Bash:
 
 ```bash
 AIP_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.sh | bash
