@@ -44,21 +44,14 @@ def read_internal_json(file):
 
 def read_external_json(file):
     url_path = f'https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/program/system/{system.nameSO().lower()}/json/{file}.json'
-    url_path_test = f'https://raw.githubusercontent.com/JLBBARCO/programs-manager/refatoring/program/system/{system.nameSO().lower()}/json/{file}.json'
     try:
         import requests
-        response = requests.get(url_path_test, timeout=20)
+        response = requests.get(url_path, timeout=20)
         response.raise_for_status()
         return response.json()
-    except Exception as e:
-        try:
-            import requests
-            response = requests.get(url_path, timeout=20)
-            response.raise_for_status()
-            return response.json()
-        except Exception as fallback_error:
-            log.log(f"Failed to fetch external JSON: {fallback_error}", level="ERROR")
-        return None
+    except Exception as fallback_error:
+        log.log(f"Failed to fetch external JSON: {fallback_error}", level="ERROR")
+    return None
 
 
 def write_json(data=None):

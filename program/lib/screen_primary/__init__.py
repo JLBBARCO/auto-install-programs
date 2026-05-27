@@ -17,7 +17,6 @@ class CategoryConfig:
 CATEGORY_CONFIGS = (
     CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization"),
     CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development"),
-    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="driver"),
     CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essential"),
     CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="game"),
     CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen"),

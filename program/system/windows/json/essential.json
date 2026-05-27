@@ -103,6 +103,12 @@
       "type": "install",
       "id": "ProtonVPN.ProtonVPN",
       "checkbox": true
+    },
+    {
+      "name": "Video Drivers",
+      "type": "function",
+      "id": "installVideoDrivers",
+      "checkbox": true
     }
   ]
 }

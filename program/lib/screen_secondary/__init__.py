@@ -8,80 +8,13 @@ from typing import cast
 import customtkinter as ctk
 
 from lib import json as json_data
-from lib import log, system
+from lib import log, system, screen_other
 
 
 GRID_PADDING_X = 20
 GRID_PADDING_Y = 5
 PROGRAM_TAB_ROW = 10
 DEFAULT_USER_DESCRIPTION = "User data generated after execution of write system"
-
-
-class _ProgramSelectionDialog(ctk.CTkToplevel):
-    def __init__(self, parent, title: str, items: list[dict[str, str]], on_submit):
-        super().__init__(parent)
-        self.title(title)
-        self.geometry("640x520")
-        self.resizable(True, True)
-        self.transient(parent)
-        self.grab_set()
-
-        self.items = [item for item in items if isinstance(item, dict)]
-        self.on_submit = on_submit
-        self.item_vars: list[tuple[dict[str, str], ctk.BooleanVar]] = []
-
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-
-        self.header_label = ctk.CTkLabel(self, text=title, font=ctk.CTkFont(size=18, weight="bold"))
-        self.header_label.grid(row=0, column=0, padx=12, pady=(12, 6), sticky="w")
-
-        self.scroll_frame = ctk.CTkScrollableFrame(self)
-        self.scroll_frame.grid(row=1, column=0, padx=12, pady=8, sticky="nsew")
-        self.scroll_frame.grid_columnconfigure(0, weight=1)
-
-        if not self.items:
-            empty_label = ctk.CTkLabel(self.scroll_frame, text="No programs found.", anchor="w")
-            empty_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        else:
-            for row_index, item in enumerate(self.items):
-                row_frame = ctk.CTkFrame(self.scroll_frame)
-                row_frame.grid(row=row_index, column=0, padx=8, pady=6, sticky="ew")
-                row_frame.grid_columnconfigure(0, weight=1)
-
-                label_name = str(item.get("name", "")).strip()
-                label_id = str(item.get("id", "")).strip()
-                if label_id:
-                    text = f"{label_name} ({label_id})"
-                else:
-                    text = label_name
-
-                checkbox_var = ctk.BooleanVar(value=True)
-                checkbox = ctk.CTkCheckBox(row_frame, text=text, variable=checkbox_var)
-                checkbox.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-                self.item_vars.append((item, checkbox_var))
-
-        self.button_frame = ctk.CTkFrame(self)
-        self.button_frame.grid(row=2, column=0, padx=12, pady=(0, 12), sticky="ew")
-        self.button_frame.grid_columnconfigure(0, weight=1)
-        self.button_frame.grid_columnconfigure(1, weight=0)
-
-        self.cancel_button = ctk.CTkButton(self.button_frame, text="Cancel", command=self.destroy)
-        self.cancel_button.grid(row=0, column=0, padx=(0, 8), pady=10, sticky="e")
-
-        self.submit_button = ctk.CTkButton(self.button_frame, text="Save", command=self._submit)
-        self.submit_button.grid(row=0, column=1, padx=(8, 0), pady=10, sticky="e")
-
-    def _submit(self):
-        selected_items: list[dict[str, str]] = []
-        for item, checkbox_var in self.item_vars:
-            if checkbox_var.get():
-                selected_items.append(item)
-
-        if callable(self.on_submit):
-            self.on_submit(selected_items)
-
-        self.destroy()
 
 
 class ScreenSecondary(ctk.CTk):
@@ -228,7 +161,7 @@ class ScreenSecondary(ctk.CTk):
 
     def _normalize_payload(self, payload: dict, fallback_name: str) -> dict[str, object]:
         payload_name = str(payload.get('name', '')).strip() or self._display_name_from_file_key(fallback_name)
-        description = str(payload.get('description', payload.get('descriptrion', ''))).strip()
+        description = str(payload.get('description', payload.get('description', ''))).strip()
         raw_entries = payload.get('data', [])
         normalized_entries: list[dict[str, object]] = []
 
@@ -410,7 +343,7 @@ class ScreenSecondary(ctk.CTk):
             name_label = ctk.CTkLabel(row_frame, text=name, anchor='w')
             name_label.grid(row=0, column=1, padx=6, pady=8, sticky='ew')
 
-            type_label = ctk.CTkLabel(row_frame, text=entry_type, anchor='w')
+            type_label = ctk.CTkLabel(row_frame, text=entry_type.capitalize(), anchor='w')
             type_label.grid(row=0, column=2, padx=(6, 12), pady=8, sticky='w')
 
             row_index += 1
@@ -528,7 +461,7 @@ class ScreenSecondary(ctk.CTk):
             self.status_label.configure(text=f'No search results found for {system.nameSO()}.')
             return
 
-        self._open_selection_dialog('Add Program', results, 'install')
+        self._open_selection_dialog('Add Programs', results, 'install')
 
     def uninstall_programs(self):
         results = self._list_installed_programs()
@@ -536,17 +469,18 @@ class ScreenSecondary(ctk.CTk):
             self.status_label.configure(text=f'No installed programs found for {system.nameSO()}.')
             return
 
-        self._open_selection_dialog('Remove Program', results, 'uninstall')
+        self._open_selection_dialog('Remove Programs', results, 'uninstall')
 
     def _open_selection_dialog(self, title: str, items: list[dict[str, str]], entry_type: str):
         if not items:
             return
 
-        dialog = _ProgramSelectionDialog(
+        dialog = screen_other._ProgramSelectionDialog(
             self,
             title=title,
             items=items,
             on_submit=lambda selected_items: self._save_user_entries(selected_items, entry_type),
+            default_selected=False,
         )
         self.tool_windows.append(dialog)
 
@@ -563,7 +497,7 @@ class ScreenSecondary(ctk.CTk):
                 'data': [],
             }
 
-        existing_entries = []
+        existing_entries: list[dict[str, object]] = []
         raw_entries = user_payload.get('data', []) if isinstance(user_payload, dict) else []
         if isinstance(raw_entries, list):
             for entry in raw_entries:
@@ -581,8 +515,7 @@ class ScreenSecondary(ctk.CTk):
             entry_lookup[key] = entry
 
         for item in selected_items:
-            normalized_name = str(item.get('name', '')).strip()
-            normalized_id = str(item.get('id', '')).strip()
+            normalized_name, normalized_id = self._normalize_selected_program(item)
             if not normalized_name or not normalized_id:
                 continue
 
@@ -603,6 +536,70 @@ class ScreenSecondary(ctk.CTk):
         json_data.write_json(user_payload)
         self.status_label.configure(text=f'Saved {len(merged_entries)} program(s) in user.json.')
         self._reload_all_entries()
+
+    def _normalize_selected_program(self, item: dict[str, str]) -> tuple[str, str]:
+        normalized_name = str(item.get('name', '')).strip()
+        normalized_id = str(item.get('id', '')).strip()
+
+        if self._is_winget_source(normalized_id):
+            extracted_name, extracted_id = self._extract_winget_name_and_id(normalized_name)
+            if extracted_name and extracted_id:
+                normalized_name = extracted_name
+                normalized_id = extracted_id
+            else:
+                normalized_id = ''
+
+        if normalized_name.endswith(')') and '(' in normalized_name:
+            base_name, extracted_id = normalized_name.rsplit('(', 1)
+            extracted_name = base_name.strip()
+            extracted_id = extracted_id[:-1].strip()
+            if extracted_name and extracted_id and not normalized_id:
+                normalized_name = extracted_name
+                normalized_id = extracted_id
+
+        return normalized_name, normalized_id
+
+    def _is_winget_source(self, value: str) -> bool:
+        return value.strip().lower() in {'winget', 'msstore'}
+
+    def _looks_like_winget_version(self, value: str) -> bool:
+        token = value.strip().lower()
+        if not token:
+            return False
+        if token in {'unknown', 'installed', 'available', 'latest'}:
+            return True
+        return bool(re.fullmatch(r'[0-9]+(?:\.[0-9a-z]+)*', token))
+
+    def _looks_like_winget_id(self, value: str) -> bool:
+        token = value.strip()
+        if not token or self._is_winget_source(token):
+            return False
+        if self._looks_like_winget_version(token):
+            return False
+        return bool(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*', token))
+
+    def _extract_winget_name_and_id(self, label: str) -> tuple[str, str]:
+        tokens = [token for token in label.split() if token.strip()]
+        if len(tokens) < 2:
+            return label.strip(), ''
+
+        for index, token in enumerate(tokens):
+            if not self._looks_like_winget_id(token):
+                continue
+
+            next_token = tokens[index + 1] if index + 1 < len(tokens) else ''
+            if index + 1 >= len(tokens) or self._looks_like_winget_version(next_token) or self._is_winget_source(next_token):
+                extracted_name = ' '.join(tokens[:index]).strip()
+                if extracted_name:
+                    return extracted_name, token.strip()
+
+        if len(tokens) >= 2 and self._looks_like_winget_version(tokens[-1]):
+            candidate_id = tokens[-2].strip()
+            extracted_name = ' '.join(tokens[:-2]).strip()
+            if extracted_name and self._looks_like_winget_id(candidate_id):
+                return extracted_name, candidate_id
+
+        return label.strip(), ''
 
     def _search_remote_programs(self, query: str) -> list[dict[str, str]]:
         system_name = system.nameSO()
@@ -875,7 +872,10 @@ class ScreenSecondary(ctk.CTk):
                 continue
 
             lowered = raw.lower()
-            if lowered.startswith('name') and 'id' in lowered:
+            if lowered.startswith('name') or lowered.startswith('nome'):
+                if 'id' in lowered or 'fonte' in lowered or 'source' in lowered:
+                    continue
+            if lowered in {'name', 'nome', 'id', 'fonte', 'source'}:
                 continue
             if set(raw) <= {'-', ' '}:
                 continue
@@ -884,14 +884,28 @@ class ScreenSecondary(ctk.CTk):
 
             parts = re.split(r'\s{2,}', raw)
             if len(parts) < 2:
-                continue
+                extracted_name, item_id = self._extract_winget_name_and_id(raw)
+                name = extracted_name
+            else:
+                name = str(parts[0]).strip()
+                item_id = str(parts[1]).strip()
 
-            name = str(parts[0]).strip()
-            item_id = str(parts[1]).strip()
+            if not name or not item_id:
+                extracted_name, extracted_id = self._extract_winget_name_and_id(raw)
+                name = name or extracted_name
+                item_id = item_id or extracted_id
+
             if not name or not item_id:
                 continue
-            if ' ' in item_id:
+            if name.lower() in {'name', 'nome'}:
                 continue
+            if self._is_winget_source(item_id) or item_id.lower() in {'id', 'id.'}:
+                extracted_name, extracted_id = self._extract_winget_name_and_id(raw)
+                if extracted_name and extracted_id:
+                    name = extracted_name
+                    item_id = extracted_id
+                else:
+                    continue
 
             key = item_id.lower()
             if key in seen_ids:
@@ -916,3 +930,4 @@ class ScreenSecondary(ctk.CTk):
         if self.selected_result:
             return self.selected_result
         return self._collect_selected_by_type()
+

@@ -1,3 +1,5 @@
+from typing import Any
+
 from lib import system, log, screen_primary, screen_secondary
 
 theme = "system"
@@ -12,29 +14,32 @@ try:
 
     secondary_screen = screen_secondary.ScreenSecondary(operational_system, theme, system_title, primary_array)
     secondary_screen.mainloop()
-    secondary_array = secondary_screen.ScreenSecondaryReturn() or {}
+    secondary_result: Any = secondary_screen.ScreenSecondaryReturn()
 
     install_list = []
     uninstall_list = []
     function_list = []
 
-    for programs in secondary_array.values():
-        for item in programs:
-            if not isinstance(item, dict):
+    if isinstance(secondary_result, dict):
+        install_list.extend(item for item in secondary_result.get('install', []) if isinstance(item, dict))
+        uninstall_list.extend(item for item in secondary_result.get('uninstall', []) if isinstance(item, dict))
+        function_list.extend(item for item in secondary_result.get('function', []) if isinstance(item, dict))
+    elif isinstance(secondary_result, list):
+        for programs in secondary_result:
+            if not isinstance(programs, dict):
                 continue
 
-            entry_type = str(item.get('type', '')).strip().lower()
+            entry_type = str(programs.get('type', '')).strip().lower()
             if entry_type == 'install':
-                install_list.append(item)
+                install_list.append(programs)
             elif entry_type == 'uninstall':
-                uninstall_list.append(item)
+                uninstall_list.append(programs)
             elif entry_type == 'function':
-                function_list.append(item)
+                function_list.append(programs)
 
-    log.log(
-        f"Collected selections: install={len(install_list)}, uninstall={len(uninstall_list)}, function={len(function_list)}",
-        level="INFO",
-    )
+    print(f'\nInstall List: {install_list}')
+    print(f'\nUninstall List: {uninstall_list}')
+    print(f'\nFunction List: {function_list}')
 
 except Exception as e:
     log.log(f"An error occurred: {e}", level="ERROR")
