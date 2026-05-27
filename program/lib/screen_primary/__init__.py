@@ -15,14 +15,14 @@ class CategoryConfig:
 
 
 CATEGORY_CONFIGS = (
-    CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization.json"),
-    CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development.json"),
-    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="driver.json"),
-    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essential.json"),
-    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="game.json"),
-    CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen.json"),
-    CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server.json"),
-    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), installer_name="ti_tools.json", include_in_tabs=False),
+    CategoryConfig("customization", "Customization", 0, supported_systems=("Windows",), installer_name="customization"),
+    CategoryConfig("development", "Developer Tools", 1, default_selected=True, installer_name="development"),
+    CategoryConfig("drivers", "Drivers", 2, supported_systems=("Windows", "Linux"), installer_name="driver"),
+    CategoryConfig("essentials", "Essential Programs", 3, default_selected=True, installer_name="essential"),
+    CategoryConfig("games", "Games", 4, supported_systems=("Windows", "Linux"), installer_name="game"),
+    CategoryConfig("screen", "Screen", 5, default_selected=True, installer_name="screen"),
+    CategoryConfig("server", "Server Tools", 6, supported_systems=("Linux",), installer_name="server"),
+    CategoryConfig("ti_tools", "TI Tools", 7, supported_systems=("Windows",), installer_name="ti_tools", include_in_tabs=False),
 )
 GRID_PADDING_X = 20
 GRID_PADDING_Y = 5
@@ -30,10 +30,10 @@ PROGRAM_TAB_ROW = 10
 
 
 class ScreenPrimary(ctk.CTk):
-    def __init__(self, operational_system: str, theme: str):
+    def __init__(self, operational_system: str, theme: str, title: str):
         super().__init__()
         ctk.set_appearance_mode(theme)
-        self.title(f'{operational_system} Programs Manager')
+        self.title(title)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -42,7 +42,7 @@ class ScreenPrimary(ctk.CTk):
         self.category_checkboxes = {}
         self.system_name = operational_system
 
-        self.main_title = ctk.CTkLabel(self, text=f'{self.system_name} Programs Manager', font=ctk.CTkFont(size=16, weight="bold"))
+        self.main_title = ctk.CTkLabel(self, text=title, font=ctk.CTkFont(size=16, weight="bold"))
         self.main_title.grid(pady=10, row=0, columnspan=2)
 
         self.options_frame = ctk.CTkFrame(self)
@@ -144,3 +144,4 @@ class ScreenPrimary(ctk.CTk):
     def return_array(self):
         if self.array_json:
             return self.array_json
+
