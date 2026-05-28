@@ -1,11 +1,13 @@
 import json
+import os
+import secrets
 import threading
 import time
 import webbrowser
 from pathlib import Path
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from urllib.request import Request, urlopen
 
 from lib.find_folders import get_ProgramsManager_folder
@@ -14,14 +16,39 @@ from lib.find_folders import get_ProgramsManager_folder
 _server_lock = threading.Lock()
 _shared_log_server = None
 _shared_log_server_thread = None
-_shared_log_server_port = 9999
+_shared_log_server_port_range = range(9900, 10000)
 _log_file_path = get_ProgramsManager_folder() / 'log.log'
-_programs_manager_site_url = 'https://jlbbarco.github.io/programs-manager'
+_programs_manager_site_url = os.getenv(
+	'PROGRAMS_MANAGER_SITE_URL',
+	'https://jlbbarco.github.io/programs-manager',
+)
+_programs_manager_site_fallback_url = os.getenv(
+	'PROGRAMS_MANAGER_SITE_FALLBACK_URL',
+	'https://passwords-manager-jlbbarco.vercel.app',
+)
 _internet_check_interval_seconds = 30
 _internet_check_url = 'https://www.google.com/generate_204'
 _internet_online_event = threading.Event()
 _internet_monitor_stop_event = threading.Event()
 _internet_monitor_thread = None
+
+
+def _build_site_url(base_url: str, port: int) -> str:
+	parsed_url = urlparse(base_url)
+	query_items = dict(parse_qsl(parsed_url.query, keep_blank_values=True))
+	query_items['port'] = str(port)
+	return urlunparse(parsed_url._replace(query=urlencode(query_items)))
+
+
+def _iter_shared_log_server_ports(preferred_port: int | None = None):
+	if preferred_port is not None:
+		yield preferred_port
+		return
+
+	candidate_ports = list(_shared_log_server_port_range)
+	secrets.SystemRandom().shuffle(candidate_ports)
+	for candidate_port in candidate_ports:
+		yield candidate_port
 
 
 def _check_internet_connection(timeout_seconds: int = 5) -> bool:
@@ -138,7 +165,7 @@ class _LogShareRequestHandler(BaseHTTPRequestHandler):
 		return
 
 
-def start_shared_log_server(host='127.0.0.1', port=_shared_log_server_port):
+def start_shared_log_server(host='127.0.0.1', port=None):
 	global _shared_log_server
 	global _shared_log_server_thread
 
@@ -146,14 +173,25 @@ def start_shared_log_server(host='127.0.0.1', port=_shared_log_server_port):
 		if _shared_log_server is not None:
 			return _shared_log_server
 
-		try:
-			server = ThreadingHTTPServer((host, port), _LogShareRequestHandler)
-		except OSError as error:
-			if port != 0:
-				print(f'Port {port} unavailable for shared log server: {error}')
-				server = ThreadingHTTPServer((host, 0), _LogShareRequestHandler)
-			else:
-				raise
+		server = None
+		last_error = None
+		for candidate_port in _iter_shared_log_server_ports(port):
+			if candidate_port not in _shared_log_server_port_range:
+				raise ValueError(
+					f'Unsupported shared log server port: {candidate_port}. '
+					'Expected a port in the 99** range.'
+				)
+
+			try:
+				server = ThreadingHTTPServer((host, candidate_port), _LogShareRequestHandler)
+				break
+			except OSError as error:
+				last_error = error
+
+		if server is None:
+			raise RuntimeError(
+				'No available port found in the 99** range for the shared log server.'
+		) from last_error
 
 		server.daemon_threads = True
 		server_url = f'http://{server.server_address[0]}:{server.server_address[1]}'
@@ -196,6 +234,23 @@ def get_shared_log_server_url():
 	return getattr(_shared_log_server, 'server_url', '')
 
 
-def open_programs_manager_site():
-	webbrowser.open(_programs_manager_site_url, new=2)
+def get_shared_log_server_port():
+	if _shared_log_server is None:
+		return 0
+	return int(_shared_log_server.server_address[1])
+
+
+def open_programs_manager_site(port=None):
+	resolved_port = port if port is not None else get_shared_log_server_port()
+	opened_url = ''
+
+	for base_url in (_programs_manager_site_url, _programs_manager_site_fallback_url):
+		opened_url = _build_site_url(base_url, resolved_port)
+		try:
+			if webbrowser.open(opened_url, new=2):
+				return opened_url
+		except Exception:
+			continue
+
+	return opened_url
 

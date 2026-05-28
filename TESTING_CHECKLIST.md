@@ -50,10 +50,11 @@ In another terminal:
 
 ```bash
 cd client/public
-python -m http.server 9999
+# Start a simple HTTP server on a port in the 99xx range (replace <port>):
+python -m http.server <port>
 ```
 
-**Expected:** Server running on `http://localhost:9999`
+**Expected:** Server running on `http://localhost:<port>` (the site will receive the chosen port via `?port=<port>`)
 
 ### Step 5: Log Server Simulation
 
@@ -100,9 +101,9 @@ Refresh browser: `Ctrl+R`
 
 ### ErrorState Component
 
-- [ ] If localhost:9999 unreachable, error page shows
+- [ ] If the configured log port (see `?port=NNNN`) is unreachable, error page shows
 - [ ] "Tentar Novamente" button refreshes page
-- [ ] "Abrir Servidor de Logs" opens localhost:9999
+- [ ] "Abrir Servidor de Logs" opens the configured log server URL (localhost:`<port>`)
 - [ ] Server URL shown in instructions
 
 ## Accessibility Tests
@@ -243,7 +244,7 @@ npm run preview
 
 ## Known Limitations
 
-- Log server must be running at `localhost:9999`
+- Log server must be running on a reachable port in the `9900–9999` range or the port passed to the site via `?port=NNNN`
 - 30-second timeout for connection
 - 60-second tolerance for "current" vs "history" logs
 - Contact API requires GitHub availability (or Vercel endpoint)
@@ -253,6 +254,6 @@ npm run preview
 For issues:
 
 1. Check console (F12)
-2. Verify localhost:9999 is running
+2. Verify the local log server (port in the `99xx` range) is running
 3. Check network tab for failed requests
 4. Review browser compatibility

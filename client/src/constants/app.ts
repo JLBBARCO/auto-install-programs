@@ -3,12 +3,87 @@
  * Centralize valores mágicos aqui para fácil manutenção
  */
 
+export const MIN_DYNAMIC_LOG_SERVER_PORT = 9900;
+export const MAX_DYNAMIC_LOG_SERVER_PORT = 9999;
+export const DEFAULT_LOG_SERVER_PORT = 9999;
+export const LOG_SERVER_PATH = "/log.log";
+export const DEFAULT_PROGRAMS_MANAGER_SITE_URL =
+  "https://jlbbarco.github.io/programs-manager";
+export const FALLBACK_PROGRAMS_MANAGER_SITE_URL =
+  "https://passwords-manager-jlbbarco.vercel.app";
+
 // URLs e Endpoints
-export const LOG_SERVER_URL = "http://localhost:9999/log.log";
 export const CONTACT_API_ENDPOINTS = [
   "/api/contact",
   "https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json",
 ] as const;
+
+export function getConfiguredLogServerPort(): number {
+  const searchParams =
+    typeof window === "undefined"
+      ? new URLSearchParams("")
+      : new URLSearchParams(window.location.search);
+
+  const rawPort = searchParams.get("port");
+  const parsedPort = Number.parseInt(rawPort ?? "", 10);
+
+  if (
+    Number.isInteger(parsedPort) &&
+    parsedPort >= MIN_DYNAMIC_LOG_SERVER_PORT &&
+    parsedPort <= MAX_DYNAMIC_LOG_SERVER_PORT
+  ) {
+    return parsedPort;
+  }
+
+  return DEFAULT_LOG_SERVER_PORT;
+}
+
+export function getLogServerPortFromUrl(url: string): number {
+  const parsedPort = Number.parseInt(new URL(url).port || "", 10);
+
+  if (
+    Number.isInteger(parsedPort) &&
+    parsedPort >= MIN_DYNAMIC_LOG_SERVER_PORT &&
+    parsedPort <= MAX_DYNAMIC_LOG_SERVER_PORT
+  ) {
+    return parsedPort;
+  }
+
+  return getConfiguredLogServerPort();
+}
+
+export function getLogServerUrl(port = getConfiguredLogServerPort()): string {
+  return `http://localhost:${port}${LOG_SERVER_PATH}`;
+}
+
+export function getProgramsManagerSiteUrl(
+  port = getConfiguredLogServerPort(),
+  baseUrl = import.meta.env.VITE_PROGRAMS_MANAGER_SITE_URL ??
+    DEFAULT_PROGRAMS_MANAGER_SITE_URL
+): string {
+  const siteUrl = new URL(baseUrl);
+  siteUrl.searchParams.set("port", String(port));
+  return siteUrl.toString();
+}
+
+export function getFallbackProgramsManagerSiteUrl(
+  port = getConfiguredLogServerPort(),
+  baseUrl = import.meta.env.VITE_PROGRAMS_MANAGER_SITE_FALLBACK_URL ??
+    FALLBACK_PROGRAMS_MANAGER_SITE_URL
+): string {
+  const siteUrl = new URL(baseUrl);
+  siteUrl.searchParams.set("port", String(port));
+  return siteUrl.toString();
+}
+
+export function getLogServerDisplay(port = getConfiguredLogServerPort()) {
+  return {
+    port,
+    portError: `Porta ${port} indisponível`,
+    timeout: `Timeout ao conectar na porta ${port}`,
+    troubleshootingHint: `Verifique se o servidor está rodando em: ${getLogServerUrl(port)}`,
+  };
+}
 
 // Timeouts e Durações
 export const LOG_MONITOR_TIMEOUT_MS = 30_000; // 30 segundos
@@ -20,7 +95,7 @@ export const MESSAGES = {
   LOG_WAITING: "Aguardando logs...",
   LOADING_CONTACTS: "Carregando contatos...",
   CONTACT_ERROR: "Erro ao carregar contatos",
-  PORT_ERROR: "Porta 9999 indisponível",
+  PORT_ERROR: "Porta indisponível",
   CONNECTION_ERROR: "Conexão Recusada",
   PORT_ERROR_HINT:
     "Faça refresh na página ou reexecute o programa para tentar novamente.",

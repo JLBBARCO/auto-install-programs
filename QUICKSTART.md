@@ -18,8 +18,9 @@ npm run dev
 
 # Terminal 2: Log Server
 cd client/public
-python -m http.server 9999
-# → Log server em http://localhost:9999
+# Start a simple HTTP server on a port in the `99xx` range (replace `<port>`):
+python -m http.server <port>
+# → Log server em http://localhost:<port>
 ```
 
 ### 3️⃣ Abrir Navegador
@@ -114,12 +115,12 @@ Constants (50 linhas)
 
 ## Troubleshooting
 
-| Problema                  | Solução                                           |
-| ------------------------- | ------------------------------------------------- |
-| Página em branco          | Abra console (F12), check logs                    |
-| "Porta 9999 indisponível" | Inicie: `python -m http.server 9999`              |
-| TypeScript error          | Rode: `npm run type-check`                        |
-| Build falha               | Limpe: `rm -rf node_modules dist` → `npm install` |
+| Problema             | Solução                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Página em branco     | Abra console (F12), check logs                                                                                                |
+| "Porta indisponível" | Inicie o servidor de logs na porta indicada na URL (`?port=NNNN`) ou em qualquer porta `99xx`: `python -m http.server <port>` |
+| TypeScript error     | Rode: `npm run type-check`                                                                                                    |
+| Build falha          | Limpe: `rm -rf node_modules dist` → `npm install`                                                                             |
 
 ---
 

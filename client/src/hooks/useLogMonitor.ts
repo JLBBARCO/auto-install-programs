@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  getConfiguredLogServerPort,
+  getLogServerDisplay,
   LOG_MONITOR_TIMEOUT_MS,
-  LOG_SERVER_URL,
-  LOG_TOLERANCE_MS,
+  getLogServerUrl,
 } from "@/constants/app";
 import { fetchLogStream, fetchLogOnce } from "@/lib/logFetcher";
 import {
@@ -47,6 +48,9 @@ const LOG_POLL_INTERVAL_MS = 5000; // 5 segundos
  * @returns Estado dos logs e status do monitoramento
  */
 export function useLogMonitor(): UseLogMonitorResult {
+  const logServerPort = getConfiguredLogServerPort();
+  const logServerUrl = getLogServerUrl(logServerPort);
+  const logServerDisplay = getLogServerDisplay(logServerPort);
   const [info, setInfo] = useState<LogEntry[]>([]);
   const [warning, setWarning] = useState<LogEntry[]>([]);
   const [error, setError] = useState<LogEntry[]>([]);
@@ -123,7 +127,7 @@ export function useLogMonitor(): UseLogMonitorResult {
     const poll = async () => {
       try {
         const lines = await fetchLogOnce(
-          LOG_SERVER_URL,
+          logServerUrl,
           controllerRef.current?.signal
         );
 
@@ -161,7 +165,7 @@ export function useLogMonitor(): UseLogMonitorResult {
     const timeoutId = window.setTimeout(() => {
       didTimeout = true;
       setIsLoading(false);
-      setMonitorError(new Error("Timeout ao conectar na porta 9999"));
+      setMonitorError(new Error(logServerDisplay.timeout));
       controller.abort();
       // Iniciar polling após timeout
       startPolling();
@@ -171,7 +175,7 @@ export function useLogMonitor(): UseLogMonitorResult {
 
     const monitorLogs = async () => {
       try {
-        for await (const rawLine of fetchLogStream(LOG_SERVER_URL, {
+        for await (const rawLine of fetchLogStream(logServerUrl, {
           signal: controller.signal,
         })) {
           setIsLoading(false);

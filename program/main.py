@@ -1,6 +1,6 @@
 from typing import Any
 
-from lib import system, log, screen_primary, screen_secondary, updates, install, web
+from lib import system, log, screen_primary, screen_secondary, updates, install, uninstall, web
 
 theme = "system"
 operational_system = system.nameSO()
@@ -43,16 +43,19 @@ try:
 
     web.start_shared_log_server()
     web.wait_for_internet_connection()
-    web.open_programs_manager_site()
+    web.open_programs_manager_site(web.get_shared_log_server_port())
 
     updates.update_package_manager(operational_system, log.log)
     if uninstall_list:
+        web.wait_for_internet_connection()
         log.log('Uninstalling programs...', level='INFO')
+        uninstall.uninstall(uninstall_list, operational_system)
     if install_list:
         web.wait_for_internet_connection()
         log.log('Installing programs...', level='INFO')
         install.install(install_list, operational_system)
     if function_list:
+        web.wait_for_internet_connection()
         log.log('Executing functions...', level='INFO')
 
     log.log('End System', level='INFO')

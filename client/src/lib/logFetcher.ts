@@ -1,3 +1,5 @@
+import { getLogServerDisplay, getLogServerPortFromUrl } from "@/constants/app";
+
 interface FetchLogStreamOptions {
   signal?: AbortSignal;
 }
@@ -6,13 +8,16 @@ export async function* fetchLogStream(
   url: string,
   options: FetchLogStreamOptions = {}
 ) {
+  const portDisplay = getLogServerDisplay(getLogServerPortFromUrl(url));
   const res = await fetch(url, {
     headers: { Accept: "text/plain" },
     signal: options.signal,
   });
 
   if (!res.ok) {
-    throw new Error(`Servidor na porta 9999 respondeu ${res.status}`);
+    throw new Error(
+      `Servidor na porta ${portDisplay.port} respondeu ${res.status}`
+    );
   }
 
   if (!res.body) {
@@ -59,13 +64,16 @@ export async function fetchLogOnce(
   url: string,
   signal?: AbortSignal
 ): Promise<string[]> {
+  const portDisplay = getLogServerDisplay(getLogServerPortFromUrl(url));
   const res = await fetch(url, {
     headers: { Accept: "text/plain" },
     signal,
   });
 
   if (!res.ok) {
-    throw new Error(`Servidor na porta 9999 respondeu ${res.status}`);
+    throw new Error(
+      `Servidor na porta ${portDisplay.port} respondeu ${res.status}`
+    );
   }
 
   const text = await res.text();

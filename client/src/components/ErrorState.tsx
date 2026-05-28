@@ -1,12 +1,14 @@
 import { AlertCircle, Github, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MESSAGES } from "@/constants/app";
+import { MESSAGES, getLogServerDisplay } from "@/constants/app";
 
 interface ErrorStateProps {
   onRefresh: () => void;
 }
 
 export function ErrorState({ onRefresh }: ErrorStateProps) {
+  const logServerDisplay = getLogServerDisplay();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-md w-full text-center">
@@ -23,10 +25,10 @@ export function ErrorState({ onRefresh }: ErrorStateProps) {
           {MESSAGES.CONNECTION_ERROR}
         </h1>
 
-        <p className="text-foreground/70 mb-2">{MESSAGES.PORT_ERROR}</p>
+        <p className="text-foreground/70 mb-2">{logServerDisplay.portError}</p>
 
         <p className="text-sm text-muted-foreground mb-6">
-          {MESSAGES.PORT_ERROR_HINT}
+          {MESSAGES.PORT_ERROR_HINT} {logServerDisplay.troubleshootingHint}
         </p>
 
         <div className="flex flex-col gap-3">
@@ -51,7 +53,7 @@ export function ErrorState({ onRefresh }: ErrorStateProps) {
         </div>
 
         <p className="text-xs text-muted-foreground mt-6">
-          Timeout: 30 segundos de monitoramento
+          {logServerDisplay.timeout}
         </p>
       </div>
     </div>
