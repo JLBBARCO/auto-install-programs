@@ -24,13 +24,13 @@
       "name": "WhatsApp (Desktop)",
       "type": "install",
       "id": "whatsapp-for-linux",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Telegram",
       "type": "install",
       "id": "telegram-desktop",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Spotify",
@@ -48,6 +48,12 @@
       "name": "Curl",
       "type": "install",
       "id": "curl",
+      "checkbox": true
+    },
+    {
+      "name": "Video Drivers",
+      "type": "function",
+      "id": "videoDrivers",
       "checkbox": true
     }
   ]

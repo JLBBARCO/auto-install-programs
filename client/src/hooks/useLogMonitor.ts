@@ -161,7 +161,7 @@ export function useLogMonitor(): UseLogMonitorResult {
     const timeoutId = window.setTimeout(() => {
       didTimeout = true;
       setIsLoading(false);
-      setMonitorError(new Error("Timeout ao conectar na porta 8000"));
+      setMonitorError(new Error("Timeout ao conectar na porta 9999"));
       controller.abort();
       // Iniciar polling após timeout
       startPolling();

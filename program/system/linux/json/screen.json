@@ -7,18 +7,6 @@
       "type": "install",
       "id": "anydesk",
       "checkbox": true
-    },
-    {
-      "name": "Git",
-      "type": "install",
-      "id": "git",
-      "checkbox": true
-    },
-    {
-      "name": "VNC Server",
-      "type": "install",
-      "id": "tightvncserver",
-      "checkbox": true
     }
   ]
 }

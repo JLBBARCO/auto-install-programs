@@ -1,4 +1,6 @@
 {
+  "name": "TI Tools",
+  "description": "Tools for managing and optimizing your computer's performance and maintenance.",
   "data": [
     {
       "name": "Rufus",

@@ -18,13 +18,13 @@
       "name": "Python 3",
       "type": "install",
       "id": "python3",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Node.js",
       "type": "install",
       "id": "nodejs",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Docker",

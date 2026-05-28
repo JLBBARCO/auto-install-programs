@@ -12,7 +12,7 @@ export async function* fetchLogStream(
   });
 
   if (!res.ok) {
-    throw new Error(`Servidor na porta 8000 respondeu ${res.status}`);
+    throw new Error(`Servidor na porta 9999 respondeu ${res.status}`);
   }
 
   if (!res.body) {
@@ -65,7 +65,7 @@ export async function fetchLogOnce(
   });
 
   if (!res.ok) {
-    throw new Error(`Servidor na porta 8000 respondeu ${res.status}`);
+    throw new Error(`Servidor na porta 9999 respondeu ${res.status}`);
   }
 
   const text = await res.text();

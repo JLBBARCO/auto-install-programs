@@ -4,7 +4,7 @@
  */
 
 // URLs e Endpoints
-export const LOG_SERVER_URL = "http://localhost:8000/log.log";
+export const LOG_SERVER_URL = "http://localhost:9999/log.log";
 export const CONTACT_API_ENDPOINTS = [
   "/api/contact",
   "https://raw.githubusercontent.com/JLBBARCO/portfolio/main/src/json/areas/contact.json",
@@ -20,7 +20,7 @@ export const MESSAGES = {
   LOG_WAITING: "Aguardando logs...",
   LOADING_CONTACTS: "Carregando contatos...",
   CONTACT_ERROR: "Erro ao carregar contatos",
-  PORT_ERROR: "Porta 8000 indisponível",
+  PORT_ERROR: "Porta 9999 indisponível",
   CONNECTION_ERROR: "Conexão Recusada",
   PORT_ERROR_HINT:
     "Faça refresh na página ou reexecute o programa para tentar novamente.",

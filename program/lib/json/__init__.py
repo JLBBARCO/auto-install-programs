@@ -1,29 +1,6 @@
 import json
 
-from pathlib import Path
-
-from lib import log, system
-
-
-def get_user_documents_folder():
-    if system.nameSO() == "Windows":
-        import winreg
-        chave_registro = r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-        try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, chave_registro) as key:
-                caminho_docs, _ = winreg.QueryValueEx(key, "Personal")
-                return Path(winreg.ExpandEnvironmentStrings(caminho_docs))
-
-        except Exception:
-            return Path.home() / "Documents"
-
-    return Path.home() / "Documents"
-
-
-def get_ProgramsManager_folder():
-    base_path = get_user_documents_folder() / "Programs Manager"
-    base_path.mkdir(parents=True, exist_ok=True)
-    return base_path
+from lib import log, system, find_folders
 
 
 def read_json(file_path):
@@ -34,7 +11,7 @@ def read_json(file_path):
 
 
 def read_internal_json(file):
-    folder = get_ProgramsManager_folder()
+    folder = find_folders.get_ProgramsManager_folder()
     file_path = folder / f'{file}.json'
     if not file_path.exists():
         log.log(f'File {file}.json not found, creating default file.', level='WARNING')
@@ -70,7 +47,7 @@ def write_json(data=None):
         }
 
 
-    folder = get_ProgramsManager_folder()
+    folder = find_folders.get_ProgramsManager_folder()
     with open(f'{folder}/user.json', 'w', encoding='utf-8') as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
 

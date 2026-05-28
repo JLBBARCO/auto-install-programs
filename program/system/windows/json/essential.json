@@ -30,7 +30,7 @@
       "name": "Google Drive",
       "type": "install",
       "id": "Google.Drive",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Mozilla Firefox",
@@ -63,40 +63,34 @@
       "checkbox": true
     },
     {
-      "name": "Notion",
+      "name": "BlueStacks",
       "type": "install",
-      "id": "Notion.Notion",
-      "checkbox": true
-    },
-    {
-      "name": "Obsidian",
-      "type": "install",
-      "id": "Obsidian.Obsidian",
+      "id": "BlueStack.BlueStacks",
       "checkbox": true
     },
     {
       "name": "Camo Studio",
       "type": "install",
       "id": "Reincubate.CamoStudio",
-      "checkbox": true
+      "checkbox": false
     },
     {
-      "name": "Tor Browser",
+      "name": "OBS Studio",
       "type": "install",
-      "id": "TheTorProject.TorBrowser",
-      "checkbox": true
+      "id": "OBSProject.OBSStudio",
+      "checkbox": false
     },
     {
       "name": "Whatsapp",
       "type": "install",
       "id": "WhatsApp.WhatsApp",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Telegram",
       "type": "install",
       "id": "Telegram.TelegramDesktop",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Proton VPN",
@@ -107,7 +101,7 @@
     {
       "name": "Video Drivers",
       "type": "function",
-      "id": "installVideoDrivers",
+      "id": "videoDrivers",
       "checkbox": true
     }
   ]

@@ -18,8 +18,8 @@ npm run dev
 
 # Terminal 2: Log Server
 cd client/public
-python -m http.server 8000
-# → Log server em http://localhost:8000
+python -m http.server 9999
+# → Log server em http://localhost:9999
 ```
 
 ### 3️⃣ Abrir Navegador
@@ -117,7 +117,7 @@ Constants (50 linhas)
 | Problema                  | Solução                                           |
 | ------------------------- | ------------------------------------------------- |
 | Página em branco          | Abra console (F12), check logs                    |
-| "Porta 8000 indisponível" | Inicie: `python -m http.server 8000`              |
+| "Porta 9999 indisponível" | Inicie: `python -m http.server 9999`              |
 | TypeScript error          | Rode: `npm run type-check`                        |
 | Build falha               | Limpe: `rm -rf node_modules dist` → `npm install` |
 

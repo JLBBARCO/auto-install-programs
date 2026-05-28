@@ -6,7 +6,7 @@
       "name": "Lively Wallpaper",
       "type": "install",
       "id": "9NTM2QC6QWS7",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Rainmeter",
@@ -36,18 +36,24 @@
       "name": "Seelen UI",
       "type": "install",
       "id": "SeelenUI.SeelenUI",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Vision Cursor",
       "type": "function",
       "id": "vision-cursor",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Essential Programs Initialization",
       "type": "function",
       "id": "essential-programs-initialization",
+      "checkbox": true
+    },
+    {
+      "name": "WinToys",
+      "type": "install",
+      "id": "9P8LTPGCBZXD",
       "checkbox": true
     }
   ]

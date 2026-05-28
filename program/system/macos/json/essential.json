@@ -30,7 +30,7 @@
       "name": "WhatsApp",
       "type": "install",
       "id": "whatsapp",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Telegram",

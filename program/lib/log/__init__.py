@@ -1,29 +1,24 @@
-import datetime
-import json
-import os
-import sys
-import threading
+import datetime, json, threading
+from pathlib import Path
+
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
 from urllib.parse import urlparse
 
-# write log.log alongside the executable when frozen or in the project root
-if getattr(sys, 'frozen', False):
-    base_dir = os.path.dirname(sys.executable)
-else:
-    # prefer the repository root if available, otherwise CWD
-    base_dir = os.getcwd()
+from lib.find_folders import get_ProgramsManager_folder
 
-_log_file_path = os.path.join(base_dir, 'log.log')
-_log_file = open(_log_file_path, 'a+', encoding="utf-8")
+
+_log_file_path = get_ProgramsManager_folder() / 'log.log'
+_log_file = open(_log_file_path, 'a+', encoding='utf-8')
 _lock = threading.Lock()
 _server_lock = threading.Lock()
 _shared_log_server = None
 _shared_log_server_thread = None
-_shared_log_server_port = 8000
+_shared_log_server_port = 9999
 
 
 def _now():
-    return datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    return datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
 
 def get_log_file_path():

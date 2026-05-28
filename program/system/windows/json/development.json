@@ -72,13 +72,13 @@
       "name": "Python 3.12",
       "type": "install",
       "id": "Python.Python.3.12",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "Python Install Manager",
       "type": "install",
       "id": "Python.PythonInstallManager",
-      "checkbox": true
+      "checkbox": false
     },
     {
       "name": "VirtualBox",
@@ -102,6 +102,18 @@
       "name": "Microsoft PowerShell",
       "type": "install",
       "id": "Microsoft.PowerShell",
+      "checkbox": true
+    },
+    {
+      "name": "Notion",
+      "type": "install",
+      "id": "Notion.Notion",
+      "checkbox": true
+    },
+    {
+      "name": "Obsidian",
+      "type": "install",
+      "id": "Obsidian.Obsidian",
       "checkbox": true
     }
   ]

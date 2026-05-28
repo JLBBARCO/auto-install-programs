@@ -84,5 +84,34 @@ class _ProgramSelectionDialog(ctk.CTkToplevel):
         if callable(self.on_submit):
             self.on_submit(selected_items)
 
+        self._request_close()
+
+    def _request_close(self):
+        if getattr(self, '_close_scheduled', False):
+            return
+        self._close_scheduled = True
+        self.after(0, self._finalize_close)
+
+    def _finalize_close(self):
+        self._cancel_pending_after_callbacks()
         self.destroy()
+
+    def destroy(self):
+        self._cancel_pending_after_callbacks()
+        super().destroy()
+
+    def _cancel_pending_after_callbacks(self):
+        try:
+            pending_after_ids = self.tk.call('after', 'info')
+        except Exception:
+            pending_after_ids = ()
+
+        if isinstance(pending_after_ids, str):
+            pending_after_ids = (pending_after_ids,)
+
+        for after_id in pending_after_ids:
+            try:
+                self.after_cancel(after_id)
+            except Exception:
+                continue
 

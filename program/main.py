@@ -1,6 +1,6 @@
 from typing import Any
 
-from lib import system, log, screen_primary, screen_secondary
+from lib import system, log, screen_primary, screen_secondary, updates, install, web
 
 theme = "system"
 operational_system = system.nameSO()
@@ -37,9 +37,19 @@ try:
             elif entry_type == 'function':
                 function_list.append(programs)
 
-    print(f'\nInstall List: {install_list}')
-    print(f'\nUninstall List: {uninstall_list}')
-    print(f'\nFunction List: {function_list}')
+
+    log.log('Start System', level='INFO')
+    web.start_shared_log_server()
+
+
+    updates.update_package_manager(operational_system, log.log)
+    install.install(install_list, operational_system)
+
+    log.log('End System', level='INFO')
 
 except Exception as e:
     log.log(f"An error occurred: {e}", level="ERROR")
+
+finally:
+    web.stop_shared_log_server()
+
