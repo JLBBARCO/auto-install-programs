@@ -7,6 +7,8 @@ operational_system = system.nameSO()
 system_title = f'{operational_system} Programs Manager'
 
 
+log.log('Start System', level='INFO')
+
 try:
     primary_screen = screen_primary.ScreenPrimary(operational_system, theme, system_title)
     primary_screen.mainloop()
@@ -38,12 +40,17 @@ try:
                 function_list.append(programs)
 
 
-    log.log('Start System', level='INFO')
     web.start_shared_log_server()
-
+    web.open_programs_manager_site()
 
     updates.update_package_manager(operational_system, log.log)
-    install.install(install_list, operational_system)
+    if uninstall_list:
+        log.log('Uninstalling programs...', level='INFO')
+    if install_list:
+        log.log('Installing programs...', level='INFO')
+        install.install(install_list, operational_system)
+    if function_list:
+        log.log('Executing functions...', level='INFO')
 
     log.log('End System', level='INFO')
 
