@@ -71,7 +71,6 @@ export function useLogMonitor(): UseLogMonitorResult {
     (entry: LogEntry, section: "current" | "history") => {
       if (section === "history") {
         setHistory(prev => [...prev, entry]);
-        return;
       }
 
       const bucket = bucketLogLevel(entry.level);
