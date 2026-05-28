@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Programs Manager** é uma aplicação React + TypeScript que monitora logs em tempo real de um servidor local (porta 9999), com interface moderna usando Tailwind CSS e Radix UI.
+**Programs Manager** é uma aplicação React + TypeScript que monitora logs em tempo real de um servidor local (porta dinâmica no intervalo `9900–9999`), com interface moderna usando Tailwind CSS e Radix UI. O programa comunica a porta selecionada ao site adicionando `?port=NNNN` à URL.
 
 ### Stack Técnico
 
@@ -71,7 +71,7 @@
 └─────────────────────────────────────────────────────────────┘
          ↓ (Fetch API with streaming)
 ┌─────────────────────────────────────────────────────────────┐
-│            Backend / Log Server (localhost:9999)            │
+│            Backend / Log Server (localhost:99xx)            │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  HTTP Server (Python http.server or any static)     │   │
 │  │  - Serves: /log.log                                │   │
@@ -181,7 +181,8 @@ ContactFooter mounts
 **Purpose:** Centralized configuration
 
 ```ts
-export const LOG_SERVER_URL = "http://localhost:9999/log.log"
+// The runtime log server URL includes the chosen port. The site reads `?port=NNNN` or falls back to a default in the 99xx range.
+export const LOG_SERVER_URL = "http://localhost:<port>/log.log"
 export const LOG_MONITOR_TIMEOUT_MS = 30_000
 export const MESSAGES = { ... } // 18 chaves
 export const LOG_LEVEL_STYLES = { ... }
@@ -578,7 +579,7 @@ None currently (all hardcoded in constants).
 
 ```ts
 // .env.local
-VITE_LOG_SERVER_URL=http://localhost:9999/log.log
+VITE_LOG_SERVER_URL=http://localhost:<port>/log.log
 VITE_LOG_MONITOR_TIMEOUT_MS=30000
 ```
 
@@ -586,13 +587,13 @@ VITE_LOG_MONITOR_TIMEOUT_MS=30000
 
 ## Troubleshooting
 
-| Issue                     | Cause              | Solution                                 |
-| ------------------------- | ------------------ | ---------------------------------------- |
-| "Cannot GET /log.log"     | Server not running | Start: `python -m http.server 9999`      |
-| "Porta 9999 indisponível" | Timeout after 30s  | Check server, increase timeout           |
-| Blank page                | JavaScript error   | Open console (F12), check errors         |
-| Logs not streaming        | Wrong file path    | Verify `/log.log` exists and is readable |
-| Contact cards fail        | GitHub API down    | Check internet, API rate limit           |
+| Issue                 | Cause              | Solution                                                     |
+| --------------------- | ------------------ | ------------------------------------------------------------ |
+| "Cannot GET /log.log" | Server not running | Start: `python -m http.server <port>` (use a port in `99xx`) |
+| "Porta indisponível"  | Timeout after 30s  | Check server (port in `99xx`), increase timeout              |
+| Blank page            | JavaScript error   | Open console (F12), check errors                             |
+| Logs not streaming    | Wrong file path    | Verify `/log.log` exists and is readable                     |
+| Contact cards fail    | GitHub API down    | Check internet, API rate limit                               |
 
 ---
 

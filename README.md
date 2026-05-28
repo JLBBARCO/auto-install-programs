@@ -142,7 +142,7 @@ Those entries are intended for package-manager commands such as `winget uninstal
 
 #### Background execution
 
-When the user presses `RUN`, all windows close and the program continues running in the background. It writes `[dd/mm/yyyy hh:mm:ss] [INFO] Start system` to `log.log`, exposes `log.log` via an HTTP endpoint on `localhost:9999`, and opens the Programs Manager website: `https://programs-manager-website.vercel.app`.
+When the user presses `RUN`, all windows close and the program continues running in the background. It writes `[dd/mm/yyyy hh:mm:ss] [INFO] Start system` to `log.log`, exposes `log.log` via an HTTP endpoint on a dynamically chosen `localhost` port in the range `9900–9999` (the program will bind a free `99xx` port), and opens the Programs Manager website including the selected port as a query parameter (for example: `https://programs-manager-website.vercel.app?port=9936`).
 
 Startup tasks are executed in this order:
 
@@ -208,7 +208,7 @@ align-items: center;
 
 #### Error page
 
-If the site cannot access the `log.log` port (9999) or the file is not shared, an error page is shown with a refresh button and a link to the GitHub repository: `https://github.com/JLBBARCO/programs-manager`.
+If the site cannot access the `log.log` port (the port provided in the page query parameter `?port=NNNN` or any `99xx` port) or the file is not shared, an error page is shown with a refresh button and a link to the GitHub repository: `https://github.com/JLBBARCO/programs-manager`.
 
 ### Backend (Site)
 
@@ -216,7 +216,7 @@ The site temporarily records the page load time and uses it to partition current
 
 #### Port probe
 
-On load the site probes `localhost:9999` for 30 seconds. If the log endpoint is not available, monitoring is paused until the user refreshes.
+On load the site probes the port specified by the query parameter `?port=NNNN` (if present) or falls back to a sensible default in the `99xx` range for up to 30 seconds. If the log endpoint is not available, monitoring is paused until the user refreshes.
 
 #### Contacts source
 
