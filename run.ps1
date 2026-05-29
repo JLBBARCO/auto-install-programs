@@ -6,8 +6,15 @@ $repo = "programs-manager"
 #  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/run.ps1  -> set to 'main'
 #  - https://raw.githubusercontent.com/JLBBARCO/programs-manager/beta/run.ps1 -> set to 'beta'
 # The branch controls whether the script downloads the latest stable release (main)
-# or the most-recent prerelease (beta).
-$ScriptBranch = 'beta'
+# or the most-recent prerelease (beta). Allow an environment override for testing.
+$ScriptBranch = if ($env:AIP_BRANCH) {
+    $env:AIP_BRANCH
+} elseif ($env:SCRIPT_BRANCH) {
+    $env:SCRIPT_BRANCH
+} else {
+    'main'
+}
+$ScriptBranch = $ScriptBranch.Trim().ToLowerInvariant()
 # Use the current user's profile directory (works on Windows reliably).
 $installRoot = Join-Path $env:USERPROFILE ".programs-manager"
 $expectedExePath = Join-Path $installRoot "Programs Manager\Programs Manager.exe"
@@ -46,15 +53,17 @@ function Resolve-LocalBuildPath {
     }
     
     $scriptDir = Split-Path -Parent $scriptPath
-    $buildDir = Join-Path $scriptDir "build"
-    
-    if (Test-Path $buildDir) {
-        $foundExe = Get-ChildItem -Path $buildDir -Filter "Programs Manager.exe" -Recurse -File -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-        
-        if ($foundExe) {
-            return $foundExe.FullName
+    foreach ($candidateDir in @("dist", "build")) {
+        $searchRoot = Join-Path $scriptDir $candidateDir
+
+        if (Test-Path $searchRoot) {
+            $foundExe = Get-ChildItem -Path $searchRoot -Filter "Programs Manager.exe" -Recurse -File -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+
+            if ($foundExe) {
+                return $foundExe.FullName
+            }
         }
     }
     
@@ -84,8 +93,15 @@ if (-not $exePath) {
             # Find the most recent prerelease
             $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases" -UseBasicParsing
             $prerelease = $releases | Where-Object { $_.prerelease } | Sort-Object -Property published_at -Descending | Select-Object -First 1
-            if (-not $prerelease) { throw "No prerelease found." }
-            $asset = $prerelease.assets | Where-Object { $_.name -eq "programs-manager-windows.zip" } | Select-Object -First 1
+            if ($prerelease) {
+                $asset = $prerelease.assets | Where-Object { $_.name -eq "programs-manager-windows.zip" } | Select-Object -First 1
+            }
+
+            if (-not $asset) {
+                Write-Host "[programs-manager] Nenhum prerelease encontrado; usando a última release estável." -ForegroundColor Yellow
+                $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
+                $asset = $release.assets | Where-Object { $_.name -eq "programs-manager-windows.zip" } | Select-Object -First 1
+            }
         } else {
             # Stable channel: use latest stable release endpoint
             $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$owner/$repo/releases/latest" -UseBasicParsing
@@ -129,4 +145,5 @@ if (-not $exePath -or -not (Test-Path $exePath)) {
 # 2. Executa o binário diretamente (Sem Python, sem VENV)
 Write-Host "[programs-manager] Iniciando..."
 Write-Host "[programs-manager] Executável: $exePath"
-Start-Process -FilePath $exePath
+$exeWorkingDirectory = Split-Path -Parent $exePath
+Start-Process -FilePath $exePath -WorkingDirectory $exeWorkingDirectory

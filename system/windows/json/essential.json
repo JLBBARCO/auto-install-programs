@@ -1,0 +1,108 @@
+{
+  "name": "Essentials",
+  "description": "Essential programs for a functional Windows system.",
+  "data": [
+    {
+      "name": "Adobe Acrobat",
+      "type": "install",
+      "id": "Adobe.Acrobat.Reader.64-bit",
+      "checkbox": true
+    },
+    {
+      "name": "Cloudflare WARP",
+      "type": "install",
+      "id": "Cloudflare.Warp",
+      "checkbox": true
+    },
+    {
+      "name": "Free Download Manager",
+      "type": "install",
+      "id": "SoftDeluxe.FreeDownloadManager",
+      "checkbox": true
+    },
+    {
+      "name": "Google Chrome",
+      "type": "install",
+      "id": "Google.Chrome",
+      "checkbox": true
+    },
+    {
+      "name": "Google Drive",
+      "type": "install",
+      "id": "Google.Drive",
+      "checkbox": false
+    },
+    {
+      "name": "Mozilla Firefox",
+      "type": "install",
+      "id": "Mozilla.Firefox",
+      "checkbox": true
+    },
+    {
+      "name": "Spotify",
+      "type": "install",
+      "id": "Spotify.Spotify",
+      "checkbox": true
+    },
+    {
+      "name": "VLC",
+      "type": "install",
+      "id": "VideoLAN.VLC",
+      "checkbox": true
+    },
+    {
+      "name": "WinRAR",
+      "type": "install",
+      "id": "RARLab.WinRAR",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft Office",
+      "type": "install",
+      "id": "Microsoft.Office",
+      "checkbox": true
+    },
+    {
+      "name": "BlueStacks",
+      "type": "install",
+      "id": "BlueStack.BlueStacks",
+      "checkbox": true
+    },
+    {
+      "name": "Camo Studio",
+      "type": "install",
+      "id": "Reincubate.CamoStudio",
+      "checkbox": false
+    },
+    {
+      "name": "OBS Studio",
+      "type": "install",
+      "id": "OBSProject.OBSStudio",
+      "checkbox": false
+    },
+    {
+      "name": "Whatsapp",
+      "type": "install",
+      "id": "WhatsApp.WhatsApp",
+      "checkbox": false
+    },
+    {
+      "name": "Telegram",
+      "type": "install",
+      "id": "Telegram.TelegramDesktop",
+      "checkbox": false
+    },
+    {
+      "name": "Proton VPN",
+      "type": "install",
+      "id": "ProtonVPN.ProtonVPN",
+      "checkbox": true
+    },
+    {
+      "name": "Video Drivers",
+      "type": "function",
+      "id": "video_drivers",
+      "checkbox": true
+    }
+  ]
+}

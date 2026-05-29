@@ -1,0 +1,60 @@
+{
+  "name": "Essentials",
+  "description": "Essential programs for a functional Linux system.",
+  "data": [
+    {
+      "name": "Google Chrome",
+      "type": "install",
+      "id": "google-chrome-stable",
+      "checkbox": true
+    },
+    {
+      "name": "Mozilla Firefox",
+      "type": "install",
+      "id": "firefox",
+      "checkbox": true
+    },
+    {
+      "name": "VLC",
+      "type": "install",
+      "id": "vlc",
+      "checkbox": true
+    },
+    {
+      "name": "WhatsApp (Desktop)",
+      "type": "install",
+      "id": "whatsapp-for-linux",
+      "checkbox": false
+    },
+    {
+      "name": "Telegram",
+      "type": "install",
+      "id": "telegram-desktop",
+      "checkbox": false
+    },
+    {
+      "name": "Spotify",
+      "type": "install",
+      "id": "spotify-client",
+      "checkbox": true
+    },
+    {
+      "name": "Git",
+      "type": "install",
+      "id": "git",
+      "checkbox": true
+    },
+    {
+      "name": "Curl",
+      "type": "install",
+      "id": "curl",
+      "checkbox": true
+    },
+    {
+      "name": "Video Drivers",
+      "type": "function",
+      "id": "video_drivers",
+      "checkbox": true
+    }
+  ]
+}

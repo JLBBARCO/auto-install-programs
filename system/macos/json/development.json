@@ -1,0 +1,90 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for macOS.",
+  "data": [
+    {
+      "name": "Visual Studio Code",
+      "type": "install",
+      "id": "visual-studio-code",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft Teams",
+      "type": "install",
+      "id": "microsoft-teams",
+      "checkbox": true
+    },
+    {
+      "name": "GIMP",
+      "type": "install",
+      "id": "gimp",
+      "checkbox": true
+    },
+    {
+      "name": "GitHub Desktop",
+      "type": "install",
+      "id": "github",
+      "checkbox": true
+    },
+    {
+      "name": "MySQL Workbench",
+      "type": "install",
+      "id": "mysql-workbench",
+      "checkbox": true
+    },
+    {
+      "name": "XAMPP",
+      "type": "install",
+      "id": "xampp",
+      "checkbox": true
+    },
+    {
+      "name": "Docker",
+      "type": "install",
+      "id": "docker",
+      "checkbox": true
+    },
+    {
+      "name": "VirtualBox",
+      "type": "install",
+      "id": "virtualbox",
+      "checkbox": true
+    },
+    {
+      "name": "Figma",
+      "type": "install",
+      "id": "figma",
+      "checkbox": true
+    },
+    {
+      "name": "Blender",
+      "type": "install",
+      "id": "blender",
+      "checkbox": true
+    },
+    {
+      "name": "Git",
+      "type": "install",
+      "id": "git",
+      "checkbox": true
+    },
+    {
+      "name": "Python 3.12",
+      "type": "install",
+      "id": "python@3.12",
+      "checkbox": false
+    },
+    {
+      "name": "Node.js",
+      "type": "install",
+      "id": "node",
+      "checkbox": false
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "type": "install",
+      "id": "powershell",
+      "checkbox": true
+    }
+  ]
+}

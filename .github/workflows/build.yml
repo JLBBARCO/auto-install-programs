@@ -50,6 +50,7 @@ jobs:
     outputs:
       python_changed: ${{ steps.filter.outputs.python }}
       data_changed: ${{ steps.filter.outputs.data }}
+      requirements_changed: ${{ steps.filter.outputs.requirements }}
       windows_changed: ${{ steps.filter.outputs.windows }}
       linux_changed: ${{ steps.filter.outputs.linux }}
       macos_changed: ${{ steps.filter.outputs.macos }}
@@ -70,6 +71,8 @@ jobs:
             data:
               - 'install/**'
               - 'README.md'
+            requirements:
+              - 'requirements.txt'
             windows:
               - 'build.bat'
               - 'run.ps1'
@@ -86,6 +89,7 @@ jobs:
     if: |
       needs.detect-changes.outputs.python_changed == 'true' ||
       needs.detect-changes.outputs.data_changed == 'true' ||
+      needs.detect-changes.outputs.requirements_changed == 'true' ||
       needs.detect-changes.outputs.windows_changed == 'true' ||
       needs.detect-changes.outputs.linux_changed == 'true' ||
       needs.detect-changes.outputs.macos_changed == 'true' ||
@@ -116,7 +120,7 @@ jobs:
             script: build-mac.sh
             artifact-name: macos
             artifact-path: dist/Auto*
-            launch-path: dist/Programs Manager/Programs Manager
+            launch-path: dist/Programs Manager.app/Contents/MacOS/Programs Manager
             build_filter: macos
 
     steps:
@@ -129,6 +133,7 @@ jobs:
         run: |
           BUILD_PYTHON="${{ needs.detect-changes.outputs.python_changed }}"
           BUILD_DATA="${{ needs.detect-changes.outputs.data_changed }}"
+          BUILD_REQUIREMENTS="${{ needs.detect-changes.outputs.requirements_changed }}"
           BUILD_WINDOWS="${{ needs.detect-changes.outputs.windows_changed }}"
           BUILD_LINUX="${{ needs.detect-changes.outputs.linux_changed }}"
           BUILD_MACOS="${{ needs.detect-changes.outputs.macos_changed }}"
@@ -145,6 +150,12 @@ jobs:
           if [ "$BUILD_DATA" == "true" ]; then
             echo "should_build=true" >> "$GITHUB_OUTPUT"
             echo "Compilando ${{ matrix.build_filter }} porque dados foram modificados"
+            exit 0
+          fi
+
+          if [ "$BUILD_REQUIREMENTS" == "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "Compilando ${{ matrix.build_filter }} porque requirements.txt foi modificado"
             exit 0
           fi
 

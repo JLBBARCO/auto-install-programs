@@ -1,0 +1,65 @@
+{
+  "name": "TI Tools",
+  "description": "Tools for managing and optimizing your computer's performance and maintenance.",
+  "data": [
+    {
+      "name": "Rufus",
+      "type": "install",
+      "id": "Rufus.Rufus",
+      "checkbox": true
+    },
+    {
+      "name": "Ventoy",
+      "type": "install",
+      "id": "Ventoy.Ventoy",
+      "checkbox": true
+    },
+    {
+      "name": "BIOS",
+      "function": "path-to-bios",
+      "checkbox": true
+    },
+    {
+      "name": "EaseUS Todo Backup",
+      "type": "install",
+      "id": "EaseUS.TodoBackup",
+      "checkbox": true
+    },
+    {
+      "name": "EaseUS Disk Copy",
+      "type": "install",
+      "id": "EaseUS.DiskCopy",
+      "checkbox": true
+    },
+    {
+      "name": "AIDA64",
+      "type": "install",
+      "id": "FinalWire.AIDA64.Extreme",
+      "checkbox": true
+    },
+    {
+      "name": "HWMonitor",
+      "type": "install",
+      "id": "CPUID.HWMonitor",
+      "checkbox": true
+    },
+    {
+      "name": "CrystalDiskInfo",
+      "type": "install",
+      "id": "CrystalDewWorld.CrystalDiskInfo",
+      "checkbox": true
+    },
+    {
+      "name": "CPU-Z",
+      "type": "install",
+      "id": "CPUID.CPU-Z",
+      "checkbox": true
+    },
+    {
+      "name": "BIOS Shortcut",
+      "type": "function",
+      "id": "bios_shortcut",
+      "checkbox": true
+    }
+  ]
+}

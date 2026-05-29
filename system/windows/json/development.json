@@ -1,0 +1,120 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for Windows.",
+  "data": [
+    {
+      "name": "Blender",
+      "type": "install",
+      "id": "BlenderFoundation.Blender",
+      "checkbox": true
+    },
+    {
+      "name": "Docker Desktop",
+      "type": "install",
+      "id": "Docker.DockerDesktop",
+      "checkbox": true
+    },
+    {
+      "name": "Figma",
+      "type": "install",
+      "id": "Figma.Figma",
+      "checkbox": true
+    },
+    {
+      "name": "Gimp",
+      "type": "install",
+      "id": "GIMP.GIMP.3",
+      "checkbox": true
+    },
+    {
+      "name": "Git",
+      "type": "install",
+      "id": "Git.Git",
+      "checkbox": true
+    },
+    {
+      "name": "GitHub Desktop",
+      "type": "install",
+      "id": "GitHub.GitHubDesktop",
+      "checkbox": true
+    },
+    {
+      "name": "Java Runtime Environment",
+      "type": "install",
+      "id": "Oracle.JavaRuntimeEnvironment",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft Teams",
+      "type": "install",
+      "id": "Microsoft.Teams",
+      "checkbox": true
+    },
+    {
+      "name": "MySQL Workbench",
+      "type": "install",
+      "id": "Oracle.MySQLWorkbench",
+      "checkbox": true
+    },
+    {
+      "name": "Node.js",
+      "type": "install",
+      "id": "OpenJS.NodeJS",
+      "checkbox": true
+    },
+    {
+      "name": "Visual Studio Code",
+      "type": "install",
+      "id": "Microsoft.VisualStudioCode",
+      "checkbox": true
+    },
+    {
+      "name": "Python 3.12",
+      "type": "install",
+      "id": "Python.Python.3.12",
+      "checkbox": false
+    },
+    {
+      "name": "Python Install Manager",
+      "type": "install",
+      "id": "Python.PythonInstallManager",
+      "checkbox": false
+    },
+    {
+      "name": "VirtualBox",
+      "type": "install",
+      "id": "Oracle.VirtualBox",
+      "checkbox": true
+    },
+    {
+      "name": "XAMPP",
+      "type": "install",
+      "id": "ApacheFriends.Xampp.8.1",
+      "checkbox": true
+    },
+    {
+      "name": "Postman",
+      "type": "install",
+      "id": "Postman.Postman",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "type": "install",
+      "id": "Microsoft.PowerShell",
+      "checkbox": true
+    },
+    {
+      "name": "Notion",
+      "type": "install",
+      "id": "Notion.Notion",
+      "checkbox": true
+    },
+    {
+      "name": "Obsidian",
+      "type": "install",
+      "id": "Obsidian.Obsidian",
+      "checkbox": true
+    }
+  ]
+}

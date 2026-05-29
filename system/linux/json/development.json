@@ -1,0 +1,90 @@
+{
+  "name": "Development",
+  "description": "Development tools and environments for Linux.",
+  "data": [
+    {
+      "name": "Visual Studio Code",
+      "type": "install",
+      "id": "code",
+      "checkbox": true
+    },
+    {
+      "name": "Git",
+      "type": "install",
+      "id": "git",
+      "checkbox": true
+    },
+    {
+      "name": "Python 3",
+      "type": "install",
+      "id": "python3",
+      "checkbox": false
+    },
+    {
+      "name": "Node.js",
+      "type": "install",
+      "id": "nodejs",
+      "checkbox": false
+    },
+    {
+      "name": "Docker",
+      "type": "install",
+      "id": "docker.io",
+      "checkbox": true
+    },
+    {
+      "name": "Gimp",
+      "type": "install",
+      "id": "gimp",
+      "checkbox": true
+    },
+    {
+      "name": "Blender",
+      "type": "install",
+      "id": "blender",
+      "checkbox": true
+    },
+    {
+      "name": "VirtualBox",
+      "type": "install",
+      "id": "virtualbox",
+      "checkbox": true
+    },
+    {
+      "name": "Figma",
+      "type": "install",
+      "id": "figma",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft Teams",
+      "type": "install",
+      "id": "teams",
+      "checkbox": true
+    },
+    {
+      "name": "MySQL Workbench",
+      "type": "install",
+      "id": "mysql-workbench",
+      "checkbox": true
+    },
+    {
+      "name": "GitHub Desktop",
+      "type": "install",
+      "id": "github-desktop",
+      "checkbox": true
+    },
+    {
+      "name": "XAMPP",
+      "type": "install",
+      "id": "xampp",
+      "checkbox": true
+    },
+    {
+      "name": "Microsoft PowerShell",
+      "type": "install",
+      "id": "powershell",
+      "checkbox": true
+    }
+  ]
+}

@@ -6,31 +6,17 @@ rm -rf dist build
 rm -f "Programs Manager.spec"
 
 echo "Installing required dependencies..."
-python -m pip install --upgrade pip
-python -m pip install pyinstaller customtkinter psutil
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 
 echo "Starting build with PyInstaller..."
 
-# Prepare PyInstaller command with conditional install directory
-PYINSTALLER_CMD="python -m PyInstaller --noconfirm --onedir --windowed \\
-    --name \"Programs Manager\" \\
-    --add-data \"src:src\""
-
-if [ -d "install" ]; then
-    echo "Adding install directory to bundle..."
-    PYINSTALLER_CMD="$PYINSTALLER_CMD \\
-    --add-data \"install:install\""
-else
-    echo "WARNING: install directory not found. App will fetch resources from GitHub."
-fi
-
-# Complete the command
-PYINSTALLER_CMD="$PYINSTALLER_CMD \\
-    --collect-all customtkinter \\
-    --collect-all psutil \\
-    \"main.py\""
-
-eval "$PYINSTALLER_CMD"
+python3 -m PyInstaller --noconfirm --onedir --windowed \
+    --name "Programs Manager" \
+    --add-data "lib:lib" \
+    --collect-all customtkinter \
+    --collect-all psutil \
+    "main.py"
 
 echo ""
 if [ -d "dist/Programs Manager" ]; then

@@ -1,28 +1,16 @@
 # Quick Start Guide 🚀
 
-## Tl;dr - O Essencial
-
-### Status
-✅ Código refatorado, testado e pronto para produção
-
-### O que mudou?
-- ✅ Integração Claude + Manus completada
-- ✅ Clean code + SOLID principles aplicados
-- ✅ UI/UX melhorada com skeletons
-- ✅ Zero erros TypeScript
-- ✅ Documentação completa
-
----
-
 ## Setup Local (5 minutos)
 
 ### 1️⃣ Install
+
 ```bash
 npm install
 # Instala todas as dependências
 ```
 
 ### 2️⃣ Dev Server
+
 ```bash
 # Terminal 1: App
 npm run dev
@@ -30,11 +18,13 @@ npm run dev
 
 # Terminal 2: Log Server
 cd client/public
-python -m http.server 8000
-# → Log server em http://localhost:8000
+# Start a simple HTTP server on a port in the `99xx` range (replace `<port>`):
+python -m http.server <port>
+# → Log server em http://localhost:<port>
 ```
 
 ### 3️⃣ Abrir Navegador
+
 - [x] Vá para `http://localhost:5173`
 - [x] Se não houver logs, crie `client/public/log.log`
 
@@ -43,12 +33,14 @@ python -m http.server 8000
 ## Build & Deploy
 
 ### Build Local
+
 ```bash
 npm run build
 # → Saída em dist/
 ```
 
 ### Deploy Vercel (automático)
+
 ```bash
 git push origin main
 # → Deploy automático via GitHub
@@ -59,14 +51,15 @@ git push origin main
 ## Arquivos Importantes
 
 ### 📄 Ler Primeiro
-1. **[SUMMARY.md](./SUMMARY.md)** - Resumo executivo
-2. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Arquitetura técnica
-3. **[REFACTORING_SUMMARY.md](./REFACTORING_SUMMARY.md)** - Detalhes das mudanças
+
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Arquitetura técnica
 
 ### 🧪 Antes de Mergear
+
 1. **[TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)** - Guia de testes
 
 ### 💻 Para Developers
+
 1. `client/src/constants/app.ts` - Config centralizada
 2. `client/src/hooks/useLogMonitor.ts` - Custom hook
 3. `client/src/lib/logParser.ts` - Parse logic
@@ -76,7 +69,7 @@ git push origin main
 
 ## Estrutura Rápida
 
-```
+```plaintext
 Home.tsx (60 linhas)
 ├── useLogMonitor() hook
 ├── LogContainer (info/warning/error)
@@ -101,16 +94,19 @@ Constants (50 linhas)
 ## Próximas Tarefas
 
 ### Imediato
+
 - [ ] Executar checklist de testes (TESTING_CHECKLIST.md)
 - [ ] Code review com team
 - [ ] Deploy em staging
 
 ### Curto Prazo
+
 - [ ] Unit tests (Jest)
 - [ ] E2E tests (Playwright)
 - [ ] CI/CD pipeline
 
 ### Futuro
+
 - [ ] i18n (tradução - MESSAGES pronto)
 - [ ] Dark mode
 - [ ] WebSocket real-time
@@ -119,18 +115,19 @@ Constants (50 linhas)
 
 ## Troubleshooting
 
-| Problema | Solução |
-|----------|---------|
-| Página em branco | Abra console (F12), check logs |
-| "Porta 8000 indisponível" | Inicie: `python -m http.server 8000` |
-| TypeScript error | Rode: `npm run type-check` |
-| Build falha | Limpe: `rm -rf node_modules dist` → `npm install` |
+| Problema             | Solução                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Página em branco     | Abra console (F12), check logs                                                                                                |
+| "Porta indisponível" | Inicie o servidor de logs na porta indicada na URL (`?port=NNNN`) ou em qualquer porta `99xx`: `python -m http.server <port>` |
+| TypeScript error     | Rode: `npm run type-check`                                                                                                    |
+| Build falha          | Limpe: `rm -rf node_modules dist` → `npm install`                                                                             |
 
 ---
 
 ## Contato
 
 Para dúvidas:
+
 1. Leia a documentação relevante (veja acima)
 2. Consulte ARCHITECTURE.md para detalhes técnicos
 3. Abra issue no GitHub com contexto
@@ -150,4 +147,4 @@ npm run dev           # ✅ Running at localhost:5173
 
 ---
 
-**Que comece a diversão! 🎉**
+## Que comece a diversão! 🎉

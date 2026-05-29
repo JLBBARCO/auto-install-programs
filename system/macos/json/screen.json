@@ -1,0 +1,12 @@
+{
+  "name": "Screen",
+  "description": "Remote access and display tools for macOS.",
+  "data": [
+    {
+      "name": "AnyDesk",
+      "type": "install",
+      "id": "anydesk",
+      "checkbox": true
+    }
+  ]
+}
