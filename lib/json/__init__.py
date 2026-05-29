@@ -20,7 +20,7 @@ def read_internal_json(file):
 
 
 def read_external_json(file):
-    url_path = f'https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/program/system/{system.nameSO().lower()}/json/{file}.json'
+    url_path = f'https://raw.githubusercontent.com/JLBBARCO/programs-manager/main/system/{system.nameSO().lower()}/json/{file}.json'
     try:
         import requests
         response = requests.get(url_path, timeout=20)
